@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_sources import source_name
-from tools.audit_eador_economy import Trial
+from tools.sources import source_name, source_path
+from tools.audit_economy import Trial
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -230,12 +230,12 @@ def main():
     parser.add_argument('--cpu-percent', type=float, default=25)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    paths = [*ROOT.glob('eador/**/*.py'), ROOT / 'tools/audit_eador_army_plans.py',
-             ROOT / 'tools/audit_eador_economy.py']
+    paths = [*ROOT.glob('eador/**/*.py'), ROOT / 'tools/audit_army_plans.py',
+             ROOT / 'tools/audit_economy.py']
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     report = journey(args.plan, seed=args.seed, difficulty=args.difficulty, middle=args.middle,
                      finale=args.finale, cpu_percent=args.cpu_percent)
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == value for path, value in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == value for path, value in hashes.items())
     report.update(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, source_unchanged=True)
     args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -40,7 +40,7 @@ Saves remain accessible at departures, recovery and endings.
 
 ## Verification
 
-`tools/verify_eador_campaign.py` executes the existing public-command campaign
+`tools/verify_campaign.py` executes the existing public-command campaign
 policy through actual controls. Model reads choose a legal strategy; every
 build, recruit, travel, battle round, reward, equipment change and transition
 uses a key or mouse event. The policy's reload seam uses F5/F9 and compares
@@ -65,7 +65,7 @@ used 356 input activations and 11 exact reloads; Foundries/Throne with recovery
 used 377 and 13. J/Locate was exercised on every stage, and the final briefing
 was canceled, reopened and accepted with resources checked. The independently
 reviewed eight-relic inventory case now has a mouse-only native verifier:
-`uv run python tools/verify_eador_campaign.py --inventory`. It earns all relics
+`uv run python tools/verify_campaign.py --inventory`. It earns all relics
 through public play as a prepared fixture, pages to the last item, selects it,
 returns to page one and verifies its actual carryover after departure.
 

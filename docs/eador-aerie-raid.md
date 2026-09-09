@@ -20,7 +20,7 @@ in Ruins; every world's previously available relic set remains available.
 
 ## Actual purchased plans
 
-`tools/eador_aerie_campaign.py` accepts an ordinary State or the native input
+`tools/aerie_campaign.py` accepts an ordinary State or the native input
 adapter in `prepare_aerie(state=...)`. Preparation resolves prior conquest with
 the explicit auto command, purchases its buildings/troops and travels to the
 real unexplored Aerie. Encounter routes use only manual orders and accept an
@@ -100,7 +100,7 @@ Unentered future shards use current generation under the existing
 Run the production audit with:
 
 ```sh
-PYTHONPATH=. python tools/audit_eador_aerie.py --output /tmp/aerie-production.json.gz
+PYTHONPATH=. python tools/audit_aerie.py --output /tmp/aerie-production.json.gz
 PYTHONPATH=. python -m pytest -q tests/eador/test_aerie.py
 ```
 

@@ -91,8 +91,8 @@ checks use clean source hashes from the same revision:
 - [300 randomized campaigns](evidence/shardbound-roles-campaigns-2026-09-06.json): 100 per theme, 46,348 state/roundtrip checks, 1,050 recruits, 12,494 rejected commands and 3,170 resolved battles. The random policy lost 296 and won four; this is robustness evidence, not a prepared-strategy acceptance result. No scene runs were included in this model-only check.
 
 Reproduce with `python -m pytest tests/eador/test_roles.py -q`,
-`python tools/stress_eador_roles.py --cases 1000 --report /tmp/roles.json`, and
-`python tools/fuzz_eador.py --campaigns 300 --scenes 0 --steps 180` from the
+`python tools/stress_roles.py --cases 1000 --report /tmp/roles.json`, and
+`python tools/fuzz.py --campaigns 300 --scenes 0 --steps 180` from the
 source checkout. These reports do not include UI/native verification or a soak
 of the later integrated candidate.
 
@@ -118,14 +118,14 @@ An acted Ranger with unused movement remains selectable with Tab and shows
 **Can move** plus its reachable hexes. Reduced motion keeps the transient
 damage/healing feedback still without changing combat or its display lifetime.
 
-The retained `tools/verify_eador_roles.py` journey starts at the title, applies
+The retained `tools/verify_roles.py` journey starts at the title, applies
 reduced motion, purchases all facilities/troops and reaches Watch on turn seven
 through real player controls. It shoots and repositions the Ranger, swaps the
 wounded seal holder, then heals the extracted ally using the Acolyte. It wins
 by holding the seal with all allies alive and defenders still standing. Six
 save/reloads compare complete serialized states between orders and result;
 claiming the site rewards it once. The shared opening policy lives in
-`tools/eador_roles_campaign.py`, so native input and model checks use the same
+`tools/roles_campaign.py`, so native input and model checks use the same
 paid preparation rather than separate hand-built winning fixtures.
 
 Independent review also completed Swap and Heal with F → Enter, and exercised

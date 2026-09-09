@@ -1,6 +1,6 @@
 # Replacement model and input stress
 
-The model policy in `tools/fuzz_eador.py` exercises the public replacement
+The model policy in `tools/fuzz.py` exercises the public replacement
 command alongside ordinary recruiting. The first tranche below changed no game
 rules or scene input adapter; the later input tranche is recorded separately. The model interface is documented in
 [the replacement contract](eador-army-replacement-interface.md).
@@ -70,8 +70,8 @@ framework and policy-helper source files remained unchanged during the runs:
 [linked evidence](evidence/eador-replacement-linked-fuzz.json).
 
 ```sh
-uv run python tools/fuzz_eador.py --campaigns 120 --scenes 0 --steps 240 --report /tmp/replacement-model.json
-uv run python tools/fuzz_eador.py --linked --campaigns 60 --scenes 0 --steps 240 --report /tmp/replacement-linked.json
+uv run python tools/fuzz.py --campaigns 120 --scenes 0 --steps 240 --report /tmp/replacement-model.json
+uv run python tools/fuzz.py --linked --campaigns 60 --scenes 0 --steps 240 --report /tmp/replacement-linked.json
 ```
 
 ## Input adapter and measured follow-up
@@ -137,5 +137,5 @@ counts, source hashes, platform and run limits.
 
 ```sh
 uv run pytest tests/eador/test_replacement_input.py -q
-uv run python tools/fuzz_eador.py --linked --campaigns 60 --scenes 60 --steps 240 --events 30000 --report /tmp/replacement-input.json
+uv run python tools/fuzz.py --linked --campaigns 60 --scenes 60 --steps 240 --events 30000 --report /tmp/replacement-input.json
 ```

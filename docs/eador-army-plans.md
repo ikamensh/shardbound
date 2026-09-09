@@ -34,7 +34,7 @@ not silently substitute Swordsmen when a specialist plan becomes expensive.
 ## Reproduce one bounded attempt
 
 ```sh
-uv run python tools/audit_eador_army_plans.py --plan sustain --output /tmp/shardbound-sustain.json.gz
+uv run python tools/audit_army_plans.py --plan sustain --output /tmp/shardbound-sustain.json.gz
 ```
 
 One invocation runs one candidate campaign, default Standard seed 7 through

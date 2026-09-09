@@ -3,7 +3,7 @@ import pytest
 
 from eador.content import SKILLS
 from eador.model import State
-from tools.audit_eador_disciplines import journey
+from tools.audit_disciplines import journey
 
 
 @pytest.mark.parametrize('skill', SKILLS)

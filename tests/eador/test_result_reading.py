@@ -5,8 +5,8 @@ from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ResultScene, ShardScene, TitleScene
 from eador.settings_scene import SettingsScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_battle_result_reflows_without_resolving_or_losing_its_saved_outcome(tmp_path):
@@ -48,7 +48,7 @@ def test_battle_result_reflows_without_resolving_or_losing_its_saved_outcome(tmp
 
 def test_result_save_errors_keep_the_battle_and_damaged_file_intact(tmp_path):
     """Refused save/load writes remain readable immediately, including after a settings round trip."""
-    from tools.verify_eador_results import prepared_results
+    from tools.verify_results import prepared_results
 
     before = dict(prepared_results())['rout']
     saves = tmp_path / 'saves'
@@ -79,7 +79,7 @@ def test_result_save_errors_keep_the_battle_and_damaged_file_intact(tmp_path):
 
 def test_earned_result_types_preserve_their_entire_outcome_at_each_reading_size(tmp_path):
     """Rout, extraction, hold, deadlines, hero death and world conclusions remain read-only and in bounds."""
-    from tools.verify_eador_results import prepared_results
+    from tools.verify_results import prepared_results
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     player = PlayerInput(game)

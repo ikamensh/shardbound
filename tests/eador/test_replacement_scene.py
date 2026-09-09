@@ -6,8 +6,8 @@ from saga2d import Label
 from eador.app import create_game
 from eador.model import State
 from eador.scene import CatalogScene, ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def earned_army():
@@ -128,7 +128,7 @@ def test_unavailable_role_still_has_a_complete_quote_without_spending_or_rotatin
 
 def test_complete_replacement_reading_and_saved_manual_rescue(tmp_path):
     """Every offered role reflows; file errors preserve all roster rows and the paid Warden rescues a real flank."""
-    from tools.verify_eador_replacement import verify
+    from tools.verify_replacement import verify
     verify(tmp_path, backend='mock')
 
 

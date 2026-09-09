@@ -11,8 +11,8 @@ os.environ['SAGA2D_SILENT'] = '1'
 
 from eador.app import create_game
 from eador.scene import BattleScene, ChoiceScene, ResultScene, TitleScene
-from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure, crossing_route, cache_route
-from tools.eador_ui import PlayerInput
+from tools.extraction_campaign import AdventureOrders, prepare_adventure, crossing_route, cache_route
+from tools.ui import PlayerInput
 
 
 class PlayerOrders(AdventureOrders):

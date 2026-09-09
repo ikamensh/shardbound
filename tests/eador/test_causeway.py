@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from eador.model import State
-from tools.eador_campaign import finish_battle
+from tools.campaign import finish_battle
 
 
 def test_actual_pre_causeway_shrine_keeps_its_complete_saved_continuation():
@@ -20,7 +20,7 @@ def test_paid_travel_reaches_an_optional_causeway_with_the_recorded_reward():
     """Conquest does not force entry; the free assembly snapshots the inherited Shrine reward."""
     state = State.new(7, theme='ruins')
     province, = [p for p in state.provinces.values() if p.site_kind == 'runebound_causeway']
-    from tools.eador_causeway_campaign import prepare_causeway
+    from tools.causeway_campaign import prepare_causeway
 
     prepare_causeway(state=state)
     assert state.hero.pos == province.pos and not province.explored
@@ -69,7 +69,7 @@ def test_a_thousand_ruins_keep_recorded_reward_packages_and_conquest():
 
 def test_actual_low_mana_commander_can_prioritize_the_caster_and_escape():
     """Ten earned mana permits focus+Heal now; the initial caster dies without a forced Guard order."""
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_focus_route
+    from tools.causeway_campaign import prepare_causeway, causeway_focus_route
     from tests.eador.test_extraction_journeys import Journey, assert_one_reward
 
     state = prepare_causeway()
@@ -85,7 +85,7 @@ def test_actual_low_mana_commander_can_prioritize_the_caster_and_escape():
 
 def test_guard_and_occupied_landing_trade_real_recovery_for_fewer_wounds():
     """The same paid six-body army has two safe Repulse counters; neither refills mana for free."""
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_guard_route
+    from tools.causeway_campaign import prepare_causeway, causeway_guard_route
     from tests.eador.test_extraction_journeys import Journey, assert_one_reward
 
     guard_state = prepare_causeway(mana=12)
@@ -105,7 +105,7 @@ def test_guard_and_occupied_landing_trade_real_recovery_for_fewer_wounds():
 
 def test_existing_tower_infusion_can_pay_for_entry_now_instead_of_advancing_the_rival():
     """Three crystals and one actual hero action buy enough mana while leaving one action to enter."""
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_guard_route
+    from tools.causeway_campaign import prepare_causeway, causeway_guard_route
     from tests.eador.test_extraction_journeys import Journey, assert_one_reward
     from dataclasses import asdict
 
@@ -125,7 +125,7 @@ def test_existing_tower_infusion_can_pay_for_entry_now_instead_of_advancing_the_
 
 def test_smaller_scout_can_escape_now_or_spend_its_exit_order_healing_before_a_rout():
     """The same paid five-body party trades four mana and another enemy phase for fewer wounds."""
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_scout_route
+    from tools.causeway_campaign import prepare_causeway, causeway_scout_route
     from tests.eador.test_extraction_journeys import Journey, assert_one_reward
     from tests.eador.test_relief import assert_one_reward as assert_rout_reward
 
@@ -149,7 +149,7 @@ def test_smaller_scout_can_escape_now_or_spend_its_exit_order_healing_before_a_r
 
 def test_failed_causeway_keeps_the_dead_caster_and_finite_wounds_on_retry():
     """An exposed carrier really is pushed; deliberate deadline failure pays no partial-kill reward."""
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_failed_attempt, causeway_retry_route
+    from tools.causeway_campaign import prepare_causeway, causeway_failed_attempt, causeway_retry_route
     from tests.eador.test_extraction_journeys import Journey
     from tests.eador.test_relief import assert_one_reward
 
@@ -176,7 +176,7 @@ def test_codex_uses_this_shards_recorded_causeway_reward_and_closes_without_muta
     from eador.app import create_game
     from eador.content import RELICS
     from eador.scene import ShardScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:

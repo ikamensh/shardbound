@@ -25,7 +25,7 @@ their buildings, resources and armies through actual campaign controls.
 
 ## Executable and native evidence
 
-`tools/verify_eador_control.py` runs the same ordinary mouse/keyboard journeys
+`tools/verify_control.py` runs the same ordinary mouse/keyboard journeys
 against mock or native Pyglet input. The completed macOS native checks use the
 shipping 1280×800 logical canvas:
 
@@ -68,10 +68,10 @@ The repeated runs produced the same input/reload counts. This source includes
 the saved-control/terrain-sight Codex increment `4114510`.
 
 ```sh
-uv run python tools/verify_eador_control.py --scenario smoke --output /tmp/control-smoke
-uv run python tools/verify_eador_control.py --scenario rally --output /tmp/control-rally
-uv run python tools/verify_eador_control.py --scenario repulse --output /tmp/control-repulse
-uv run python tools/verify_eador_control.py --scenario watch --output /tmp/control-watch
+uv run python tools/verify_control.py --scenario smoke --output /tmp/control-smoke
+uv run python tools/verify_control.py --scenario rally --output /tmp/control-rally
+uv run python tools/verify_control.py --scenario repulse --output /tmp/control-repulse
+uv run python tools/verify_control.py --scenario watch --output /tmp/control-watch
 uv run python -m pytest tests/eador/test_roster_scene.py -q
 ```
 
@@ -91,7 +91,7 @@ battle. Attack/Pin refusals now mention clear sight, and the idle tactical hint
 uses the battle's saved sight rule. The hint was shortened after native inspection
 caught it touching End Round. No targeting or compatibility rules changed.
 
-`tools/verify_eador_control.py --scenario sight` prepares the paid Watch army,
+`tools/verify_control.py --scenario sight` prepares the paid Watch army,
 moves an unspent Archer into range behind forest, rejects the blocked shot without
 changing state, then loads the actual v10 Pinned Crossing fixture. Its legal shot
 through terrain matches the public damage forecast and survives quicksave/load.

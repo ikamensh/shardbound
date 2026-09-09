@@ -1,7 +1,7 @@
 """Build/check Shardbound's original precomputed icons at 25% CPU by default.
 
-    uv run python tools/build_eador_icons.py
-    uv run python tools/build_eador_icons.py --check
+    uv run python tools/build_icons.py
+    uv run python tools/build_icons.py --check
 
 Only the finished PNGs are loaded during play; this generator needs no fonts.
 """
@@ -17,7 +17,7 @@ from PIL import Image, __version__ as pillow_version
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.eador_sources import source_path
+from tools.sources import source_path
 
 from eador.icon_art import GENERATOR_VERSION, ICONS, SIZE, render_icon  # noqa: E402
 from saga2d.testing.cpu_budget import CpuBudget  # noqa: E402
@@ -49,7 +49,7 @@ def build_assets(directory: Path, *, budget: CpuBudget | None = None) -> dict:
         'runtime': 'Prebuilt transparent PNGs only; icon composition does not run during play.',
         'generator_dependencies': {'pillow': pillow_version},
         'source_sha256': {name: _digest(source_path(name)) for name in
-                          ('eador/icon_art.py', 'tools/build_eador_icons.py')},
+                          ('eador/icon_art.py', 'tools/build_icons.py')},
         'files': files,
     }
     (directory / 'icon-art-manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')

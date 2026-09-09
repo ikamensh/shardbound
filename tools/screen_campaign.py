@@ -1,7 +1,7 @@
 """Purchased Smuggler Screen parties and manual orders for input adapters."""
 from eador.model import BUILDINGS, State
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders
 
 
 def prepare_screen(hero_class='Commander', *, state=None, budget=None):

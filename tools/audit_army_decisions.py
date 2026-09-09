@@ -19,8 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from eador.model import State
-from tools.eador_sources import framework_sources, source_name
-from tools.audit_eador_army_plans import ArmyTrial, PLANS, SavedCommands
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_army_plans import ArmyTrial, PLANS, SavedCommands
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -95,7 +95,7 @@ def compare(plan='control', *, cpu_percent=25):
         policy='One disclosed manual decision versus autoplay from the same earned save; '
                'remaining tactical rounds use autoplay; existing army-plan rewards, equipment and '
                'immediate affordable purchases follow. No rest, journey, injected funds or native input.',
-        source=dict(path=str(path.relative_to(ROOT)), journal_sha256=journal_hash,
+        source=dict(path=source_name(path), journal_sha256=journal_hash,
                     journal_source_commit=journal['source_commit'],
                     stage_index=case['stage'], battle_index=case['battle'],
                     command_index=case['command'], state_sha256=case['state_sha256'],
@@ -113,12 +113,12 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             *(ROOT / 'tools' / name for name in ('audit_eador_army_decisions.py',
-                 'audit_eador_army_plans.py', 'audit_eador_economy.py',
-                 'eador_campaign.py'))]
+             *(ROOT / 'tools' / name for name in ('audit_army_decisions.py',
+                 'audit_army_plans.py', 'audit_economy.py',
+                 'campaign.py'))]
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     report = compare(args.plan, cpu_percent=args.cpu_percent)
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == value for path, value in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == value for path, value in hashes.items())
     report.update(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, source_unchanged=True, python_version=sys.version)
     args.output.parent.mkdir(parents=True, exist_ok=True)

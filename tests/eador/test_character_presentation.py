@@ -2,7 +2,7 @@
 import pytest
 
 from eador.model import HERO_CLASSES
-from tools.verify_eador_characters import verify, verify_class_carryover
+from tools.verify_characters import verify, verify_class_carryover
 
 
 @pytest.mark.parametrize('hero_class', HERO_CLASSES)

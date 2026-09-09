@@ -22,7 +22,7 @@ failed command opens its new complete diagnostic; simply returning or resizing
 does not repeatedly reopen the same message. The game owns this presentation and
 retry policy; no framework primitive, file schema or persistence behavior changes.
 
-`tools/verify_eador_diagnostics.py` reproduces errors using a valid nested save
+`tools/verify_diagnostics.py` reproduces errors using a valid nested save
 directory longer than 700 characters and a directory occupying a real save-file
 path. The native SaveScene reproduction previously exhausted its slot budget;
 the replacement reproduction previously raised `Replacement does not fit`.

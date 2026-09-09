@@ -24,7 +24,7 @@ and the other early-access criteria remain open.
 
 ```sh
 uv run pytest tests/eador/test_forecast_reading.py tests/eador/test_scene.py -q
-uv run python tools/verify_eador_forecast.py
+uv run python tools/verify_forecast.py
 ```
 
 The regression uses the shipped controls to aim a Wizard's Bolt, Cancel and Apply

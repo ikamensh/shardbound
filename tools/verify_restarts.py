@@ -28,8 +28,8 @@ from eador.model import State
 from eador.persistence import CampaignSaves
 from eador.scene import SaveScene, ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
 
 JOURNAL = 'docs/evidence/adventure-variety/route-seed5.json.gz'
 DEPARTURE = 'docs/evidence/shardbound-package-7b5562d/campaign/direct/phase-2.json.gz'
@@ -52,7 +52,7 @@ def _sha(data):
 
 
 def _fingerprints():
-    paths = {Path(__file__), ROOT / 'tools/eador_ui.py',
+    paths = {Path(__file__), ROOT / 'tools/ui.py',
              *(ROOT / 'eador').glob('*.py'), *framework_sources(),
              *(ROOT / name for name in FIXED)}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
@@ -72,7 +72,7 @@ def _earned(name):
         preparation = ('Actual capital loss from the earlier complete-journey test; visible A autoplay.'
                        if name == 'capital-loss' else
                        'Frozen package from clean 7b5562d; paid linked campaign using visible A autoplay.')
-    data = (ROOT / source).read_bytes()
+    data = source_path(source).read_bytes()
     assert _sha(data) == FIXED[source], f'Changed earned fixture: {source}'
     retained = json.loads(gzip.decompress(data))
     snapshot = (retained['commands'][index]['after'] if source == JOURNAL else

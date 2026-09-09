@@ -155,6 +155,6 @@ The reports record distinct source hashes; historical prototype results are not
 relabeled as outcomes of the later shipped command.
 
 ```sh
-uv run python tools/audit_eador_crystal_demand.py --seeds 1 --report /tmp/crystal-service-comparison.json
-uv run python tools/prototype_eador_camp_services.py --examples /tmp/crystal-service-comparison.examples.json --report /tmp/crystal-service-prototype.json
+uv run python tools/audit_crystal_demand.py --seeds 1 --report /tmp/crystal-service-comparison.json
+uv run python tools/prototype_camp_services.py --examples /tmp/crystal-service-comparison.examples.json --report /tmp/crystal-service-prototype.json
 ```

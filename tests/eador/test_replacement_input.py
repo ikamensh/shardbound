@@ -5,7 +5,7 @@ from pathlib import Path
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def test_paid_replacement_adapter_preserves_exact_identity_and_leaves_reload_to_caller(tmp_path):

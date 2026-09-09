@@ -7,12 +7,12 @@ from eador.scene import BattleScene, ShardScene, TitleScene
 
 
 def press(game, key):
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     PlayerInput(game).press(key)
 
 
 def click_hex(game, pos):
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     PlayerInput(game).click(*game.scene.grid.center(pos))
 
 

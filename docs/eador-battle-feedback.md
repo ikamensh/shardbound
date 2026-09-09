@@ -55,9 +55,9 @@ from ordinary recruitment, battle orders, saves and linked transitions.
 
 ```sh
 uv run pytest -q tests/eador/test_battle_trace.py tests/eador/test_battle_playback_scene.py
-uv run python tools/verify_eador_battle_feedback.py --scenario rally --scale 125 --output /tmp/feedback-rally
-uv run python tools/verify_eador_battle_feedback.py --scenario rally --still --scale 125 --output /tmp/feedback-still
-uv run python tools/verify_eador_battle_feedback.py --scenario hold --output /tmp/feedback-hold
+uv run python tools/verify_battle_feedback.py --scenario rally --scale 125 --output /tmp/feedback-rally
+uv run python tools/verify_battle_feedback.py --scenario rally --still --scale 125 --output /tmp/feedback-still
+uv run python tools/verify_battle_feedback.py --scenario hold --output /tmp/feedback-hold
 ```
 
 The native verifier starts at Title, purchases the actual Relief party and issues

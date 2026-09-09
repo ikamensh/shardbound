@@ -3,7 +3,7 @@ import pytest
 
 from eador.model import HERO_CLASSES, State
 from eador.difficulty import DIFFICULTIES
-from tools.eador_linked_campaign import lose_shard
+from tools.linked_campaign import lose_shard
 
 
 def test_linked_start_saves_its_contract_while_standalone_stays_standalone():
@@ -21,7 +21,7 @@ def test_linked_start_saves_its_contract_while_standalone_stays_standalone():
 
 def test_a_real_shard_victory_caps_advancement_and_opens_persistent_choices():
     """A finished shard offers two distinct challenges after its last earned choice."""
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     state = play_campaign(State.new_campaign(7))
     assert state.status == 'victory'
     assert state.hero.level <= state.hero_level_cap == 3
@@ -37,7 +37,7 @@ def test_departure_carries_choices_and_two_veterans_but_rebuilds_the_local_realm
     import pytest
     from copy import deepcopy
     from eador.model import RuleError
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     state = play_campaign(State.new_campaign(7))
     old_hero = deepcopy(state.hero)
     selected = tuple(t.id for t in state.hero.army[:2])
@@ -86,7 +86,7 @@ def test_damaged_linked_metadata_is_rejected_before_it_can_change_the_live_game(
 
 
 def second_shard(contract='rootward', hero_class='Commander', seed=7, *, difficulty='standard'):
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     state = play_campaign(State.new_campaign(seed, hero_class, difficulty=difficulty))
     state.advance(contract, troop_ids=tuple(t.id for t in state.hero.army[:2]), relic_ids=tuple(state.inventory[:2]))
     return state
@@ -96,7 +96,7 @@ def test_middle_contracts_block_an_early_assault_then_reward_actual_objective_co
     """A new stage changes what must be controlled; its gate cannot spend an illegal order."""
     import pytest
     from eador.model import RuleError
-    from tools.eador_campaign import finish_battle, march_to, play_campaign, rest
+    from tools.campaign import finish_battle, march_to, play_campaign, rest
     for contract in ('rootward', 'foundries'):
         state = second_shard(contract)
         with pytest.raises(RuleError, match='Border Watch|foundries'):
@@ -128,7 +128,7 @@ def test_recovery_keeps_new_knowledge_and_survivors_in_the_exact_world_then_a_se
     import json
     import pytest
     from eador.model import RuleError
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     state = second_shard()
     old_ranks = dict(state.hero.skill_ranks)
     with pytest.raises(RuleError, match='Border Watch'):
@@ -156,7 +156,7 @@ def test_recovery_keeps_new_knowledge_and_survivors_in_the_exact_world_then_a_se
 
 def test_a_three_shard_campaign_reaches_both_final_contracts_and_a_saved_ending():
     """Each finale has an explicit contract and completes three distinct recorded themes."""
-    from tools.eador_linked_campaign import play_linked
+    from tools.linked_campaign import play_linked
     for middle in ('rootward', 'foundries'):
         for finale in ('throne', 'gate'):
             state = play_linked(7, 'Commander', middle, finale)
@@ -170,8 +170,8 @@ def test_a_three_shard_campaign_reaches_both_final_contracts_and_a_saved_ending(
 
 def final_battle(finale='gate', hero_class='Commander', seed=7, *, ranged=False):
     """Prepare a final assault by playing two shards and developing the third normally."""
-    from tools.eador_campaign import finish_battle, march_to, provision_army, rest
-    from tools.eador_linked_campaign import play_stage, travel_selection
+    from tools.campaign import finish_battle, march_to, provision_army, rest
+    from tools.linked_campaign import play_stage, travel_selection
     state = State.new_campaign(seed, hero_class)
     for contract in ('rootward', finale):
         state = play_stage(state)
@@ -235,7 +235,7 @@ def final_battle(finale='gate', hero_class='Commander', seed=7, *, ranged=False)
 
 def test_final_seal_has_a_distinct_saved_battlefield_and_enforceable_deadline():
     """The ritual contract uses actual hold rules at the capital, with a real failure outcome."""
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     state = final_battle()
     battle = state.battle
     assert battle.objective.kind == 'hold' and battle.objective.deadline == 8
@@ -347,7 +347,7 @@ def test_an_actual_v7_standalone_battle_continues_exactly_after_the_v8_migration
 @pytest.mark.parametrize('difficulty', DIFFICULTIES)
 def test_a_recovery_expedition_can_complete_its_contract_and_the_final_shard(hero_class, contract, difficulty):
     """The smaller recovery treasury still permits a winning public strategy."""
-    from tools.eador_linked_campaign import play_stage, travel_selection
+    from tools.linked_campaign import play_stage, travel_selection
     state = second_shard(contract, hero_class, difficulty=difficulty)
     lose_shard(state)
     lost_turns, casualties = state.turn, state.campaign.casualties
@@ -367,7 +367,7 @@ def test_a_recovery_expedition_can_complete_its_contract_and_the_final_shard(her
 @pytest.mark.parametrize('difficulty', DIFFICULTIES)
 def test_each_hero_can_finish_each_linked_contract_path(hero_class, middle, finale, difficulty):
     """No class or offered path depends on the Commander-only manual seal formation."""
-    from tools.eador_linked_campaign import play_linked
+    from tools.linked_campaign import play_linked
     state = play_linked(17, hero_class, middle, finale, difficulty=difficulty,
                         secure_before_watch=difficulty != 'standard')
     assert state.campaign.phase == 'completed' and state.status == 'victory'
@@ -376,7 +376,7 @@ def test_each_hero_can_finish_each_linked_contract_path(hero_class, middle, fina
 
 def test_losing_a_foundry_relocks_the_assault_until_a_real_recapture():
     """The broad-front contract remains contested by the finite rival after the first capture."""
-    from tools.eador_campaign import finish_battle, march_to, play_campaign, rest
+    from tools.campaign import finish_battle, march_to, play_campaign, rest
     from eador.model import RuleError
     state = second_shard('foundries')
     with pytest.raises(RuleError, match='foundries'):

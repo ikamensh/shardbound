@@ -4,8 +4,8 @@ import pytest
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_linked_campaign import lose_shard
-from tools.eador_ui import PlayerInput
+from tools.linked_campaign import lose_shard
+from tools.ui import PlayerInput
 
 
 def test_an_unadapted_campaign_command_is_refused_before_mutating_a_ready_recovery(tmp_path):

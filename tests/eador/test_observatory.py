@@ -4,7 +4,7 @@ from eador.model import State
 
 def test_purchased_observatory_army_holds_the_cleared_lane_and_survives_every_saved_order():
     """A real earned army secures the hill before the deadline while enemies remain alive."""
-    from tools.eador_observatory_campaign import prepare_observatory, observatory_route
+    from tools.observatory_campaign import prepare_observatory, observatory_route
     from tests.eador.test_extraction_journeys import Journey
 
     state = prepare_observatory()
@@ -25,7 +25,7 @@ def test_actual_prior_barrow_save_keeps_its_site_and_complete_continuation():
     """Authored placement affects new worlds only; an old active Barrow stays exact."""
     import json
     from pathlib import Path
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     fixtures = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixtures / 'v11_ruins_barrow_battle.json').read_text())
@@ -41,7 +41,7 @@ def test_actual_prior_barrow_save_keeps_its_site_and_complete_continuation():
 
 def test_a_purchased_rune_army_can_keep_the_forest_and_push_the_final_contester_off_the_hill():
     """The same Rune orders hold in either approach; the paid terrain saves wounds, not a phase."""
-    from tools.eador_observatory_campaign import prepare_observatory, observatory_rune_route
+    from tools.observatory_campaign import prepare_observatory, observatory_rune_route
     from tests.eador.test_extraction_journeys import Journey
 
     before = prepare_observatory(support='adept').to_json()
@@ -84,7 +84,7 @@ def assert_one_hold_reward(play):
 
 def test_paid_lane_changes_reach_and_opposing_sight_without_replacing_guards_or_rewards():
     """The fee changes a visible terrain choice, not hidden combat strength or free defenders."""
-    from tools.eador_observatory_campaign import prepare_observatory
+    from tools.observatory_campaign import prepare_observatory
     before = prepare_observatory().to_json()
     free, paid = State.from_json(before), State.from_json(before)
     free.explore(approach='covered'); paid.explore(approach='clear')
@@ -107,8 +107,8 @@ def test_paid_lane_changes_reach_and_opposing_sight_without_replacing_guards_or_
 
 def test_failed_cleared_attempt_keeps_its_fee_and_finite_wounds_on_a_saved_free_retry():
     """One killed marksman and the guard's wounds cannot regenerate when changing approaches."""
-    from tools.eador_observatory_campaign import prepare_observatory, observatory_route
-    from tools.eador_campaign import finish_battle, march_to, rest
+    from tools.observatory_campaign import prepare_observatory, observatory_route
+    from tools.campaign import finish_battle, march_to, rest
 
     before = prepare_observatory().to_json()
     successful = observatory_route(State.from_json(before), 'clear')

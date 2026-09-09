@@ -23,9 +23,9 @@ from eador.rival import RECRUIT_COSTS
 from eador.rival_scene import RivalScene, rival_order
 from eador.scene import ShardScene
 from eador.ui import icon_path
-from tools.eador_campaign import finish_battle
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.campaign import finish_battle
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 @cache
@@ -104,7 +104,7 @@ def prepared_rivals():
 
 def check_rival(scene):
     """The view shows exact saved orders, current resources, force health and applicable counterplay."""
-    from tools.verify_eador_shard_reading import check_metric
+    from tools.verify_shard_reading import check_metric
 
     assert isinstance(scene, RivalScene)
     count = check_reading_layout(scene)

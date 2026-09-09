@@ -6,8 +6,8 @@ import pytest
 from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ShardScene
-from tools.eador_observatory_campaign import prepare_observatory
-from tools.eador_ui import PlayerInput
+from tools.observatory_campaign import prepare_observatory
+from tools.ui import PlayerInput
 
 
 def melee_state():
@@ -81,7 +81,7 @@ def test_attack_and_recoil_return_home_with_health_and_saved_positions_fixed(tmp
 @pytest.mark.parametrize('still', [False, True])
 def test_defeated_target_recoils_briefly_without_resurrecting_or_changing_the_saved_outcome(tmp_path, still):
     """The earned final arrow retains only the drawing of its victim, then removes it."""
-    from tools.verify_eador_final_blow import earned_last_arrow
+    from tools.verify_final_blow import earned_last_arrow
 
     order = earned_last_arrow()
     state = State.from_json(order['before'])

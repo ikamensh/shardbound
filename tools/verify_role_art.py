@@ -14,8 +14,8 @@ from eador.codex import CodexScene
 from eador.model import State
 from eador.scene import Screen, ShardScene
 from eador.style import GOLD, MUTED, TEAL
-from tools.eador_roles_campaign import prepare_support_watch
-from tools.eador_ui import PlayerInput
+from tools.roles_campaign import prepare_support_watch
+from tools.ui import PlayerInput
 
 
 class TroopSheet(Screen):

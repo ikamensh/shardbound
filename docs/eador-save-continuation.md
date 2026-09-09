@@ -20,7 +20,7 @@ version or save schema was added for Smuggler Screen. It does not promise that a
 future, ungenerated shard will reproduce every site from an older release.
 
 The historical difficulty fixtures remain byte-for-byte original. Only their
-Rootward **advance outputs** use `tools/eador_save_expectations.py` to construct
+Rootward **advance outputs** use `tools/save_expectations.py` to construct
 the expected fresh province arrays from public `worldgen.generate(seed, theme)`.
 The helper verifies Rootward/stage two/Elderwild, substitutes the complete live
 and newly recorded entry arrays, and retains every other recorded key. Tests

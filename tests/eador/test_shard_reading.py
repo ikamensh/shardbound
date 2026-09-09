@@ -5,9 +5,9 @@ from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene
 from eador.settings_scene import SettingsScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_shard_reading import check_metric
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_shard_reading import check_metric
 
 
 def test_reading_the_selected_province_preserves_and_executes_its_actual_order(tmp_path):
@@ -103,7 +103,7 @@ def test_a_campaign_command_refreshes_its_applied_autosave_error_immediately(tmp
 
 def test_earned_and_historical_shards_keep_all_facts_and_map_cells_accessible(tmp_path):
     """Zero resources, full armies and old encirclement retain complete facts for every selected province."""
-    from tools.verify_eador_shard_reading import prepared_shards, check_shard
+    from tools.verify_shard_reading import prepared_shards, check_shard
 
     (tmp_path / 'settings.json').write_text('{"codex_text_scale": 125}')
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
@@ -146,7 +146,7 @@ def test_every_earned_contract_objective_stays_readable_on_the_map_after_selecti
     from eador.campaign import CONTRACTS
     from eador.campaign_scene import CampaignPlanScene
     from eador.rival_scene import rival_order
-    from tools.verify_eador_shard_reading import check_shard
+    from tools.verify_shard_reading import check_shard
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:

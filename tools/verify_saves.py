@@ -19,12 +19,12 @@ from eador.app import create_game
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, SaveScene, ShardScene, TitleScene
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_linked_campaign import lose_shard, play_linked, play_stage, travel_selection
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name, source_path
+from tools.linked_campaign import lose_shard, play_linked, play_stage, travel_selection
+from tools.ui import PlayerInput
 from saga2d.testing.cpu_budget import CpuBudget
 from saga2d.testing.native_frames import tick
-from tools.verify_eador_guidance import check_reading_layout
+from tools.verify_guidance import check_reading_layout
 
 
 def prepared_saves(*, budget=None):
@@ -211,7 +211,7 @@ def verify(output, *, backend='pyglet', budget=None):
             events = player.events + replay.events
         finally:
             restarted.close()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   backend=backend, source_sha256=hashes, source_unchanged=True, input_activations=len(events),
                   matrix=metrics, inputs=events, phases=[name for name, _ in cases], cpu_percent=budget.percent)

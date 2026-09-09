@@ -5,9 +5,9 @@ from eador.campaign_scene import CampaignScene
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ShardScene
-from tools.eador_linked_campaign import play_stage
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.linked_campaign import play_stage
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 import pytest
 
 
@@ -55,7 +55,7 @@ def test_saved_departure_reflows_without_losing_retinue_or_cursor(tmp_path):
 
 def test_reflow_keeps_the_page_anchor_and_moves_hidden_focus_before_space(tmp_path):
     """An earned last-row relic remains kept when Settings or resizing makes its former page shorter."""
-    from tools.verify_eador_campaign_reading import verify_reflow
+    from tools.verify_campaign_reading import verify_reflow
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
         verify_reflow(PlayerInput(game))
@@ -65,7 +65,7 @@ def test_reflow_keeps_the_page_anchor_and_moves_hidden_focus_before_space(tmp_pa
 
 def test_earned_and_legacy_transitions_show_complete_facts_at_each_supported_reading_size(tmp_path):
     """Current modes, both finales, recovered/declined endings and old Challenge rules retain exact saved facts."""
-    from tools.verify_eador_campaign_reading import verify
+    from tools.verify_campaign_reading import verify
     verify(tmp_path, backend='mock')
 
 
@@ -75,7 +75,7 @@ def test_complete_checkpoint_error_keeps_decision_pending_until_exact_manual_rem
     """Damaged autosaves, Settings and repeated Enter cannot spend a transition before a valid checkpoint."""
     from saga2d import Label
     from eador.persistence import AUTO_SLOTS, CampaignSaves
-    from tools.eador_linked_campaign import lose_shard
+    from tools.linked_campaign import lose_shard
 
     state = State.new_campaign()
     state = lose_shard(state) if recovery else play_stage(state)
@@ -115,5 +115,5 @@ def test_complete_checkpoint_error_keeps_decision_pending_until_exact_manual_rem
 
 def test_long_real_filesystem_error_is_read_in_full_without_hidden_retinue_actions(tmp_path):
     """A valid deep directory cannot consume the row budget or hide a Space-triggered selection."""
-    from tools.verify_eador_campaign_reading import verify_long_error
+    from tools.verify_campaign_reading import verify_long_error
     verify_long_error(tmp_path, backend='mock')

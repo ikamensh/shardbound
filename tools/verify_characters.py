@@ -30,9 +30,9 @@ from eador.style import GOLD, MUTED
 from eador.ui import hero_portrait_path, icon_path
 from saga2d import Button, Image, Label, Row
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 EFFECTS = 'docs/evidence/presentation-pass/effects/verification.json.gz'
 EQUIPMENT = 'tests/eador/fixtures/v11_relic_collection.json'
@@ -45,7 +45,7 @@ FIXED_SAVES = {
 def _fixed_states():
     blobs = {}
     for name, digest in FIXED_SAVES.items():
-        blobs[name] = (ROOT / name).read_bytes()
+        blobs[name] = source_path(name).read_bytes()
         assert hashlib.sha256(blobs[name]).hexdigest() == digest, f'Changed earned source: {name}'
     report = json.loads(gzip.decompress(blobs[EFFECTS]))
     case = next(case for case in report['cases'] if case['name'] == 'melee')
@@ -58,8 +58,8 @@ def _fixed_states():
 
 
 def _fingerprints():
-    paths = {Path(__file__), ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/verify_eador_guidance.py',
+    paths = {Path(__file__), ROOT / 'tools/ui.py',
+             ROOT / 'tools/verify_guidance.py',
              *(ROOT / 'eador').glob('*.py'), *framework_sources(),
              *(ROOT / 'eador/assets').rglob('*.json'), *(ROOT / 'eador/assets/images').rglob('*.png'),
              *(ROOT / name for name in FIXED_SAVES)}

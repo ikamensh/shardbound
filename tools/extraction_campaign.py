@@ -5,8 +5,8 @@ not the opponent or optimal-play rules. Supply an AdventureOrders subclass whose
 `do` dispatches real controls to replay the same route through the UI.
 """
 from eador.model import BUILDINGS, State
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_roles_campaign import prepare_support_watch
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.roles_campaign import prepare_support_watch
 
 
 class AdventureOrders:

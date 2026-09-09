@@ -61,8 +61,8 @@
     "saga2d/util/reactive.py": "f39d57b4186d2cf246631c4963bc4dd26f2e47d1cff01c81b32ee8c6bdf20c30",
     "saga2d/util/timer.py": "e77300dcb9ec728dbfa7f84f8179796cc1ab6573e6918eb6a2f3fa2348828c5b",
     "saga2d/util/tween.py": "e63a62e61d65531a7fc5f9158e28e1c52b3dbe27ba2f19ecc730bad827f1a061",
-    "tools/eador_linked_campaign.py": "6888ff9dce8bd5e812e19b61ff8b9c55687e5efb964f17748547fde81b4e4e45",
-    "tools/eador_ui.py": "d0feecc9a335d2bbf06bf78df1986d2ff454497b14be15cd1d5d6d06630eb067"
+    "tools/linked_campaign.py": "6888ff9dce8bd5e812e19b61ff8b9c55687e5efb964f17748547fde81b4e4e45",
+    "tools/ui.py": "d0feecc9a335d2bbf06bf78df1986d2ff454497b14be15cd1d5d6d06630eb067"
   },
   "rules_id": "challenge-1",
   "backend": "pyglet",

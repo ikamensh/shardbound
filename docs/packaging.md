@@ -30,15 +30,15 @@ directory and are preserved.
 From the repository root, with uv installed:
 
 ```bash
-uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build_eador.py
+uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build.py
 ```
 
 A release build names its version and refuses a modified tree; on Windows it
 also compiles the per-user installer from the shared `packaging/game.iss`:
 
 ```bash
-uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build_eador.py --version 0.1.0-preview.1 --require-clean
-uv run python tools/verify_shardbound_package.py dist/shardbound          # extracted app: smoke journey + online co-op diagnostic
+uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build.py --version 0.1.0-preview.1 --require-clean
+uv run python tools/verify_package.py dist/shardbound          # extracted app: smoke journey + online co-op diagnostic
 ```
 
 Artifacts are versioned: `Shardbound-<version>-darwin-arm64-app.zip` on a Mac,
@@ -76,7 +76,7 @@ Generate shipping audio explicitly before packaging when composition or
 synthesis source changes:
 
 ```bash
-uv run python tools/build_eador_audio.py
+uv run python tools/build_audio.py
 ```
 
 Generated WAVs and their manifest are committed inputs. Packaging rejects
@@ -102,7 +102,7 @@ To regenerate the packaging lock after an intentional tool upgrade:
 uv pip compile packaging/requirements.in --universal --python-version 3.13 --generate-hashes --output-file packaging/requirements.txt
 ```
 
-Update the matching tool-version check in `tools/build_eador.py` and rerun
+Update the matching tool-version check in `tools/build.py` and rerun
 the complete build and package checks. Pins make build inputs repeatable;
 the recipe does not promise byte-identical archives across builds. Build
 timestamps, platform tooling and binary signing can affect output hashes.
@@ -152,7 +152,7 @@ starts each looping track, checking live mute/channel gains and player cleanup.
 The builder compares the reported WAV hashes with the frozen input collection
 and requires the asset root to reside inside the extracted archive. This quick
 playback check does not establish listening quality or full-loop continuity;
-the dedicated `tools/build_eador_audio.py --verify-native` checks complete loops,
+the dedicated `tools/build_audio.py --verify-native` checks complete loops,
 and human listening remains required. The
 builder checks that the process is frozen and is the extracted executable,
 with Python environment overrides removed and an OS-only executable search

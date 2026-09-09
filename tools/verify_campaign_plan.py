@@ -20,10 +20,10 @@ from eador.difficulty import DIFFICULTIES
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ShardScene, TitleScene
-from tools.eador_campaign import finish_battle, march_to, rest
-from tools.eador_linked_campaign import lose_shard, play_stage, secure_frontier, travel_selection
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.campaign import finish_battle, march_to, rest
+from tools.linked_campaign import lose_shard, play_stage, secure_frontier, travel_selection
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 @cache

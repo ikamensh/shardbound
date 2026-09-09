@@ -3,7 +3,7 @@ import pytest
 
 from eador.battle import Battle, BattleObjective, BattleUnit
 from eador.model import RuleError, SaveFormatError
-from tools.eador_extraction_campaign import prepared_crossing
+from tools.extraction_campaign import prepared_crossing
 
 
 def escape_fixture():
@@ -72,7 +72,7 @@ def test_a_real_v9_support_battle_retains_its_exact_continuation():
     import json
     from pathlib import Path
     from eador.model import State
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     fixture = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixture / 'v9_support_watch.json').read_text())
     assert state.battle.objective.exits == ()
@@ -139,7 +139,7 @@ def test_paid_entry_is_atomic_saved_once_and_retry_preserves_defender_wounds():
 def test_cache_cargo_is_a_saved_battle_burden_not_a_persistent_hero_upgrade():
     """The risky reward buys no extra power: it costs exactly one carrier move point."""
     from eador.model import State
-    from tools.eador_campaign import finish_battle, march_to, site_position
+    from tools.campaign import finish_battle, march_to, site_position
     state = State.new(7, theme='elderwild')
     state.explore(); finish_battle(state)
     march_to(state, site_position(state, 'supply_cache'))

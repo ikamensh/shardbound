@@ -134,13 +134,13 @@ Reproduce from the checkout with:
 
 ```sh
 python -m pytest tests/eador/test_extraction.py tests/eador/test_extraction_journeys.py -q
-python tools/audit_eador_extraction.py --report /tmp/extraction-manual.json
-python tools/stress_eador_roles.py --cases 1200 --report /tmp/extraction-battles.json
-python tools/fuzz_eador.py --campaigns 300 --scenes 0 --steps 180 --report /tmp/extraction-campaigns.json
-python tools/fuzz_eador.py --linked --campaigns 60 --scenes 0 --steps 180 --report /tmp/extraction-linked.json
+python tools/audit_extraction.py --report /tmp/extraction-manual.json
+python tools/stress_roles.py --cases 1200 --report /tmp/extraction-battles.json
+python tools/fuzz.py --campaigns 300 --scenes 0 --steps 180 --report /tmp/extraction-campaigns.json
+python tools/fuzz.py --linked --campaigns 60 --scenes 0 --steps 180 --report /tmp/extraction-linked.json
 ```
 
-`tools/eador_extraction_campaign.py` exposes `prepared_crossing(state=None)`
+`tools/extraction_campaign.py` exposes `prepared_crossing(state=None)`
 and `prepare_adventure(..., state=None)` for a real-input State adapter. Its
 `crossing_route` and `cache_route` accept `orders_type`; a native verifier can
 subclass `AdventureOrders.do` to dispatch the same orders through controls.
@@ -157,7 +157,7 @@ free. During combat, O cycles the exits and V explicitly evacuates. Its
 disabled reason states the current obstacle. The army panel includes cargo
 and Pin in the actual movement allowance; terminal escape has its own result.
 
-`tools/verify_eador_extraction.py` buys and prepares an ordinary army through
+`tools/verify_extraction.py` buys and prepares an ordinary army through
 player controls, cancels and reopens the chosen briefing, then replays the
 public manual plan with clicks and aimed keyboard actions. It checks exact
 attack/Pin/Heal forecasts, disabled evacuation, exit cycling, saved choices
@@ -190,7 +190,7 @@ crystal fees too. Twelve linked model and twelve scene fuzz runs passed
 This is source/UI evidence, not an updated packaged release or human playtest.
 
 ```sh
-uv run python tools/verify_eador_extraction.py --theme frontier --approach guided --output /tmp/extraction-guided
-uv run python tools/verify_eador_extraction.py --theme elderwild --approach full --output /tmp/extraction-full
-uv run python tools/verify_eador_extraction_codex.py
+uv run python tools/verify_extraction.py --theme frontier --approach guided --output /tmp/extraction-guided
+uv run python tools/verify_extraction.py --theme elderwild --approach full --output /tmp/extraction-full
+uv run python tools/verify_extraction_codex.py
 ```

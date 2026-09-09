@@ -115,8 +115,8 @@ The follow-up command is bounded by explicit seed/class/theme/mode selections;
 run one small selection at a time when test load is permitted:
 
 ```sh
-uv run python tools/prototype_eador_early_conversion.py --authored --seeds 0 --heroes Commander --themes ruins --modes standard --repeat --report /tmp/earned-investment.json.gz
-uv run python tools/prototype_eador_early_conversion.py --tactical-control-from /tmp/earned-investment.json.gz --report /tmp/earned-smoke-control.json.gz
+uv run python tools/prototype_early_conversion.py --authored --seeds 0 --heroes Commander --themes ruins --modes standard --repeat --report /tmp/earned-investment.json.gz
+uv run python tools/prototype_early_conversion.py --tactical-control-from /tmp/earned-investment.json.gz --report /tmp/earned-smoke-control.json.gz
 ```
 
 The original source/model control invocation hit a tuple/list comparison in its

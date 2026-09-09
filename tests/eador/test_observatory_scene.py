@@ -3,7 +3,7 @@
 
 def test_paid_observatory_approach_spends_its_crystals_and_holds_through_visible_orders(tmp_path):
     """Pay for the actual army and lane, save the control orders, then claim the finite reward once."""
-    from tools.verify_eador_observatory import verify
+    from tools.verify_observatory import verify
 
     report = verify(tmp_path, backend='mock')
     assert report['approach'] == 'clear' and report['fee_crystals'] == 2
@@ -12,7 +12,7 @@ def test_paid_observatory_approach_spends_its_crystals_and_holds_through_visible
 
 def test_the_same_visible_rune_orders_hold_both_lanes_and_show_the_paid_health_tradeoff(tmp_path):
     """The fee saves wounds in a matched battle, with every Repulse and reward passing through input."""
-    from tools.verify_eador_observatory import verify
+    from tools.verify_observatory import verify
 
     free = verify(tmp_path / 'covered', backend='mock', support='adept', approach='covered')
     paid = verify(tmp_path / 'clear', backend='mock', support='adept', approach='clear')

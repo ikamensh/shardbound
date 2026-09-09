@@ -22,7 +22,7 @@ The layout uses existing wrapped Labels, Columns, Rows and game-owned
 `reading_pages`; vector portraits and health bars use component bounds.
 No framework API, preference key, model rule or save schema was added.
 
-`tools/verify_eador_rival_reading.py` prepares 15 actual saved states. All three
+`tools/verify_rival_reading.py` prepares 15 actual saved states. All three
 modes cover opening and first conquest. A paid Standard expedition supplies
 announced attack, surviving wounds after interception/withdrawal, paid
 recovery, healed troops, defeat and paid rebuilding. Existing v11, Challenge-1
@@ -30,7 +30,7 @@ and fortified-capital saves verify preserved rules and encirclement advice.
 No troop health, money, intent or progress is inserted into these snapshots.
 
 ```sh
-uv run python tools/verify_eador_rival_reading.py --output /tmp/shardbound-rival-reading
+uv run python tools/verify_rival_reading.py --output /tmp/shardbound-rival-reading
 uv run python -m pytest tests/eador/test_rival_scene.py tests/eador/test_rival.py -q
 ```
 

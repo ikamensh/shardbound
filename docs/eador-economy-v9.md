@@ -9,7 +9,7 @@ robustness, not difficulty balance or player enjoyment.
 
 ## Method
 
-The [reproducible tool](../tools/audit_eador_economy.py) plays seeds 0–99 in all
+The [reproducible tool](../tools/audit_economy.py) plays seeds 0–99 in all
 three themes, all four classes and three plans: **3,600 complete single-shard
 runs**. It calls actual State/Battle commands, follows the same direct itinerary
 of four sites, explicitly uses tactical autoplay, intercepts a nearby visible

@@ -8,7 +8,7 @@ import pytest
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 @pytest.mark.parametrize('case', ['opening', 'crowded'])

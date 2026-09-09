@@ -22,14 +22,14 @@ from eador.model import RECRUITABLE, State
 from eador.persistence import AUTO_SLOTS, CampaignSaves
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_control_campaign import prepare_control_watch
-from tools.eador_explorer_campaign import prepare_explorer
-from tools.eador_roles_campaign import prepare_support_watch
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_diagnostics import queued_keys, read_all
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_shard_reading import check_metric
+from tools.sources import framework_sources, source_name, source_path
+from tools.control_campaign import prepare_control_watch
+from tools.explorer_campaign import prepare_explorer
+from tools.roles_campaign import prepare_support_watch
+from tools.ui import PlayerInput
+from tools.verify_diagnostics import queued_keys, read_all
+from tools.verify_guidance import check_reading_layout
+from tools.verify_shard_reading import check_metric
 
 
 @cache
@@ -193,7 +193,7 @@ def verify(output, *, backend='pyglet'):
             events += len(player.events); reloads += player.reloads
         finally:
             game._teardown(); game.backend.quit()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=source, dirty_at_start=dirty, source_sha256=hashes, source_files_changed=False,
                   backend=backend, unit_views=matrix, roles=sorted(roles), orders=orders,
                   input_activations=events, exact_save_reloads=reloads, error_pages=error_pages)

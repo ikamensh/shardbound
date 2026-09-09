@@ -24,10 +24,10 @@ from eador.model import State
 from eador.persistence import AUTO_SLOTS, CampaignSaves
 from eador.preferences import reading_scale, reduced_motion
 from eador.scene import ResultScene, SaveScene, ShardScene
-from tools.eador_sources import framework_sources, source_name
-from tools.capture_eador_gameplay import AudioLog
+from tools.sources import framework_sources, source_name, source_path
+from tools.capture_gameplay import AudioLog
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 from saga2d.testing.native_frames import tick
 
 SOURCE = ROOT / 'docs/evidence/gameplay-movie/capture.json.gz'
@@ -66,13 +66,13 @@ def verify(output, *, backend='pyglet', budget=None):
     started, cpu_started = time.monotonic(), time.process_time()
     paths = {Path(__file__).resolve(), SOURCE, *(ROOT / 'eador').glob('*.py'),
              *framework_sources(), *(ROOT / 'tools' / name for name in
-             ('eador_ui.py', 'capture_eador_gameplay.py'))}
+             ('ui.py', 'capture_gameplay.py'))}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(paths)}
     order = earned_last_arrow()
     report = dict(source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, backend=backend, cpu_percent_requested=budget.percent, fps=30,
-                  origin=dict(file=str(SOURCE.relative_to(ROOT)), sha256=SOURCE_SHA, selector='orders[13]',
+                  origin=dict(file=source_name(SOURCE), sha256=SOURCE_SHA, selector='orders[13]',
                               preparation='Retained agent-directed fresh Wizard/Standard/Frontier7 opening; no autoplay.'),
                   cases=[])
     with TemporaryDirectory(prefix='shardbound-final-blow-') as temporary:
@@ -161,7 +161,7 @@ def verify(output, *, backend='pyglet', budget=None):
                 report['cases'].append(case)
             finally:
                 game.close()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report.update(source_unchanged=True, wall_seconds=time.monotonic() - started,
                   cpu_seconds=time.process_time() - cpu_started,
                   input_activations=sum(len(case['inputs']) for case in report['cases']))

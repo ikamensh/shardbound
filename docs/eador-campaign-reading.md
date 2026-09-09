@@ -40,8 +40,8 @@ Verification:
 
 ```sh
 .venv/bin/python -m pytest tests/eador/test_campaign_reading.py tests/eador/test_campaign_scene.py tests/eador/test_campaign_plan_reading.py -q
-.venv/bin/python tools/verify_eador_campaign_reading.py --output /tmp/shardbound-campaign-reading
-.venv/bin/python tools/verify_eador_campaign.py --middle foundries --finale throne --recovery
+.venv/bin/python tools/verify_campaign_reading.py --output /tmp/shardbound-campaign-reading
+.venv/bin/python tools/verify_campaign.py --middle foundries --finale throne --recovery
 ```
 
 The retained verifier prepares victories/recoveries through public campaign

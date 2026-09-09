@@ -3,7 +3,7 @@ from saga2d import Label
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def test_nearer_provinces_cover_rear_sidewalls_but_never_selection_markers(tmp_path):

@@ -172,7 +172,7 @@ def test_both_paid_sappers_keep_smoke_until_their_next_turn_without_refunding_ch
 
 def test_paid_veterans_keep_class_skills_relics_and_source_ids_on_both_sides():
     """Two real conquests earn the ranks being deployed; remapping cannot flatten a defender."""
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     budget = CpuBudget(25)
     realms = [State.new(7, kind) for kind in ('Warrior', 'Commander')]

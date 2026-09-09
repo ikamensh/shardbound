@@ -15,12 +15,12 @@ sys.path.insert(0, str(ROOT))
 
 from eador.battle import Battle
 from eador.model import RuleError, State
-from tools.eador_sources import source_name
-from tools.audit_eador_extraction import PaidState
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_extraction import PaidState
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_aerie_campaign import (prepare_aerie, aerie_western_route, aerie_northern_route,
+from tools.aerie_campaign import (prepare_aerie, aerie_western_route, aerie_northern_route,
                                        aerie_scout_route, aerie_failed_sortie, aerie_retry_route)
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.extraction_campaign import AdventureOrders
 
 
 class Purchases(PaidState):
@@ -114,9 +114,9 @@ def settle_once(play, *, budget=None):
 
 def measure(*, budget=None):
     budget = CpuBudget(25) if budget is None else budget
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
                       *ROOT.joinpath('tools').glob('eador_*.py'), Path(__file__).resolve(),
-                      ROOT/'tools/audit_eador_extraction.py'])
+                      ROOT/'tools/audit_extraction.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     commander = prepare_aerie(state=Purchases(State.new(7, theme='ruins')), budget=budget)
     scout = prepare_aerie('Scout', party='ground', state=Purchases(State.new(7, 'Scout', theme='ruins')), budget=budget)
@@ -142,7 +142,7 @@ def measure(*, budget=None):
     replacement = Purchases(State.from_json(state.to_json())); replacement.recruit('skyrider')
     retry = aerie_retry_route(replacement, orders_type=record_orders)
     plans['retry'] = {**retry.report(), 'purchases':replacement.purchases, 'settled':settle_once(retry, budget=budget)}
-    assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in hashes.items())
+    assert all(hashlib.sha256(source_path(name).read_bytes()).hexdigest()==digest for name,digest in hashes.items())
     return dict(source_revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                 source_sha256=hashes, python=platform.python_version(), platform=platform.platform(), cpu_percent=budget.percent,
                 parties=parties, plans=plans, scope='Actual seed-seven Standard purchases and manual model orders; no native or optimal-play claim.')

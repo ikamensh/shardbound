@@ -118,7 +118,7 @@ actual capability rather than a Pikeman type check.
 
 The public input test covers cancellation, movement, keyboard targeting, exact
 forecast, save/reload, disabled cooldown and choosing Guard while waiting.
-`tools/verify_eador_pin.py` repeats it with native Pyglet input, captures forecast,
+`tools/verify_pin.py` repeats it with native Pyglet input, captures forecast,
 status and cooldown, then earns Watch Bell through public campaign commands
 and verifies the hero's visible Brace button in a subsequent saved battle.
 These checks supplement the model evidence; they do not add a new authored

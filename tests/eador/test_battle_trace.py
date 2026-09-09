@@ -5,8 +5,8 @@ import pytest
 
 from eador.battle import Battle
 from eador.model import RuleError, State
-from tools.eador_extraction_campaign import AdventureOrders
-from tools.eador_relief_campaign import prepare_relief
+from tools.extraction_campaign import AdventureOrders
+from tools.relief_campaign import prepare_relief
 
 
 def relief_before_rally():

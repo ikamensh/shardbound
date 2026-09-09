@@ -2,7 +2,7 @@
 from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 from tests.eador.test_battle_trace import relief_before_rally
 import pytest
 
@@ -11,7 +11,7 @@ def test_previous_manual_damage_numbers_do_not_survive_a_resolved_enemy_phase(tm
     """A phase replaces the prior hit's feedback, so moved units leave no floating ghost damage."""
     from eador.app import create_game
     from eador.scene import TitleScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     game = create_game(backend='mock', save_dir=tmp_path)
     try:
         game.push(TitleScene(hero_class='Wizard'))
@@ -164,7 +164,7 @@ def test_shot_transients_leave_persistent_health_on_top(tmp_path):
 @pytest.mark.parametrize('ability', ['swap', 'smoke', 'heal'])
 def test_paid_ability_feedback_draws_from_the_resolved_trace(tmp_path, ability):
     """Purchased roles show their distinct actual effects while save/load remains authoritative."""
-    from tools.eador_observatory_campaign import prepare_observatory
+    from tools.observatory_campaign import prepare_observatory
     state = prepare_observatory()
     state.explore(approach='clear' if ability == 'heal' else 'covered')
     battle = state.battle
@@ -204,7 +204,7 @@ def test_paid_ability_feedback_draws_from_the_resolved_trace(tmp_path, ability):
 
 def test_native_effects_capture_path_uses_real_orders_and_exact_saves(tmp_path):
     """The native sampler's complete input route is executable against the shipped scene stack."""
-    from tools.verify_eador_effects import verify
+    from tools.verify_effects import verify
     report = verify(tmp_path, backend='mock')
     assert [case['name'] for case in report['cases']] == ['arrow', 'bolt', 'melee', 'heal', 'swap', 'smoke']
     assert report['exact_save_reloads'] == 6
@@ -214,7 +214,7 @@ def test_native_effects_capture_path_uses_real_orders_and_exact_saves(tmp_path):
 
 def test_quick_heal_replaces_the_previous_damage_number_at_its_hex(tmp_path):
     """A fast legal Heal shows the new recovery amount without overprinting the earlier wound."""
-    from tools.eador_observatory_campaign import prepare_observatory
+    from tools.observatory_campaign import prepare_observatory
     state = prepare_observatory(); state.explore(approach='clear')
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
@@ -316,8 +316,8 @@ def test_settings_and_history_pause_playback_without_changing_the_resolved_save(
 
 def last_hold_phase():
     """Keep the public before-state of the real passive army's final scoring phase."""
-    from tools.eador_extraction_campaign import AdventureOrders
-    from tools.eador_relief_campaign import prepare_relief, relief_passive_route
+    from tools.extraction_campaign import AdventureOrders
+    from tools.relief_campaign import prepare_relief, relief_passive_route
     snapshots = []
     class Orders(AdventureOrders):
         def do(self, command, *args, **kwargs):
@@ -425,7 +425,7 @@ def test_failed_autosave_and_manual_recovery_during_playback_preserve_the_one_re
 
 def test_the_earned_native_equivalent_chain_preserves_each_frame_and_the_hold_result(tmp_path):
     """The development capture follows actual paid preparation and input, not injected animation fixtures."""
-    from tools.verify_eador_battle_feedback import verify
+    from tools.verify_battle_feedback import verify
     report = verify(tmp_path, backend='mock', scenario='hold', still=True, scale=125)
     assert any(item['event'] == 'objective' for item in report['observed'])
     assert report['exact_save_reloads'] >= 3

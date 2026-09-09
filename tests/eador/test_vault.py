@@ -2,7 +2,7 @@
 import pytest
 
 from eador.model import State
-from tools.eador_vault_campaign import prepare_vault as prepared_vault, vault_route
+from tools.vault_campaign import prepare_vault as prepared_vault, vault_route
 
 
 def test_spending_crystals_opens_a_second_vault_exit_without_changing_the_encounter():
@@ -113,7 +113,7 @@ def test_an_existing_v10_ruins_battle_and_site_array_keep_their_actual_continuat
     """The new Vault never replaces a Tower already recorded in a player's shard."""
     import json
     from pathlib import Path
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     fixtures = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixtures / 'v10_ruins_battle.json').read_text())
     assert state.provinces[(-1, 1)].site_kind == 'tower'

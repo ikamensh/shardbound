@@ -54,7 +54,7 @@ failed writes, corrupted data, explicit recovery and launch overrides. The share
 `Game.windowed_size` public regression independently proves that a preview can
 restore an OS-resized window after entering fullscreen.
 
-Run `python tools/verify_eador_settings.py --out /tmp/shardbound-display-settings`
+Run `python tools/verify_settings.py --out /tmp/shardbound-display-settings`
 with an awake desktop. It uses native Pyglet keyboard and mouse events, silent
 audio and temporary files. It captures Sound at 1280×800 and 1280×720 window sizes
 on the same logical canvas, plus damaged/write-error states. Its Display journey

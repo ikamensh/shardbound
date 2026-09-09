@@ -15,7 +15,7 @@ from eador.style import TEAL
 from saga2d import Settings
 from tests.eador.test_game_audio import cues
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 @lru_cache(maxsize=1)

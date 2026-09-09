@@ -17,7 +17,8 @@ from eador.concurrent_campaign import ConcurrentCampaign
 from eador.concurrent_scene import ConcurrentShardScene
 from eador.scene import BattleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.verify_eador_shard_look import PacedInput
+from tools.sources import source_path
+from tools.verify_shard_look import PacedInput
 
 
 def verify(output, *, backend='pyglet', seat=0):
@@ -133,10 +134,10 @@ def verify(output, *, backend='pyglet', seat=0):
         player.press('escape')
         files = ('eador/art.py', 'eador/concurrent_scene.py', 'eador/concurrent_view.py', 'eador/concurrent_campaign.py',
                  'eador/scene.py', 'eador/model.py', 'eador/entities.py', 'eador/battle_playback_scene.py',
-                 'tools/verify_eador_concurrent_ui.py')
+                 'tools/verify_concurrent_ui.py')
         receipt = {'backend': backend, 'seat': seat, 'inputs': player.events, 'commands': commands,
                    'captures': captures, 'final_checkpoint': match.checkpoint(),
-                   'source_sha256': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in files},
+                   'source_sha256': {name: hashlib.sha256(source_path(name).read_bytes()).hexdigest() for name in files},
                    'directed_verification_not_independent_human_play': True}
     finally:
         game.close()

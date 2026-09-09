@@ -14,8 +14,8 @@ os.environ.setdefault('SAGA2D_SILENT', '1')
 from eador.app import create_game
 from eador.model import BUILDINGS, RECRUITABLE, State
 from eador.scene import CatalogScene, ShardScene, TitleScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def catalog_pages(player, kind):

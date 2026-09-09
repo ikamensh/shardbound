@@ -16,11 +16,11 @@ from eador.difficulty import DIFFICULTIES
 from eador.model import State
 from eador.persistence import CampaignSaves
 from eador.scene import TitleScene
-from tools.eador_sources import source_name
-from tools.eador_campaign import finish_battle
-from tools.eador_linked_campaign import travel_selection
-from tools.eador_save_expectations import expected_rootward_arrival
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name, source_path
+from tools.campaign import finish_battle
+from tools.linked_campaign import travel_selection
+from tools.save_expectations import expected_rootward_arrival
+from tools.ui import PlayerInput
 
 RECORDED_CHALLENGE = ROOT / 'tests/eador/fixtures/v12_challenge1_ui_cases.json'
 
@@ -68,9 +68,9 @@ def verify_recorded_challenge(output, *, backend='pyglet'):
 
 def verify(output, *, backend='pyglet'):
     output.mkdir(parents=True, exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
-                      *[ROOT / 'tools' / name for name in ('eador_campaign.py', 'eador_ui.py',
-                          'verify_eador_difficulty.py', 'verify_eador_campaign.py', 'eador_linked_campaign.py', 'eador_save_expectations.py')],
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
+                      *[ROOT / 'tools' / name for name in ('campaign.py', 'ui.py',
+                          'verify_difficulty.py', 'verify_campaign.py', 'linked_campaign.py', 'save_expectations.py')],
                       RECORDED_CHALLENGE])
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     report = dict(source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -138,7 +138,7 @@ def verify(output, *, backend='pyglet'):
                 restarted._teardown()
             report['modes'].append(row)
     report['recorded_challenge'] = verify_recorded_challenge(output / 'recorded-challenge', backend=backend)
-    assert all(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest for name, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(name).read_bytes()).hexdigest() == digest for name, digest in hashes.items())
     (output / 'journey.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f'Three difficulty openings, fresh-game restarts and recorded Challenge continuations passed ({backend}).', flush=True)
     return report

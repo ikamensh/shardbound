@@ -30,7 +30,7 @@ def clock(monkeypatch):
 
 def test_late_realm_paid_plan_yields_without_changing_its_economy(clock):
     """One real paid campaign retains its outcome and cash ledger when paced."""
-    from tools.prototype_eador_late_realm import MeasuredState, paid_plan
+    from tools.prototype_late_realm import MeasuredState, paid_plan
 
     case = (0, 'Commander', 'frontier', 'economy', 'standard', 'direct')
     expected = paid_plan(case, MeasuredState, budget=CpuBudget(100))
@@ -43,7 +43,7 @@ def test_late_realm_paid_plan_yields_without_changing_its_economy(clock):
 
 def test_veteran_recovery_preparation_and_waiting_each_yield_without_changing_results(clock):
     """A paid departure, actual loss and recovery retain their saves and later wage costs."""
-    from tools.prototype_eador_veteran_upkeep import SalaryOne, recovery_input, recovery_probe
+    from tools.prototype_veteran_upkeep import SalaryOne, recovery_input, recovery_probe
 
     expected = recovery_input('standard', budget=CpuBudget(100))
     assert not clock['sleeps']
@@ -61,7 +61,7 @@ def test_veteran_recovery_preparation_and_waiting_each_yield_without_changing_re
 
 def test_camp_service_and_actual_battle_yield_without_changing_paid_outcome(clock):
     """A retained paid camp keeps its service cost, battle and original save when yielding."""
-    from tools.prototype_eador_camp_services import exercise
+    from tools.prototype_camp_services import exercise
 
     path = Path(__file__).resolve().parents[2] / 'docs/evidence/crystal-service-comparison.examples.json'
     payload = json.loads(path.read_text())['pre_assault_mana']['state']

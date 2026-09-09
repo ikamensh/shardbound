@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from eador.model import State
-from tools.capture_eador_gameplay import FPS, RATE, capture, digest, mix_audio
+from tools.capture_gameplay import FPS, RATE, capture, digest, mix_audio
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -28,7 +28,7 @@ def test_directed_movie_reaches_an_earned_reward_without_skipping_enemy_playback
 
 def test_audio_gain_changes_preserve_loop_phase_and_stop_the_voice(tmp_path, monkeypatch):
     """Silence changes the active voice's gain; unmute resumes its timeline instead of restarting."""
-    import tools.capture_eador_gameplay as movie
+    import tools.capture_gameplay as movie
 
     monkeypatch.setattr(movie, 'ROOT', tmp_path)
     # Two frame-long halves make loop position audible and exactly inspectable.
@@ -52,7 +52,7 @@ def test_audio_gain_changes_preserve_loop_phase_and_stop_the_voice(tmp_path, mon
 @pytest.mark.parametrize('natural', [True, False])
 def test_natural_driver_cleanup_preserves_the_fixed_timeline_tail(tmp_path, monkeypatch, natural):
     """A slower capture must not shorten a WAV when the native driver finishes first."""
-    import tools.capture_eador_gameplay as movie
+    import tools.capture_gameplay as movie
 
     monkeypatch.setattr(movie, 'ROOT', tmp_path)
     step = RATE // FPS

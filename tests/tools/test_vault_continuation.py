@@ -4,7 +4,7 @@ from eador.model import State
 
 def test_vault_approaches_share_an_earned_army_and_preserve_their_campaign_consequences():
     """Follow ordinary purchases, both manual escapes and bounded rival-aware continuation."""
-    from tools.audit_eador_vault_continuation import compare
+    from tools.audit_vault_continuation import compare
 
     report = compare()
     entry = State.from_json(report['entry_state'])
@@ -41,7 +41,7 @@ def test_vault_approaches_share_an_earned_army_and_preserve_their_campaign_conse
 
 def test_campaign_order_bound_keeps_the_actual_unfinished_position_without_cleanup_turns():
     """One allowed aftermath order ends at its real save, without funding or forcing the objective."""
-    from tools.audit_eador_vault_continuation import compare
+    from tools.audit_vault_continuation import compare
 
     report = compare(campaign_order_limit=1)
     entry = State.from_json(report['entry_state'])

@@ -2,8 +2,8 @@
 from pathlib import Path
 
 from eador.model import State
-from tools.eador_campaign import finish_battle
-from tools.eador_relic_campaign import prepare_censer_watch
+from tools.campaign import finish_battle
+from tools.relic_campaign import prepare_censer_watch
 
 
 def test_an_earned_censer_grants_one_saved_smoke_charge_in_a_later_watch():
@@ -80,8 +80,8 @@ def test_new_relic_sources_and_old_equipment_remain_discoverable_across_themes()
 
 
 def test_earned_censer_screen_and_guard_both_hold_with_defenders_alive():
-    from tools.eador_extraction_campaign import AdventureOrders
-    from tools.eador_relic_campaign import censer_watch_route
+    from tools.extraction_campaign import AdventureOrders
+    from tools.relic_campaign import censer_watch_route
 
     class SavedOrders(AdventureOrders):
         def do(self, command, *args, **kwargs):
@@ -115,8 +115,8 @@ def test_both_earned_relic_branches_hold_the_gate_and_preserve_every_order_on_re
     from dataclasses import asdict
     import pytest
     from eador.model import RuleError
-    from tools.eador_extraction_campaign import AdventureOrders
-    from tools.eador_relic_campaign import porter_gate_route, mirror_gate_route
+    from tools.extraction_campaign import AdventureOrders
+    from tools.relic_campaign import porter_gate_route, mirror_gate_route
 
     class SavedOrders(AdventureOrders):
         def do(self, command, *args, **kwargs):
@@ -166,8 +166,8 @@ def test_both_earned_relic_branches_hold_the_gate_and_preserve_every_order_on_re
 
 def test_earned_drum_clears_a_real_watch_pin_without_refreshing_a_spent_ranger():
     from dataclasses import asdict
-    from tools.eador_extraction_campaign import AdventureOrders
-    from tools.eador_relic_campaign import drum_watch_route
+    from tools.extraction_campaign import AdventureOrders
+    from tools.relic_campaign import drum_watch_route
 
     class SavedOrders(AdventureOrders):
         def do(self, command, *args, **kwargs):
@@ -203,7 +203,7 @@ def test_earned_mirror_extends_arrival_but_cannot_evacuate_with_a_spent_hero_ord
     """The actual Badge can deliver its hero to an exit, but arrival costs that phase's action."""
     import pytest
     from eador.model import RuleError
-    from tools.eador_relic_campaign import prepare_relic_gate, _recover_at
+    from tools.relic_campaign import prepare_relic_gate, _recover_at
     state = prepare_relic_gate('mirror_badge')
     state.retreat()
     cache = next(p.pos for p in state.provinces.values() if p.site_kind == 'supply_cache')

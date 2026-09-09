@@ -1,7 +1,7 @@
 """The icon presentation keeps ordinary game input and explanatory text usable."""
 
 from eador.model import State
-from tools.verify_eador_icons import verify
+from tools.verify_icons import verify
 import pytest
 
 
@@ -39,8 +39,8 @@ def test_inspected_enemy_stats_keep_each_symbol_and_value_together(tmp_path, per
     from eador.scene import ShardScene
     from eador.ui import icon_path
     from tests.eador.test_attack_motion import melee_state
-    from tools.eador_ui import PlayerInput
-    from tools.verify_eador_guidance import check_reading_layout
+    from tools.ui import PlayerInput
+    from tools.verify_guidance import check_reading_layout
 
     state, actor, target = melee_state()
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')

@@ -2,7 +2,7 @@
 import pytest
 
 from eador.model import State, RuleError
-from tools.eador_extraction_campaign import AdventureOrders, prepared_crossing, prepare_adventure, crossing_route, cache_route
+from tools.extraction_campaign import AdventureOrders, prepared_crossing, prepare_adventure, crossing_route, cache_route
 
 
 class Journey(AdventureOrders):

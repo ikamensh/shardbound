@@ -22,9 +22,9 @@ sys.path.insert(0, str(ROOT))
 from eador.difficulty import DIFFICULTIES
 from eador.model import BUILDINGS, RECRUITABLE, RuleError, State, UNITS
 from eador.worldgen import THEMES
-from tools.eador_sources import source_name
-from tools.audit_eador_difficulty import DifficultyTrial
-from tools.audit_eador_economy import PLANS
+from tools.sources import source_name
+from tools.audit_difficulty import DifficultyTrial
+from tools.audit_economy import PLANS
 from saga2d.testing.cpu_budget import CpuBudget
 
 FUNDS_ERRORS = {'Not enough gold or crystals.', 'Infusion requires 3 crystals.'}
@@ -253,8 +253,8 @@ def main(argv=None):
     except ValueError as error:
         parser.error(str(error))
     sources = [*sorted((ROOT / 'eador').glob('*.py')), Path(__file__).resolve(),
-               *(ROOT / 'tools' / name for name in ('audit_eador_difficulty.py', 'audit_eador_economy.py',
-                 'eador_campaign.py', 'stress_eador_control.py'))]
+               *(ROOT / 'tools' / name for name in ('audit_difficulty.py', 'audit_economy.py',
+                 'campaign.py', 'stress_control.py'))]
     fingerprints = lambda: {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     before = fingerprints()
     rows = []

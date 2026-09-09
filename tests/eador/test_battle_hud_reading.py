@@ -3,9 +3,9 @@ from saga2d import Label
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_shard_reading import check_metric
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_shard_reading import check_metric
 
 
 def test_unit_facts_guidance_and_log_follow_a_saved_order_at_larger_size(tmp_path):
@@ -50,7 +50,7 @@ def test_unit_facts_guidance_and_log_follow_a_saved_order_at_larger_size(tmp_pat
 def test_random_input_can_leave_the_battle_log_and_complete_its_campaign():
     """The seed that clicked the new log must preserve state and reach the replay control."""
     from collections import Counter
-    from tools.fuzz_eador import scene_run
+    from tools.fuzz import scene_run
     metrics = Counter()
     scene_run(4, 120, metrics)
     assert metrics['message_reader_inputs'] > 0 and metrics['replays'] == 1

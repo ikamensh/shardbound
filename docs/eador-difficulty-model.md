@@ -110,7 +110,7 @@ the subsequent new-game selection change.
 Reproduce the original audit with the recorded source revision:
 
 ```sh
-uv run python tools/audit_eador_difficulty.py --seeds 100 --report /tmp/difficulty.json
+uv run python tools/audit_difficulty.py --seeds 100 --report /tmp/difficulty.json
 ```
 
 [Summary/source hashes](evidence/difficulty-matched-plans.json) and

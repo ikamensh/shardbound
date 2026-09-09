@@ -8,7 +8,7 @@ from eador.model import State
 from eador.preferences import DEFAULTS
 from eador.scene import ShardScene
 from eador.settings_scene import SettingsScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def reading_fonts(game):
@@ -157,7 +157,7 @@ def test_both_reading_sizes_preserve_all_current_and_older_entries_after_resize(
     """Every rule remains reachable and bounded; neither preview nor resize changes a save."""
     from pathlib import Path
     from eador.codex import CATEGORIES
-    from tools.verify_eador_reading import check_page
+    from tools.verify_reading import check_page
 
     snapshots = [State.new(7).to_json(), (Path(__file__).parent / 'fixtures/v10_pinned_crossing.json').read_text()]
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')

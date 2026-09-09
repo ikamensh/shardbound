@@ -19,12 +19,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from eador.model import State
-from tools.eador_sources import source_name
-from tools.eador_campaign import finish_battle
-from tools.eador_extraction_campaign import AdventureOrders
-from tools.eador_relic_campaign import (drum_watch_route, prepare_censer_watch,
+from tools.sources import framework_sources, source_name
+from tools.campaign import finish_battle
+from tools.extraction_campaign import AdventureOrders
+from tools.relic_campaign import (drum_watch_route, prepare_censer_watch,
                                         prepare_relic_gate)
-from tools.stress_eador_control import exercise
+from tools.stress_control import exercise
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -62,9 +62,9 @@ def main():
                         help='Cooperative allowance for one CPU core; 100 disables sleeping.')
     args = parser.parse_args()
     budget = CpuBudget(args.cpu_percent)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
                       *ROOT.joinpath('tools').glob('eador*campaign.py'), Path(__file__).resolve(),
-                      ROOT / 'tools/stress_eador_control.py'])
+                      ROOT / 'tools/stress_control.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     report = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'dirty_at_start': subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines(),
@@ -89,8 +89,8 @@ def main():
         results[relic] = dict(metrics)
         print(f'{relic}: {args.policies} policies passed', flush=True)
     report.update(metrics=results, elapsed_seconds=time.perf_counter() - started,
-                  source_files_changed=[str(p.relative_to(ROOT)) for p in sources
-                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]])
+                  source_files_changed=[source_name(p) for p in sources
+                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]])
     assert not report['source_files_changed']
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)

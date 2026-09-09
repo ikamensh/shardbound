@@ -29,9 +29,9 @@ from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene, TitleScene
 from eador.ui import icon_path
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 EFFECTS = 'docs/evidence/presentation-pass/effects/verification.json.gz'
 SCOUT = 'docs/evidence/scout-paths-78cb545/pathfinder.json.gz'
@@ -47,7 +47,7 @@ FOOTER = (('Auto-play one round', 'auto_play', 'a'), ('Retreat', 'retreat', 't')
 def _fixed_states():
     journals = {}
     for path, digest in FIXED.items():
-        data = (ROOT / path).read_bytes()
+        data = source_path(path).read_bytes()
         assert hashlib.sha256(data).hexdigest() == digest, f'Changed earned source: {path}'
         journals[path] = json.loads(gzip.decompress(data))
     effects, scout = journals[EFFECTS], journals[SCOUT]
@@ -73,8 +73,8 @@ def _fixed_states():
 
 
 def _fingerprints():
-    paths = {Path(__file__), ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/verify_eador_guidance.py', *(ROOT / 'eador').glob('*.py'),
+    paths = {Path(__file__), ROOT / 'tools/ui.py',
+             ROOT / 'tools/verify_guidance.py', *(ROOT / 'eador').glob('*.py'),
              *framework_sources(), *(ROOT / path for path in FIXED)}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
     return {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(paths)}

@@ -28,10 +28,10 @@ from eador.preferences import reading_scale
 from eador.scene import ShardScene, TitleScene
 from saga2d import Button
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_reading import check_page, visible_labels
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_reading import check_page, visible_labels
 
 OLD_WORLD = 'tests/eador/fixtures/v12_ruins_seed7_before_site_variation.json'
 CLEARED = 'tests/eador/fixtures/v12_frontier_caravan_result.json'
@@ -47,8 +47,8 @@ BASELINE = {
 
 
 def _fingerprints():
-    paths = {Path(__file__), ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/verify_eador_guidance.py', ROOT / 'tools/verify_eador_reading.py',
+    paths = {Path(__file__), ROOT / 'tools/ui.py',
+             ROOT / 'tools/verify_guidance.py', ROOT / 'tools/verify_reading.py',
              *(ROOT / 'eador').glob('*.py'), *framework_sources(),
              *(ROOT / path for path in FIXED)}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
@@ -56,7 +56,7 @@ def _fingerprints():
 
 
 def _fixed_state(path):
-    data = (ROOT / path).read_bytes()
+    data = source_path(path).read_bytes()
     assert hashlib.sha256(data).hexdigest() == FIXED[path], f'Changed historical source: {path}'
     state = State.from_json(data.decode())
     assert json.loads(state.to_json()) == json.loads(data), 'Historical world changed while loading'

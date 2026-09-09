@@ -129,8 +129,8 @@ def test_checkpoint_preserves_actual_write_error_until_matching_manual_is_saved(
 
 def test_linked_save_descriptions_distinguish_progress_and_recovery(tmp_path):
     """A player can identify the linked stage and whether defeat still permits recovery."""
-    from tools.eador_linked_campaign import play_stage
-    from tools.verify_eador_campaign import lose_shard
+    from tools.linked_campaign import play_stage
+    from tools.verify_campaign import lose_shard
 
     saves = CampaignSaves(SaveManager(tmp_path))
     state = State.new_campaign(7)
@@ -154,7 +154,7 @@ def test_linked_save_descriptions_distinguish_progress_and_recovery(tmp_path):
 
 def test_linked_descriptions_keep_battle_decisions_and_completed_ending(tmp_path):
     """Linked context supplements actionable battle/reward details and identifies the true ending."""
-    from tools.eador_linked_campaign import play_linked
+    from tools.linked_campaign import play_linked
 
     saves = CampaignSaves(SaveManager(tmp_path))
     state = State.new_campaign(7)

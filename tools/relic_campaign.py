@@ -1,7 +1,7 @@
 """Earn active relics through public campaign commands and enter their later demonstrations."""
 from eador.model import BUILDINGS
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure, crossing_route
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders, prepare_adventure, crossing_route
 
 
 def earn_censer(state=None, *, orders_type=AdventureOrders, budget=None):
@@ -97,8 +97,8 @@ def prepare_relic_gate(relic, state=None, *, reload_state=None, budget=None):
     serialization. Source battles use the explicit automatic combat command.
     """
     from eador.model import State
-    from tools.eador_campaign import provision_army
-    from tools.eador_linked_campaign import play_stage, travel_selection
+    from tools.campaign import provision_army
+    from tools.linked_campaign import play_stage, travel_selection
     if relic not in ('porter_rune', 'mirror_badge'):
         raise ValueError('This demonstration earns Porter’s Rune or Mirror Badge')
     reload_state = State.from_json if reload_state is None else reload_state

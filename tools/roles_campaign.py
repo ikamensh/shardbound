@@ -1,6 +1,6 @@
 """Public paid preparation for a sustain, mobile-fire and rescue formation."""
 from eador.model import BUILDINGS, State
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
+from tools.campaign import finish_battle, march_to, rest, site_position
 
 
 def prepare_support_watch(state=None, *, budget=None):

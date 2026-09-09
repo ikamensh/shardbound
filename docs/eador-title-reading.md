@@ -19,8 +19,8 @@ Left/Right. Reflow keeps the currently read position visible.
 Saves still owns explicit backup recovery. No launch rules or save format change.
 
 ```bash
-uv run python tools/verify_eador_title.py --backend mock
-uv run python tools/verify_eador_title.py --backend pyglet
+uv run python tools/verify_title.py --backend mock
+uv run python tools/verify_title.py --backend pyglet
 ```
 
 The public-input verifier covers every hero/world/difficulty combination at

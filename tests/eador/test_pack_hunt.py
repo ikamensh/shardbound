@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from eador.model import State
-from tools.eador_hunt_campaign import prepare_pack_hunt as prepared_hunt
+from tools.hunt_campaign import prepare_pack_hunt as prepared_hunt
 
 
 def test_luring_the_same_pack_changes_deployment_without_turning_the_fight_into_a_hold():
@@ -27,7 +27,7 @@ def test_luring_the_same_pack_changes_deployment_without_turning_the_fight_into_
 @pytest.mark.parametrize('fixture', ['v10_ruins_battle', 'v11_wolf_den_battle'])
 def test_real_prior_battles_keep_their_recorded_world_and_exact_continuation(fixture):
     """New authored content cannot replace a saved site or reroll an active old fight."""
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     fixtures = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixtures / f'{fixture}.json').read_text())
@@ -42,7 +42,7 @@ def test_real_prior_battles_keep_their_recorded_world_and_exact_continuation(fix
 
 def test_manual_lure_concentrates_fire_while_free_play_must_reposition_around_the_forest():
     """The paid army wins a round earlier, preserving mana and every purchased soldier."""
-    from tools.eador_hunt_campaign import prepare_pack_hunt, hunt_route
+    from tools.hunt_campaign import prepare_pack_hunt, hunt_route
     from tests.eador.test_extraction_journeys import Journey
 
     before = prepare_pack_hunt().to_json()
@@ -80,7 +80,7 @@ def assert_one_rout_reward(play):
 
 def test_a_cheaper_warrior_spear_army_can_clear_the_free_approach_with_different_orders():
     """Two ordinary Pikemen replace the Ranger/Warden investment without changing the pack."""
-    from tools.eador_hunt_campaign import prepare_hunt_spears, spear_hunt_route
+    from tools.hunt_campaign import prepare_hunt_spears, spear_hunt_route
     from tests.eador.test_extraction_journeys import Journey
 
     state = prepare_hunt_spears()
@@ -94,7 +94,7 @@ def test_a_cheaper_warrior_spear_army_can_clear_the_free_approach_with_different
 
 def test_saved_failed_lure_keeps_its_cost_and_remaining_wolves_when_retrying_for_free():
     """A killed wolf and another wolf's wounds remain after retreat, reload and reselection."""
-    from tools.eador_campaign import finish_battle, rest
+    from tools.campaign import finish_battle, rest
     state = prepared_hunt()
     gold, xp = state.gold, state.hero.xp
     state.explore(approach='lure')

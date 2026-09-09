@@ -31,7 +31,7 @@ def clock(monkeypatch):
 
 def test_resource_quotes_yield_without_spending_the_campaigns_resources(clock):
     """Detached purchase quotes share the allowance but never mutate the observed campaign."""
-    from tools.audit_eador_resource_breakpoints import options
+    from tools.audit_resource_breakpoints import options
 
     state = State.new(0)
     saved = state.to_json()
@@ -44,7 +44,7 @@ def test_resource_quotes_yield_without_spending_the_campaigns_resources(clock):
 
 def test_selected_resource_audit_cli_paces_observed_and_baseline_campaigns(clock, tmp_path):
     """One real CLI case reports its default allowance and retains every public outcome and quote."""
-    from tools.audit_eador_resource_breakpoints import main
+    from tools.audit_resource_breakpoints import main
 
     path = tmp_path / 'resources.json'
     args = ['--theme', 'frontier', '--difficulty', 'standard', '--plan', 'economy', '--report', str(path)]
@@ -54,7 +54,7 @@ def test_selected_resource_audit_cli_paces_observed_and_baseline_campaigns(clock
     main(args)
     report = json.loads(path.read_text())
     assert report['cpu_percent'] == 25 and report['campaigns'] == 1
-    assert 'tools/audit_eador_resource_breakpoints.py' in report['source_sha256']
+    assert 'tools/audit_resource_breakpoints.py' in report['source_sha256']
     assert clock['sleeps'], 'The selected observed/baseline pair bypassed its CPU allowance'
     assert json.loads(gzip.decompress(path.with_suffix('.rows.json.gz').read_bytes())) == expected
 
@@ -63,9 +63,9 @@ def test_selected_resource_audit_cli_paces_observed_and_baseline_campaigns(clock
 def test_authored_preparation_and_recorded_commands_preserve_paid_results(clock, name, theme, expected_reason):
     """One earned Commander route keeps its purchases and exact saved orders while yielding."""
     from importlib import import_module
-    from tools.audit_eador_aerie import Purchases, RecordedOrders
+    from tools.audit_aerie import Purchases, RecordedOrders
 
-    campaign = import_module('tools.eador_' + name + '_campaign')
+    campaign = import_module('tools.' + name + '_campaign')
     prepare = getattr(campaign, 'prepare_' + name)
     route = getattr(campaign, name + ('_western_route' if name == 'aerie' else '_forward_route'))
     expected = prepare(state=Purchases(State.new(7, theme=theme)))
@@ -83,7 +83,7 @@ def test_authored_preparation_and_recorded_commands_preserve_paid_results(clock,
 
 def test_pin_verifiers_earned_bell_preparation_yields_without_changing_the_battle(clock):
     """The verifier's model-only work defaults to pacing before it opens the earned Brace UI."""
-    from tools.verify_eador_pin import prepare_watch_bell
+    from tools.verify_pin import prepare_watch_bell
 
     expected = prepare_watch_bell(budget=CpuBudget(100))
     assert not clock['sleeps']

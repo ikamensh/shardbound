@@ -16,10 +16,10 @@ from eador.app import create_game
 from eador.battle_playback_scene import BattlePlaybackScene
 from eador.model import State
 from eador.scene import BattleScene, ResultScene, TitleScene
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_relief_campaign import prepare_relief, relief_forward_opening, relief_passive_route
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
+from tools.sources import framework_sources, source_name, source_path
+from tools.relief_campaign import prepare_relief, relief_forward_opening, relief_passive_route
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
 
 
 def watch(player, report, *, output, overlays=False):
@@ -89,8 +89,8 @@ class WatchedOrders(ControlOrders):
 def verify(output, *, backend='pyglet', scenario='rally', still=False, scale=100):
     output.mkdir(parents=True, exist_ok=True)
     paths = sorted([*ROOT.glob('eador/*.py'), *framework_sources(), *ROOT.glob('tools/eador_*.py'),
-                    ROOT / 'tools/verify_eador_battle_feedback.py', ROOT / 'tools/verify_eador_control.py',
-                    ROOT / 'tools/verify_eador_extraction.py'])
+                    ROOT / 'tools/verify_battle_feedback.py', ROOT / 'tools/verify_control.py',
+                    ROOT / 'tools/verify_extraction.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -129,7 +129,7 @@ def verify(output, *, backend='pyglet', scenario='rally', still=False, scale=100
             (output / 'resolved-state.json').write_text(player.state.to_json())
         finally:
             game._teardown(); game.backend.quit()
-    assert all(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == sha for p, sha in hashes.items())
+    assert all(hashlib.sha256(source_path(p).read_bytes()).hexdigest() == sha for p, sha in hashes.items())
     (output / 'journey.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f'Feedback {scenario}/{scale}/still={still}: {len(player.events)} inputs, {player.reloads} exact reloads ({backend})')
     return report

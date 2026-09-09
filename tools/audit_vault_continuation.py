@@ -21,11 +21,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from eador.model import State
-from tools.eador_sources import framework_sources, source_name
-from tools.audit_eador_army_plans import SavedCommands
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_army_plans import SavedCommands
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_extraction_campaign import AdventureOrders
-from tools.eador_vault_campaign import prepare_vault, vault_route
+from tools.extraction_campaign import AdventureOrders
+from tools.vault_campaign import prepare_vault, vault_route
 
 TARGET = (0, 0)
 
@@ -246,14 +246,14 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             *(ROOT / 'tools' / name for name in ('audit_eador_vault_continuation.py',
-                 'audit_eador_army_plans.py', 'audit_eador_economy.py', 'eador_vault_campaign.py',
-                 'eador_extraction_campaign.py', 'eador_roles_campaign.py', 'eador_campaign.py'))]
+             *(ROOT / 'tools' / name for name in ('audit_vault_continuation.py',
+                 'audit_army_plans.py', 'audit_economy.py', 'vault_campaign.py',
+                 'extraction_campaign.py', 'roles_campaign.py', 'campaign.py'))]
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     started = time.monotonic()
     report = compare(cpu_percent=args.cpu_percent, campaign_order_limit=args.campaign_order_limit)
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == value for path, value in hashes.items()), 'Source changed during the comparison'
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == value for path, value in hashes.items()), 'Source changed during the comparison'
     report.update(source_commit=revision, source_sha256=hashes, source_unchanged=True,
                   python=sys.version, platform=platform.platform(), elapsed_seconds=time.monotonic() - started)
     args.output.parent.mkdir(parents=True, exist_ok=True)

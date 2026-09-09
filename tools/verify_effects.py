@@ -18,9 +18,9 @@ from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_observatory_campaign import prepare_observatory
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name, source_path
+from tools.observatory_campaign import prepare_observatory
+from tools.ui import PlayerInput
 from saga2d.testing.native_frames import tick
 
 CASES = ('arrow', 'bolt', 'melee', 'heal', 'swap', 'smoke')
@@ -118,7 +118,7 @@ def verify(output, *, backend='pyglet', budget=None, case=None):
             report['briefings'] = player.briefings
         finally:
             game.close()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report['wall_seconds'], report['cpu_seconds'] = time.monotonic() - started, time.process_time() - cpu_started
     (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f"Effects: {len(report['cases'])} cases, {player.reloads} exact reloads, {len(player.events)} inputs ({backend})")

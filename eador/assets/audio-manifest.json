@@ -255,6 +255,6 @@
   "source_sha256": {
     "eador/sound.py": "60112f11c8092591cfccecd70f59b65e86ed52f57eb9d91217e4a13c99ce4e67",
     "sagaforge/synth.py": "d7e3c7c984e4fa5ce7bb48011b0ee5076dcc0ff269154288f5eb34f833f02963",
-    "tools/build_eador_audio.py": "d16755e19533735861f6974c85e2bcb580808c61d0c706913dfa0ef32788ee54"
+    "tools/build_audio.py": "ce3ad30dee16dd91a3f72714de4718a43d9d5b4c87ae09cfbf7d4da5d908a2e4"
   }
 }

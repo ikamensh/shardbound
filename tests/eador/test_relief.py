@@ -1,6 +1,6 @@
 """Relief is optional paid campaign content with finite, saved consequences."""
 from eador.model import State
-from tools.eador_campaign import finish_battle, march_to, rest
+from tools.campaign import finish_battle, march_to, rest
 
 
 def test_frontier_offers_an_optional_hold_with_its_original_reward_and_four_defenders():
@@ -26,7 +26,7 @@ def test_codex_quotes_the_recorded_variable_reward_and_never_invents_a_default(t
     """Relief inherits different loot across shards; its reference must use this saved world."""
     from eador.app import create_game
     from eador.scene import ShardScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     game = create_game(backend='mock', save_dir=tmp_path)
     try:
@@ -88,7 +88,7 @@ def test_actual_pre_relief_grove_battle_preserves_its_exact_saved_reward_continu
 
 def test_actually_purchased_commanders_intercept_support_and_save_a_manual_hold():
     """The real journey earns its stats; full-State reloads preserve the support kill and seal score."""
-    from tools.eador_relief_campaign import prepare_relief, relief_forward_route
+    from tools.relief_campaign import prepare_relief, relief_forward_route
     from tests.eador.test_extraction_journeys import Journey
 
     state = prepare_relief()
@@ -129,7 +129,7 @@ def assert_one_reward(play):
 
 def test_purchased_active_passive_and_smaller_parties_hold_in_three_modes_and_five_worlds():
     """Sixty actual paid routes retain manual hold/survivors and exact full-State order reloads."""
-    from tools.eador_relief_campaign import (prepare_relief, relief_forward_route, relief_western_route,
+    from tools.relief_campaign import (prepare_relief, relief_forward_route, relief_western_route,
                                              relief_passive_route, relief_scout_route)
     from tests.eador.test_extraction_journeys import Journey
 
@@ -149,7 +149,7 @@ def test_purchased_active_passive_and_smaller_parties_hold_in_three_modes_and_fi
 
 def test_actual_rally_mistake_loses_a_veteran_then_paid_retry_keeps_finite_wounds():
     """The missed support is consequential; neither the Pike nor killed enemies respawn after reload."""
-    from tools.eador_relief_campaign import prepare_relief, relief_failed_support, relief_retry_route
+    from tools.relief_campaign import prepare_relief, relief_failed_support, relief_retry_route
     from tests.eador.test_extraction_journeys import Journey
 
     play = relief_failed_support(prepare_relief(), orders_type=Journey)

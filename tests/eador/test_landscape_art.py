@@ -3,7 +3,7 @@ import json
 
 from PIL import Image
 
-from tools.build_eador_art import build_assets, verify_assets
+from tools.build_art import build_assets, verify_assets
 
 
 def test_terrain_assets_are_reproducible_and_manifest_checked(tmp_path):

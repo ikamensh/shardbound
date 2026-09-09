@@ -1,7 +1,7 @@
 """Build Shardbound's original shipping WAVs, provenance and a cue/music sampler.
 
-    uv run python tools/build_eador_audio.py
-    uv run python tools/build_eador_audio.py --verify-native
+    uv run python tools/build_audio.py
+    uv run python tools/build_audio.py --verify-native
 
 Generation happens before packaging, never on launch. Native verification uses
 only the silent driver and runs each music track through a complete loop.
@@ -20,7 +20,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.eador_sources import source_path
+from tools.sources import source_path
 
 from eador.sound import CUES, GENERATOR_VERSION, TRACKS  # noqa: E402
 from sagaforge.synth import SAMPLE_RATE, mix, write_wav  # noqa: E402
@@ -80,7 +80,7 @@ def build_assets(directory: Path, *, sampler: Path, budget: CpuBudget | None = N
         'review_status': 'Technical verification only; listening and artistic approval remain required.',
         'runtime': {'python': '.'.join(map(str, sys.version_info[:3])), 'numpy': np.__version__},
         'source_sha256': {name: digest(source_path(name)) for name in
-                          ('eador/sound.py', 'sagaforge/synth.py', 'tools/build_eador_audio.py')},
+                          ('eador/sound.py', 'sagaforge/synth.py', 'tools/build_audio.py')},
         'files': files,
         'sampler': {**describe(sampler), 'order': order, 'music_excerpts': music_excerpts},
     }

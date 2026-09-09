@@ -2,7 +2,7 @@
 import gzip
 import json
 
-from tools.prototype_eador_early_conversion import ROOT, authored_branch
+from tools.prototype_early_conversion import ROOT, authored_branch
 
 
 def test_defensive_recovery_returns_to_the_named_expedition_before_entering():

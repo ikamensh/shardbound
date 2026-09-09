@@ -17,11 +17,11 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from eador.model import State, RuleError, UNITS
-from tools.eador_sources import source_name
-from tools.prototype_eador_late_realm import MeasuredState, paid_plan, snapshot
+from tools.sources import source_name
+from tools.prototype_late_realm import MeasuredState, paid_plan, snapshot
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_linked_campaign import play_stage, travel_selection, lose_shard
-from tools.eador_campaign import finish_battle
+from tools.linked_campaign import play_stage, travel_selection, lose_shard
+from tools.campaign import finish_battle
 
 
 class SalaryOne(MeasuredState):
@@ -155,9 +155,9 @@ def main():
     except ValueError as error:
         parser.error(str(error))
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__).resolve(),
-                      *(ROOT / 'tools' / name for name in ('prototype_eador_late_realm.py', 'audit_eador_difficulty.py',
-                      'audit_eador_economy.py', 'eador_linked_campaign.py', 'eador_campaign.py',
-                      'stress_eador_control.py'))])
+                      *(ROOT / 'tools' / name for name in ('prototype_late_realm.py', 'audit_difficulty.py',
+                      'audit_economy.py', 'linked_campaign.py', 'campaign.py',
+                      'stress_control.py'))])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     examples_path = ROOT / 'docs/evidence/crystal-service-comparison.examples.json'
     examples = json.loads(examples_path.read_text())
@@ -204,8 +204,8 @@ def main():
                         'No production save policy or frozen rules ID was changed. No optimal-play claim.',
                   plans=plans, late_four_turns=late, pursuit_last_action=pursuit,
                   recovery_inputs=recovery_inputs, recovery=recovery, scarcity=scarcity)
-    report['source_files_changed_during_run'] = [str(p.relative_to(ROOT)) for p in sources
-        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]]
+    report['source_files_changed_during_run'] = [source_name(p) for p in sources
+        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]]
     assert not report['source_files_changed_during_run']
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')

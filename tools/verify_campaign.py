@@ -16,9 +16,9 @@ from eador.content import RELICS
 from eador.difficulty import DIFFICULTIES
 from eador.model import State
 from eador.scene import ShardScene, TitleScene
-from tools.eador_campaign import play_campaign
-from tools.eador_linked_campaign import lose_shard, play_stage, travel_selection
-from tools.eador_ui import PlayerInput
+from tools.campaign import play_campaign
+from tools.linked_campaign import lose_shard, play_stage, travel_selection
+from tools.ui import PlayerInput
 
 
 def verify_inventory(output, *, backend='pyglet'):

@@ -124,11 +124,11 @@ briefing and Codex.
 ## Reproduction and verification
 
 ```sh
-uv run python tools/audit_eador_causeway.py --output /tmp/causeway-production.json.gz
+uv run python tools/audit_causeway.py --output /tmp/causeway-production.json.gz
 uv run pytest -q tests/eador/test_causeway.py tests/eador/test_causeway_scene.py
 caffeinate -u -t 1
-uv run python tools/verify_eador_causeway.py --plan infused-guard --output /tmp/causeway-native
-uv run python tools/verify_eador_guidance.py --matrix --output /tmp/causeway-guidance
+uv run python tools/verify_causeway.py --plan infused-guard --output /tmp/causeway-native
+uv run python tools/verify_guidance.py --matrix --output /tmp/causeway-guidance
 ```
 
 The native verifier supports `focus`, `guard`, `backstop`, `infused-guard`,

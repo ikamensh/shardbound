@@ -5,7 +5,7 @@ current downloads with installation steps; the same files are on the published
 [preview.1 release](https://github.com/ikamensh/saga2d/releases/tag/shardbound-v0.1.0-preview.1):
 the [Windows installer](https://github.com/ikamensh/saga2d/releases/download/shardbound-v0.1.0-preview.1/Shardbound-0.1.0-preview.1-windows-x64-setup.exe)
 and [Apple Silicon Mac app](https://github.com/ikamensh/saga2d/releases/download/shardbound-v0.1.0-preview.1/Shardbound-0.1.0-preview.1-darwin-arm64-app.zip),
-built from `184584007ac3071dcb901e323a16bcd727877c14` with `tools/build_eador.py`. This is a
+built from `184584007ac3071dcb901e323a16bcd727877c14` with `tools/build.py`. This is a
 development preview of the game described in the [player guide](../eador/README.md);
 the Early Access gates in [early-access-criteria.md](early-access-criteria.md)
 remain separate and the build manifest keeps `release_ready: false`.

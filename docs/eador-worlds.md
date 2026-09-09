@@ -54,7 +54,7 @@ The [route report](evidence/shardbound-worlds-routes-2026-09-06.json) retains
 per-campaign observations and source SHA-256 fingerprints. Reproduce with:
 
 ```sh
-uv run python tools/audit_eador_worlds.py --seeds 20 --output /tmp/world-routes.json
+uv run python tools/audit_worlds.py --seeds 20 --output /tmp/world-routes.json
 ```
 
 The shared public-command policy explores itinerary sites, builds a Barracks and
@@ -125,7 +125,7 @@ retains it for the next selection. Loading restores the recorded world even
 after choosing a different title theme.
 
 Three public-input integration journeys cover that selection/save/load path.
-The native verifier `tools/verify_eador_themes.py` exercises the same paths and
+The native verifier `tools/verify_themes.py` exercises the same paths and
 captures all theme titles/maps at the shipping 1280×800 logical canvas, displayed
 in 1280×720 and 1280×800 windows. This verifies letterboxing, not arbitrary
 logical layouts or text scaling. A 720-pixel *logical* campaign layout was also

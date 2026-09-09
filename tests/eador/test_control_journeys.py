@@ -4,7 +4,7 @@
 def test_a_real_economy_can_buy_all_three_crystal_roles_and_reach_the_watch():
     """The demonstration starts with ordinary resources, purchases every role and preserves the save."""
     from eador.model import State
-    from tools.eador_control_campaign import prepare_control_watch
+    from tools.control_campaign import prepare_control_watch
     state = prepare_control_watch()
     assert {troop.kind for troop in state.hero.army} >= {'sapper', 'adept', 'skyrider'}
     assert {'market', 'mage_tower', 'temple'} <= state.buildings
@@ -16,8 +16,8 @@ def test_a_real_economy_can_buy_all_three_crystal_roles_and_reach_the_watch():
 def test_paid_smoke_repulse_and_flight_win_hold_with_a_living_archer_and_save_every_order():
     """A planned screen saves health; displacement and flight replace killing the final defender."""
     from eador.model import State
-    from tools.eador_control_campaign import prepare_control_watch, watch_control_route
-    from tools.eador_extraction_campaign import AdventureOrders
+    from tools.control_campaign import prepare_control_watch, watch_control_route
+    from tools.extraction_campaign import AdventureOrders
 
     class SavedOrders(AdventureOrders):
         def do(self, command, *args, **kwargs):
@@ -49,7 +49,7 @@ def test_paid_smoke_repulse_and_flight_win_hold_with_a_living_archer_and_save_ev
 def test_paid_control_and_flight_campaigns_win_for_each_hero():
     """Both disclosed investments earn a campaign win without injecting resources or troops."""
     from eador.model import HERO_CLASSES
-    from tools.stress_eador_control import ControlTrial
+    from tools.stress_control import ControlTrial
     for hero_class in HERO_CLASSES:
         for plan, recruits in (('control', ('sapper', 'adept')), ('flight', ('skyrider', 'warden'))):
             result = ControlTrial(7, hero_class, 'frontier', plan).run()

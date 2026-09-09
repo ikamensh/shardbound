@@ -25,9 +25,9 @@ from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_shard_reading import check_shard, prepared_shards
+from tools.sources import source_name
+from tools.ui import PlayerInput
+from tools.verify_shard_reading import check_shard, prepared_shards
 
 
 class PacedInput(PlayerInput):
@@ -66,7 +66,7 @@ def longest_contract(budget):
                 arrivals.append((state, index, offer.id))
                 budget.checkpoint()
     state, index, offer = max(arrivals, key=lambda item: len(item[0].campaign.objective))
-    return state.to_json(), dict(history=str(path.relative_to(ROOT)), command_index=index, offer=offer,
+    return state.to_json(), dict(history=source_name(path), command_index=index, offer=offer,
                                  sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
                                  historical_preparation_includes_autoplay=True)
 
@@ -79,7 +79,7 @@ def verify(output, *, backend='pyglet', budget=None):
     budget = CpuBudget(25) if budget is None else budget
     started, cpu_started = time.monotonic(), time.process_time()
     paths = (ROOT / 'eador/scene.py', ROOT / 'eador/art.py', ROOT / 'eador/ui.py',
-             Path(__file__).resolve(), ROOT / 'tools/verify_eador_shard_reading.py')
+             Path(__file__).resolve(), ROOT / 'tools/verify_shard_reading.py')
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     report = dict(backend=backend, cpu_percent_requested=budget.percent,
                   source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -196,7 +196,7 @@ def verify(output, *, backend='pyglet', budget=None):
             assert (game.backend.window is None) if backend == 'pyglet' else (not game.backend.is_running)
             report['game_closed'] = True
     report['source_unchanged'] = all(hashlib.sha256(path.read_bytes()).hexdigest() ==
-                                    hashes[str(path.relative_to(ROOT))] for path in paths)
+                                    hashes[source_name(path)] for path in paths)
     assert report['source_unchanged'], 'Verified UI source changed during the run'
     budget.checkpoint()
     report.update(wall_seconds=time.monotonic() - started, cpu_seconds=time.process_time() - cpu_started)

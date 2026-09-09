@@ -23,9 +23,9 @@ os.environ.setdefault('SAGA2D_SILENT', '1')
 from eador.content import SKILLS
 from eador.model import State
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_campaign import CampaignMetrics
-from tools.eador_linked_campaign import lose_shard, play_stage, travel_selection
+from tools.sources import framework_sources, source_name, source_path
+from tools.campaign import CampaignMetrics
+from tools.linked_campaign import lose_shard, play_stage, travel_selection
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -122,8 +122,8 @@ def journey(skill, *, seed=7, recovery=False, player=None, budget=None):
 def verify(output, *, skills=tuple(SKILLS), backend='model', recovery=False, seed=7, budget=None):
     output.mkdir(parents=True, exist_ok=True)
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             ROOT / 'tools/audit_eador_disciplines.py', ROOT / 'tools/eador_campaign.py',
-             ROOT / 'tools/eador_linked_campaign.py', ROOT / 'tools/eador_ui.py']
+             ROOT / 'tools/audit_disciplines.py', ROOT / 'tools/campaign.py',
+             ROOT / 'tools/linked_campaign.py', ROOT / 'tools/ui.py']
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     results = []
     for skill in skills:
@@ -131,7 +131,7 @@ def verify(output, *, skills=tuple(SKILLS), backend='model', recovery=False, see
             result = journey(skill, seed=seed, recovery=recovery, budget=budget)
         else:
             from eador.app import create_game
-            from tools.eador_ui import PlayerInput
+            from tools.ui import PlayerInput
             with TemporaryDirectory(prefix='shardbound-disciplines-') as directory:
                 game = create_game(backend=backend, visible=False, save_dir=Path(directory) / 'saves')
                 try:
@@ -142,7 +142,7 @@ def verify(output, *, skills=tuple(SKILLS), backend='model', recovery=False, see
         results.append(result)
         print(f"{skill}: {result['phase']}, ranks {result['ranks']}, "
               f"{len(result['input_events'])} inputs / {result['exact_ui_reloads']} reloads", flush=True)
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == checksum for path, checksum in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == checksum for path, checksum in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, source_unchanged=True, backend=backend,
                   cpu_percent=budget.percent if budget else None,

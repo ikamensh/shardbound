@@ -23,10 +23,10 @@ from eador.model import State, UNITS
 from eador.preferences import reading_scale
 from eador.scene import ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_campaign import play_campaign
-from tools.eador_linked_campaign import lose_shard, play_stage, travel_selection
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.campaign import play_campaign
+from tools.linked_campaign import lose_shard, play_stage, travel_selection
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 @cache

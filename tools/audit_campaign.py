@@ -13,8 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from eador.model import HERO_CLASSES, State
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import source_name
-from tools.eador_linked_campaign import lose_shard, play_linked, play_stage, travel_selection
+from tools.sources import source_name
+from tools.linked_campaign import lose_shard, play_linked, play_stage, travel_selection
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     except ValueError as error:
         parser.error(str(error))
     sources = [*sorted((ROOT / 'eador').glob('*.py')), Path(__file__),
-               ROOT / 'tools/eador_campaign.py', ROOT / 'tools/eador_linked_campaign.py']
+               ROOT / 'tools/campaign.py', ROOT / 'tools/linked_campaign.py']
     before = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     runs = []
     started = time.monotonic()

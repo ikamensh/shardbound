@@ -22,7 +22,7 @@ turns, casualties and final-save hash. This is a representative first sample, no
 new hundred-seed balance matrix or evidence about all hero classes. Commander also
 earns recruitment discounts; the quoted prices are his actual current prices.
 
-The [observer](../tools/audit_eador_resource_breakpoints.py) reconciles every gold and
+The [observer](../tools/audit_resource_breakpoints.py) reconciles every gold and
 crystal change. End-turn production is captured **before** rival movement changes
 ownership, then actual surviving-army upkeep is separated. Battle rewards, paid
 approaches, duplicate relics, sales, services and replacement purchases have separate
@@ -167,7 +167,7 @@ its accounting closes the full acceptance criterion.
 ## Reproduce and inspect
 
 ```sh
-uv run python tools/audit_eador_resource_breakpoints.py
+uv run python tools/audit_resource_breakpoints.py
 ```
 
 The [summary](evidence/resource-breakpoints.json) records source hashes, aggregate

@@ -18,11 +18,11 @@ from eador.model import HERO_CLASSES, State
 from eador.persistence import AUTO_SLOTS
 from eador.preferences import reading_scale
 from eador.scene import ChoiceScene, ShardScene
-from tools.eador_campaign import play_campaign
-from tools.eador_ui import PlayerInput
+from tools.campaign import play_campaign
+from tools.ui import PlayerInput
 from saga2d.testing.cpu_budget import CpuBudget
 from saga2d.testing.native_frames import tick
-from tools.verify_eador_guidance import check_reading_layout
+from tools.verify_guidance import check_reading_layout
 
 
 def prepared_choices(*, budget=None):

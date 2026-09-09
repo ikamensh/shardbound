@@ -3,7 +3,7 @@ import pytest
 
 from eador.app import create_game
 from eador.scene import ShardScene, TitleScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 @pytest.mark.parametrize('mode,key', [('accessible', '1'), ('standard', '2'), ('challenge', '3')])
@@ -41,7 +41,7 @@ def test_title_keyboard_and_mouse_select_the_actual_standalone_and_linked_rules(
 
 def test_paid_wounded_army_sees_its_saved_mode_and_actual_next_rest_before_ending_turn(tmp_path):
     """Hero, map and saves read the same rules; the displayed recovery matches a real paid battle."""
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
         player = PlayerInput(game)
@@ -76,7 +76,7 @@ def test_paid_wounded_army_sees_its_saved_mode_and_actual_next_rest_before_endin
 def test_linked_briefs_show_the_actual_funding_and_warning_then_launch_saved_rules(tmp_path, mode):
     """Load public-play departure/recovery states; visible retinue choices deliver their advertised funds."""
     from eador.model import State
-    from tools.eador_linked_campaign import lose_shard, play_stage, travel_selection
+    from tools.linked_campaign import lose_shard, play_stage, travel_selection
     state = play_stage(State.new_campaign(7, difficulty=mode))
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
@@ -110,7 +110,7 @@ def test_linked_briefs_show_the_actual_funding_and_warning_then_launch_saved_rul
 
 def test_challenge_explains_base_production_and_its_live_finite_rival_window(tmp_path):
     """A real Marketplace purchase exposes the reduced aggregate yield before the bill is paid."""
-    from tools.verify_eador_shard_reading import check_metric
+    from tools.verify_shard_reading import check_metric
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
@@ -138,14 +138,14 @@ def test_challenge_explains_base_production_and_its_live_finite_rival_window(tmp
 @pytest.mark.parametrize('mode,recovery', [('accessible', True), ('challenge', False)])
 def test_complete_visible_linked_run_preserves_selected_difficulty_through_departures(tmp_path, mode, recovery):
     """Replay the full input verifier, including Accessible's funded recovery and both saved departures."""
-    from tools.verify_eador_campaign import verify
+    from tools.verify_campaign import verify
     report = verify(tmp_path, backend='mock', difficulty=mode, recovery=recovery)
     assert report['difficulty'] == mode and len(report['records']) == 3
 
 
 def test_native_opening_driver_funds_its_support_purchase_in_every_mode(tmp_path):
     """Starting grants differ; the real-input verifier must earn its Acolyte before testing rest/restart."""
-    from tools.verify_eador_difficulty import verify
+    from tools.verify_difficulty import verify
     report = verify(tmp_path, backend='mock')
     assert {row['mode'] for row in report['modes']} == {'accessible', 'standard', 'challenge'}
     assert all(row['fresh_game_restarts'] == 1 for row in report['modes'])
@@ -153,7 +153,7 @@ def test_native_opening_driver_funds_its_support_purchase_in_every_mode(tmp_path
 
 def test_recorded_challenge_keeps_its_original_rest_and_linked_funding_through_current_controls(tmp_path):
     """Load actual earlier saves after starting today's Challenge; visible commands preserve exact continuation."""
-    from tools.verify_eador_difficulty import verify_recorded_challenge
+    from tools.verify_difficulty import verify_recorded_challenge
 
     reports = verify_recorded_challenge(tmp_path, backend='mock')
     assert {row['case'] for row in reports} == {'rest', 'advance', 'recover'}

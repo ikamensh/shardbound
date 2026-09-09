@@ -27,7 +27,7 @@ from this acknowledgement uses ordinary campaign state; no acknowledgement
 flag survives a restart. A successful final checkpoint retains the normal
 immediate return to the campaign.
 
-`tools/verify_eador_choices.py` earns its cases through public campaign commands,
+`tools/verify_choices.py` earns its cases through public campaign commands,
 recording JSON just before the policy chooses. Seed-zero journeys across all
 four hero classes and three themes currently cover 42 distinct decisions:
 every one of the 12 relics, real duplicate-to-crystal offers, all discipline
@@ -41,7 +41,7 @@ restart, exact save/load, overlay return and damaged-autosave acknowledgement.
 Run the native verifier with:
 
 ```sh
-uv run python tools/verify_eador_choices.py --output /tmp/shardbound-choice-reading
+uv run python tools/verify_choices.py --output /tmp/shardbound-choice-reading
 ```
 
 `tests/eador/test_choice_reading.py` covers those same real input routes on the

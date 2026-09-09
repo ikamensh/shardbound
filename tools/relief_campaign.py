@@ -1,7 +1,7 @@
 """Paid Relief journeys, reusable through ordinary model or native input commands."""
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_campaign import finish_battle, march_to, rest
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.campaign import finish_battle, march_to, rest
+from tools.extraction_campaign import AdventureOrders
 
 
 def prepare_relief(hero_class='Commander', *, seed=7, difficulty='standard', state=None, budget=None):

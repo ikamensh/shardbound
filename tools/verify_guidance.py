@@ -17,7 +17,7 @@ from eador.encounter_scene import EncounterScene
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, HelpScene, ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def check_reading_layout(scene):
@@ -38,17 +38,17 @@ def check_reading_layout(scene):
 def prepared_briefings(*, budget=None):
     """Actual paid routes plus retreat checkpoints; no injected units, prices or wounds."""
     from eador.model import State, UNITS
-    from tools.eador_campaign import finish_battle, march_to, rest
-    from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure
-    from tools.eador_explorer_campaign import prepare_explorer
-    from tools.eador_hunt_campaign import prepare_pack_hunt
-    from tools.eador_observatory_campaign import prepare_observatory
-    from tools.eador_relic_campaign import prepare_relic_gate
-    from tools.eador_vault_campaign import prepare_vault
-    from tools.eador_screen_campaign import prepare_screen
-    from tools.eador_aerie_campaign import prepare_aerie, aerie_failed_sortie
-    from tools.eador_relief_campaign import prepare_relief
-    from tools.eador_causeway_campaign import prepare_causeway, causeway_failed_attempt
+    from tools.campaign import finish_battle, march_to, rest
+    from tools.extraction_campaign import AdventureOrders, prepare_adventure
+    from tools.explorer_campaign import prepare_explorer
+    from tools.hunt_campaign import prepare_pack_hunt
+    from tools.observatory_campaign import prepare_observatory
+    from tools.relic_campaign import prepare_relic_gate
+    from tools.vault_campaign import prepare_vault
+    from tools.screen_campaign import prepare_screen
+    from tools.aerie_campaign import prepare_aerie, aerie_failed_sortie
+    from tools.relief_campaign import prepare_relief
+    from tools.causeway_campaign import prepare_causeway, causeway_failed_attempt
 
     budget = CpuBudget(25) if budget is None else budget
     orders = partial(AdventureOrders, budget=budget)
@@ -188,7 +188,7 @@ def verify(output, *, matrix=False, budget=None):
             assert any(entry.title == 'Militia' for entry in game.scene.visible_entries)
             player.press('escape')
             assert isinstance(game.scene, HelpScene) and player.state.to_json() == saved
-            from tools.eador_observatory_campaign import prepare_observatory
+            from tools.observatory_campaign import prepare_observatory
             state = prepare_observatory(budget=budget)
             before = state.to_json()
             game.clear_and_push(ShardScene(state))

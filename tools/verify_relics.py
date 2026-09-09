@@ -16,20 +16,20 @@ os.environ['SAGA2D_SILENT'] = '1'
 from eador.app import create_game
 from eador.content import RELICS
 from eador.scene import ResultScene, TitleScene
-from tools.eador_sources import source_name
-from tools.eador_relic_campaign import (censer_watch_route, prepare_censer_watch,
+from tools.sources import framework_sources, source_name, source_path
+from tools.relic_campaign import (censer_watch_route, prepare_censer_watch,
     prepare_relic_gate, porter_gate_route, mirror_gate_route, prepare_drum_watch, drum_watch_route)
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
 
 
 def verify(output, *, backend='pyglet', relic='veil_censer'):
     output.mkdir(parents=True, exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
-                      *[ROOT / 'tools' / name for name in ('eador_campaign.py', 'eador_control_campaign.py',
-                          'eador_roles_campaign.py', 'eador_extraction_campaign.py', 'eador_linked_campaign.py',
-                          'eador_relic_campaign.py', 'eador_ui.py', 'verify_eador_control.py',
-                          'verify_eador_extraction.py', 'verify_eador_relics.py')]])
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
+                      *[ROOT / 'tools' / name for name in ('campaign.py', 'control_campaign.py',
+                          'roles_campaign.py', 'extraction_campaign.py', 'linked_campaign.py',
+                          'relic_campaign.py', 'ui.py', 'verify_control.py',
+                          'verify_extraction.py', 'verify_relics.py')]])
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     with TemporaryDirectory(prefix='shardbound-earned-relic-') as directory:
@@ -86,7 +86,7 @@ def verify(output, *, backend='pyglet', relic='veil_censer'):
                           campaign_phase=state.campaign.phase if state.campaign else None,
                           input_activations=len(player.events), exact_save_reloads=player.reloads,
                           orders=play.orders, inputs=player.events)
-            assert all(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest
+            assert all(hashlib.sha256(source_path(name).read_bytes()).hexdigest() == digest
                        for name, digest in hashes.items()), 'Sources changed during the journey'
             (output / 'journey.json').write_text(json.dumps(report, indent=2) + '\n')
             print(f"Earned {RELICS[relic].name}: {outcome_reason} round {rounds}, {len(player.events)} inputs, "

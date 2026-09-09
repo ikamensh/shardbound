@@ -3,7 +3,7 @@
 
 def test_saved_sources_are_readable_before_conquest_and_after_reload(tmp_path):
     """Fresh moved sites and untouched historical sources remain locatable without spending."""
-    from tools.verify_eador_discoveries import verify
+    from tools.verify_discoveries import verify
 
     receipt = verify(tmp_path, backend='mock')
     fresh = [case for case in receipt['cases'] if case['origin'] == 'fresh_title']

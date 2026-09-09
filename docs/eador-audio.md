@@ -116,9 +116,9 @@ The full loops are `eador/assets/music/campaign.wav` and `battle.wav`.
 ## Rebuilding and verification
 
 ```bash
-uv run python tools/build_eador_audio.py
-uv run python tools/build_eador_audio.py --cpu-percent 100
-uv run python tools/build_eador_audio.py --verify-native
+uv run python tools/build_audio.py
+uv run python tools/build_audio.py --cpu-percent 100
+uv run python tools/build_audio.py --verify-native
 uv run python -m pytest tests/eador/test_shardbound_sound.py -q
 ```
 

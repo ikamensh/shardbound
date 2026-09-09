@@ -1,6 +1,6 @@
 """A public-command linked-campaign policy for executable journeys and balance probes."""
 from eador.model import State
-from tools.eador_campaign import play_campaign
+from tools.campaign import play_campaign
 
 
 def play_stage(state, **options):
@@ -21,7 +21,7 @@ def travel_selection(state):
 
 def secure_frontier(state, *, budget=None):
     """Invest and meet the visible expedition before taking the distant Watch detour."""
-    from tools.eador_campaign import finish_battle, march_to, provision_army
+    from tools.campaign import finish_battle, march_to, provision_army
     state.build('barracks')
     state.recruit('swordsman')
     state.explore(); finish_battle(state, budget=budget)
@@ -61,7 +61,7 @@ def play_linked(seed=7, hero_class='Commander', middle='rootward', finale='thron
 
 def lose_shard(state, *, budget=None):
     """Leaving the capital and declining tactical defenses permits the finite rival to win."""
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     if state.hero.pos == (-2, 0):
         if not state.actions_left:
             state.end_turn()

@@ -135,9 +135,9 @@ shows both the original +3 and current +4 mana forecasts and actual completion.
 Reproduce the full candidate and one-factor policy comparisons:
 
 ```sh
-uv run python tools/audit_eador_difficulty.py --seeds 100 --modes challenge --rules-id challenge-2 --report /tmp/difficulty-mana4-full.json
-uv run python tools/audit_eador_difficulty.py --modes challenge --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --mana-reserve 8 --report /tmp/difficulty-worst-reserve8.json
-uv run python tools/audit_eador_difficulty.py --modes challenge --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --adaptive-interception --report /tmp/difficulty-worst-pursuit.json
-uv run python tools/audit_eador_difficulty.py --modes challenge --rules-id challenge-2 --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --report /tmp/difficulty-worst-mana4.json
-uv run python tools/audit_eador_difficulty.py --seeds 20 --modes challenge --rules-id challenge-2 --plans control flight --report /tmp/difficulty-mana4-specialists.json
+uv run python tools/audit_difficulty.py --seeds 100 --modes challenge --rules-id challenge-2 --report /tmp/difficulty-mana4-full.json
+uv run python tools/audit_difficulty.py --modes challenge --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --mana-reserve 8 --report /tmp/difficulty-worst-reserve8.json
+uv run python tools/audit_difficulty.py --modes challenge --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --adaptive-interception --report /tmp/difficulty-worst-pursuit.json
+uv run python tools/audit_difficulty.py --modes challenge --rules-id challenge-2 --worst-from docs/evidence/difficulty-matched-plans.rows.json.gz --report /tmp/difficulty-worst-mana4.json
+uv run python tools/audit_difficulty.py --seeds 20 --modes challenge --rules-id challenge-2 --plans control flight --report /tmp/difficulty-mana4-specialists.json
 ```

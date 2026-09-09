@@ -1,6 +1,6 @@
 """Ordinary purchases and travel for the new control/flight encounter demonstrations."""
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
+from tools.campaign import finish_battle, march_to, rest, site_position
 
 
 def prepare_control_watch(state=None, *, kinds=None, budget=None):
@@ -39,7 +39,7 @@ def prepare_control_watch(state=None, *, kinds=None, budget=None):
 
 def watch_control_route(state=None, *, smoke=True, orders_type=None):
     """A bought seven-body formation screens the seal, repulses its contester and closes the flank."""
-    from tools.eador_extraction_campaign import AdventureOrders
+    from tools.extraction_campaign import AdventureOrders
     play = (orders_type or AdventureOrders)(prepare_control_watch() if state is None else state)
     for uid, pos in ((1, (1, 0)), (3, (0, -1)), (2, (0, 0)), (6, (2, -1)),
                      (4, (-1, 1)), (5, (-1, 0)), (0, (-1, -1))):

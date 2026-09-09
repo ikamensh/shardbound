@@ -2,7 +2,7 @@
 import pytest
 
 from eador.model import BUILDINGS, UNITS, RuleError, State
-from tools.eador_campaign import finish_battle, play_campaign, provision_army
+from tools.campaign import finish_battle, play_campaign, provision_army
 
 
 def test_a_seeded_shard_can_build_recruit_and_survive_a_save():

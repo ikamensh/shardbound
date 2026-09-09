@@ -97,7 +97,7 @@ named seal marker and a progress/deadline banner remain visible in combat;
 **O** aims at the objective without spending a unit order. Hold victory and
 deadline loss have distinct result explanations.
 
-`tools/verify_eador_objective.py` drives the full Commander preparation,
+`tools/verify_objective.py` drives the full Commander preparation,
 briefing cancellation, manual formation, saved first holding turn, terminal
 reload, one-time reward and deadline loss through visible controls. The same
 journey runs as a recording-backend integration test. Real Pyglet execution

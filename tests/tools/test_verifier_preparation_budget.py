@@ -31,7 +31,7 @@ def clock(monkeypatch):
 
 def test_saved_phase_preparation_yields_and_keeps_every_earned_snapshot(clock):
     """Default preparation preserves paid linked-campaign phases and old save payloads exactly."""
-    from tools.verify_eador_saves import prepared_saves
+    from tools.verify_saves import prepared_saves
 
     expected = prepared_saves(budget=CpuBudget(100))
     assert not clock['sleeps']
@@ -48,7 +48,7 @@ def test_saved_phase_preparation_yields_and_keeps_every_earned_snapshot(clock):
 
 def test_result_preparation_yields_and_keeps_real_battle_and_campaign_outcomes(clock):
     """The actual escape, hold, loss and victory preparations keep identical saved results."""
-    from tools.verify_eador_results import prepared_results
+    from tools.verify_results import prepared_results
 
     expected = prepared_results(budget=CpuBudget(100))
     assert not clock['sleeps']
@@ -64,7 +64,7 @@ def test_result_preparation_yields_and_keeps_real_battle_and_campaign_outcomes(c
 
 def test_choice_preparation_yields_and_preserves_every_earned_reward(clock):
     """All real hero/theme campaigns earn identical reloadable decisions with the default allowance."""
-    from tools.verify_eador_choices import prepared_choices
+    from tools.verify_choices import prepared_choices
 
     actual = prepared_choices()
     assert clock['sleeps'], 'The default reward preparation must yield'
@@ -87,7 +87,7 @@ def test_choice_cli_paces_its_real_input_journey_and_closes_both_sessions(
         cpu_percent, clock, tmp_path, monkeypatch):
     """Default CLI preparation yields, explicit stress bypasses it, and both sessions always close."""
     from saga2d.backends.mock_backend import MockBackend
-    from tools.verify_eador_choices import main
+    from tools.verify_choices import main
 
     backends = []
 
@@ -123,7 +123,7 @@ def test_verifier_closes_both_actual_mock_backends_after_its_input_journey(name,
             backends.append(self)
 
     monkeypatch.setattr('saga2d.backends.mock_backend.MockBackend', ObservedBackend)
-    verify = import_module('tools.verify_eador_' + name).verify
+    verify = import_module('tools.verify_' + name).verify
     verify(tmp_path, backend='mock')
     assert len(backends) == 2
     assert all(not backend.is_running for backend in backends)
@@ -131,7 +131,7 @@ def test_verifier_closes_both_actual_mock_backends_after_its_input_journey(name,
 
 def test_replacement_prototype_battle_and_investment_each_yield_without_changing_results(clock):
     """One retained battle and the bounded paid ledger comparison preserve outcomes while yielding independently."""
-    from tools.prototype_eador_army_replacement import exercise, investment_observation
+    from tools.prototype_army_replacement import exercise, investment_observation
 
     examples = Path(__file__).resolve().parents[2] / 'docs/evidence/crystal-service-comparison.examples.json'
     payload = json.loads(examples.read_text())['late_full_roster']['state']

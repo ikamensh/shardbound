@@ -2,7 +2,7 @@
 from collections import Counter
 
 from eador.model import State
-from tools.audit_eador_army_plans import journey
+from tools.audit_army_plans import journey
 
 
 def test_commander_completes_linked_campaign_with_paid_sustain_roster():

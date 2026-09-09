@@ -149,7 +149,7 @@ against an appropriate authored objective before changing resource supply. Exist
 successful role-specific encounters remain valid; neither a guaranteed global role
 ranking nor a new economy feature follows from this single saved window.
 
-Source **e81949a**, [tool](../tools/prototype_eador_early_conversion.py),
+Source **e81949a**, [tool](../tools/prototype_early_conversion.py),
 [complete compressed evidence](evidence/early-conversion-prototype.json.gz).
 Twenty bounded branches and the paid retry repeat exactly. Every tactical phase
 replays its actual public commands from a saved starting state, and every rejected
@@ -157,5 +157,5 @@ replacement leaves its full state unchanged. All 26 recorded source hashes staye
 fixed. There are no production changes and no native conversion workflow claim.
 
 ```sh
-uv run python tools/prototype_eador_early_conversion.py
+uv run python tools/prototype_early_conversion.py
 ```

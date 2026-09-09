@@ -15,7 +15,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.eador_sources import source_name
+from tools.sources import framework_sources, source_name
 
 from eador.battle import Battle
 from eador.model import HERO_CLASSES, RECRUITABLE, Hero, Troop, UNITS
@@ -126,7 +126,7 @@ def main():
         budget = CpuBudget(args.cpu_percent)
     except ValueError as error:
         parser.error(str(error))
-    sources = [*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = [*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
                Path(__file__).resolve()]
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(sources)}
     report = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -140,8 +140,8 @@ def main():
             print(f'Battle fixture {seed - args.seed + 1}/{args.cases}', flush=True)
         exercise(seed, metrics, budget=budget)
     report.update(elapsed_seconds=time.perf_counter() - started, metrics=dict(metrics),
-                  source_files_changed=[str(p.relative_to(ROOT)) for p in sorted(sources)
-                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]])
+                  source_files_changed=[source_name(p) for p in sorted(sources)
+                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]])
     assert not report['source_files_changed']
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)

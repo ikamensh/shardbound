@@ -1,6 +1,6 @@
 """Paid Relief routes execute through the same visible controls as the native verifier."""
 import pytest
-from tools.verify_eador_relief import verify
+from tools.verify_relief import verify
 
 
 @pytest.mark.parametrize('plan', ['forward', 'western', 'scout', 'passive', 'failed-retry'])
@@ -19,9 +19,9 @@ def test_retry_briefing_keeps_flight_advice_after_its_rally_support_dies(tmp_pat
     from eador.model import State
     from eador.persistence import CampaignSaves
     from eador.scene import ShardScene
-    from tools.eador_extraction_campaign import AdventureOrders
-    from tools.eador_relief_campaign import prepare_relief, relief_forward_opening
-    from tools.eador_ui import PlayerInput
+    from tools.extraction_campaign import AdventureOrders
+    from tools.relief_campaign import prepare_relief, relief_forward_opening
+    from tools.ui import PlayerInput
 
     state = prepare_relief()
     state.explore(approach='forward')

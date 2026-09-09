@@ -3,7 +3,7 @@
 
 def test_each_saved_phase_loads_from_disk_and_accepts_its_next_public_order(tmp_path):
     """Fresh-process UI loads preserve full state, then continue earned phases exactly."""
-    from tools.verify_eador_restarts import verify
+    from tools.verify_restarts import verify
 
     report = verify(tmp_path, backend='mock')
     assert report['writer_pid'] != report['resume_pid']

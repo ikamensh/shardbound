@@ -9,7 +9,7 @@ def test_vault_quote_matches_the_actual_paid_exploration_without_mutation(approa
     """A purchased army reaches a generated Vault; quoting and entering choose the same attempt."""
     from eador.adventures import quote_adventure
     from eador.model import State
-    from tools.eador_vault_campaign import prepare_vault
+    from tools.vault_campaign import prepare_vault
 
     state = prepare_vault(budget=CpuBudget(25))
     province = state.provinces[state.hero.pos]

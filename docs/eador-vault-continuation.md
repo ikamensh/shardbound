@@ -81,7 +81,7 @@ identity distinguish this continuation from the older
 coverage is claimed by this source/model experiment.
 
 ```sh
-uv run python tools/audit_eador_vault_continuation.py --output /tmp/vault-continuation.json.gz
+uv run python tools/audit_vault_continuation.py --output /tmp/vault-continuation.json.gz
 ```
 
 The default CPU allowance is 25% of one core. Each branch permits at most 24

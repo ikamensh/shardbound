@@ -17,9 +17,9 @@ from saga2d import Label
 from eador.__main__ import create_session
 from eador.model import State
 from eador.persistence import CampaignSaves
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def aim(player, actor, target):
@@ -54,8 +54,8 @@ def inspect(player, warning):
 def verify(input_report, output, *, backend='pyglet'):
     """Replay one current audit report; historical journals remain provenance only."""
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             ROOT / 'tools/verify_eador_army_decisions.py', ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/verify_eador_guidance.py']
+             ROOT / 'tools/verify_army_decisions.py', ROOT / 'tools/ui.py',
+             ROOT / 'tools/verify_guidance.py']
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     input_bytes = input_report.read_bytes()
     source = json.loads(gzip.decompress(input_bytes))
@@ -129,7 +129,7 @@ def verify(input_report, output, *, backend='pyglet'):
                                  final=player.state.to_json()))
             finally:
                 game.close()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, source_unchanged=True,
                   input_report=str(input_report.resolve()), input_sha256=hashlib.sha256(input_bytes).hexdigest(),
@@ -146,7 +146,7 @@ def verify(input_report, output, *, backend='pyglet'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input-report', type=Path, required=True,
-                        help='One current .json.gz report from audit_eador_army_decisions.py')
+                        help='One current .json.gz report from audit_army_decisions.py')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--backend', choices=('mock', 'pyglet'), default='pyglet')
     args = parser.parse_args()

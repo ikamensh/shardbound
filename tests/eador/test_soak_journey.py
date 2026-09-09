@@ -2,8 +2,8 @@
 from eador.app import create_game
 from eador.battle_playback_scene import BattlePlaybackScene
 from eador.scene import TitleScene
-from tools.eador_ui import PlayerInput
-from tools.soak_eador import Journey
+from tools.ui import PlayerInput
+from tools.soak import Journey
 
 
 def test_soak_journeys_watch_resolved_turns_and_return_to_title(tmp_path):

@@ -20,9 +20,9 @@ from eador.persistence import CampaignSaves
 from eador.preferences import reading_scale
 from eador.scene import TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PLAYER_COMMANDS, PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PLAYER_COMMANDS, PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 EARNED_OPENINGS = {
     'docs/evidence/shardbound-army-plans-cd351a9/control.json.gz':
@@ -50,7 +50,7 @@ def _opening(supplied):
         raise ValueError('Directed journal must name an authenticated earned opening')
     path = supplied['path']
     checksum, index = EARNED_OPENINGS[path]
-    history_blob = (ROOT / path).read_bytes()
+    history_blob = source_path(path).read_bytes()
     if hashlib.sha256(history_blob).hexdigest() != checksum:
         raise ValueError(f'The retained earned opening has changed: {path}')
     history = json.loads(gzip.decompress(history_blob))
@@ -104,8 +104,8 @@ def verify(input_report, output, *, backend='pyglet', cpu_percent=25):
     budget = CpuBudget(cpu_percent)
     started, cpu_started = time.monotonic(), time.process_time()
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             Path(__file__), ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/verify_eador_guidance.py']
+             Path(__file__), ROOT / 'tools/ui.py',
+             ROOT / 'tools/verify_guidance.py']
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     blob = input_report.read_bytes()
     source = load_journal(blob, hashes, budget)
@@ -162,7 +162,7 @@ def verify(input_report, output, *, backend='pyglet', cpu_percent=25):
             assert final == source['final_state']
         finally:
             game.close()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, source_unchanged=True, backend=backend, cpu_percent=cpu_percent,
                   elapsed_seconds=time.monotonic() - started, cpu_seconds=time.process_time() - cpu_started,

@@ -8,7 +8,7 @@ same finite roster for both approaches. Clearing forest `(-1, 0)` costs two
 crystals and opens movement and sight for both armies. The free approach keeps
 that forest. The reward is 55 gold, three crystals and Ember Lens.
 
-The executable manual plans in `tools/eador_observatory_campaign.py` prepare
+The executable manual plans in `tools/observatory_campaign.py` prepare
 ordinary purchased armies through home and western conquests. They accept the
 same State-like input adapter as the native adventure verifiers. No resources,
 levels, positions or battle statistics are injected. Seed seven produces:

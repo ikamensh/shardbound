@@ -14,7 +14,7 @@ No model, save schema, terrain or framework API changes.
 
 The public-input regression locates a real paid Watch's seal, changes reading size
 and all three supported verification windows, then checks exact state/aim and
-complete scoring instructions. `tools/verify_eador_forecast.py` now checks live
+complete scoring instructions. `tools/verify_forecast.py` now checks live
 objective facts at every input and pauses each newly reached objective state for
 the same native 100/125 × three-window matrix. Its paid Watch and Crossing routes
 still execute their original hold/escape outcomes and exact save/reloads.

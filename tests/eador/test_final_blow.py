@@ -9,8 +9,8 @@ from eador.model import State
 from eador.persistence import CampaignSaves
 from eador.scene import BattleScene, ResultScene, ShardScene
 from tests.eador.test_game_audio import cues
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_final_blow import SOURCE, earned_last_arrow as recorded_last_arrow
+from tools.ui import PlayerInput
+from tools.verify_final_blow import SOURCE, earned_last_arrow as recorded_last_arrow
 
 
 def earned_last_arrow():

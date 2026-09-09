@@ -20,7 +20,7 @@ absorbed into production content and the public campaign helper, then deleted.
 
 ## Paid, saved tactical evidence
 
-`tools/eador_explorer_campaign.py` buys a Warden and optional escort, develops
+`tools/explorer_campaign.py` buys a Warden and optional escort, develops
 the western road and reaches the actual northern site. It accepts a State-like
 input adapter. No resources, troop levels, positions or battle statistics are
 injected. These Standard seed-seven plans use earned level-three heroes:

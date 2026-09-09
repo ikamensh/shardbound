@@ -515,7 +515,7 @@ walkthroughs, complete display/settings matrix or release readiness.
   Independent review found routing oscillation and inconsistent saved
   orders/identities; targeted regressions and fixes are included.
 - Full integration passed **432 tests**, plus both games' fuzz drivers.
-  Native `tools/verify_eador_rival.py` passed inspection, interception,
+  Native `tools/verify_rival.py` passed inspection, interception,
   retreat with lasting wounds, saved reengagement, defense and the paid
   remustering window through actual mouse/keyboard input. Initial, wounded,
   located and defeated-expedition screenshots were inspected at
@@ -568,7 +568,7 @@ Encirclement and unpaid upkeep are the next isolated rules increment.
   previews reflect the same rules. Codex, recruitment and guide explain the
   melee/ranged counterplay. Schema v4 retains stances; independent rule review
   and source-specific evidence are in [eador-guard.md](eador-guard.md).
-- Native `tools/verify_eador_guard.py` recruits the Pikeman, Guards by keyboard,
+- Native `tools/verify_guard.py` recruits the Pikeman, Guards by keyboard,
   Braces by mouse, checks disabled-key behavior, expires stances and restores
   them exactly from manual saves. Screenshots were inspected at
   `/tmp/shardbound-guard`; a hint/button overlap and crowded codex text were
@@ -585,7 +585,7 @@ Encirclement and unpaid upkeep are the next isolated rules increment.
   remain byte-identical. An independent native compose → WAV → playback example
   passed. Invalid audio is rejected before replacing an asset. Sound composition,
   event selection and caching remain game-owned; Shardbound audio content is
-  still outstanding. See [framework-synth.md](framework-synth.md).
+  still outstanding. See [synth.md](../../sagaforge/docs/synth.md).
 - The combined main suite passed **515 tests** at `143628c`. This advances the
   framework and tactical foundations, not a release-candidate claim. The
   two-hour `31a2c88` real-backend soak remains running; its result cannot validate

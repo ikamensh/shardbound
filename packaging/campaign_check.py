@@ -20,8 +20,8 @@ def run(output: Path, *, phase: int, recovery=False, backend='pyglet') -> dict:
     from eador.preferences import reading_scale
     from eador.scene import ShardScene, TitleScene
     from saga2d.testing.cpu_budget import CpuBudget
-    from tools.eador_linked_campaign import lose_shard, play_stage, travel_selection
-    from tools.eador_ui import PlayerInput
+    from tools.linked_campaign import lose_shard, play_stage, travel_selection
+    from tools.ui import PlayerInput
 
     final_phase = 5 if recovery else 4
     if phase not in range(1, final_phase + 1):

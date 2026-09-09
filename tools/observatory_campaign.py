@@ -1,7 +1,7 @@
 """Purchased Observatory formations and explicit orders, reusable by input adapters."""
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders
 
 
 def prepare_observatory(state=None, *, support="sapper", budget=None):

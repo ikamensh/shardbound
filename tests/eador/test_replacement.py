@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from eador.model import RuleError, State, UNITS
-from tools.eador_campaign import finish_battle
+from tools.campaign import finish_battle
 
 
 def earned_army(name='late_full_roster'):

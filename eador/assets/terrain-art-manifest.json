@@ -362,7 +362,7 @@
   "runtime": "Prebuilt PNGs only. The game does not execute the composition module.",
   "source_sha256": {
     "eador/landscape.py": "9c3ae952cf0da62b110d8b2c85a77227f0a94ed09d122b164e7c6cfdaa0a3f72",
-    "tools/build_eador_art.py": "cae2db31bcf38246db650b64d3d21d4225a3c4035a2611ac40333a679ffd10d2"
+    "tools/build_art.py": "896534aac57adb91e5d64f26573258b58c1bcc84c6a21f05fba4ffe109aa1667"
   },
   "terrains": [
     "plains",

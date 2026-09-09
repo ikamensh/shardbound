@@ -94,7 +94,7 @@ def verify_forecast_save(save_path: Path, image_path: Path, *, backend='pyglet')
     from eador.persistence import CampaignSaves
     from eador.preferences import reading_scale
     from eador.scene import BattleScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     payload = save_path.read_bytes()
     initial = State.from_json(payload.decode('utf-8')).to_json()
@@ -161,7 +161,7 @@ def verify_shard_controls(game, image_path: Path, *, backend='pyglet', budget=No
     from eador.preferences import load_preferences, reading_scale
     from eador.scene import BattleScene, ShardScene
     from saga2d.testing.cpu_budget import CpuBudget
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     budget = CpuBudget(25) if budget is None else budget
 

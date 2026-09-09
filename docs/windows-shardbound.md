@@ -14,8 +14,8 @@ The job checks out the exact commit, uses the x64 Windows runner, and runs:
 ```sh
 uv run --locked --isolated --python 3.13.2 \
   --with-requirements packaging/requirements.txt \
-  python tools/build_eador.py --version VERSION --skip-smoke --installer --require-clean
-uv run python tools/verify_shardbound_package.py dist/shardbound --mesa-dir MESA --public-server wss://games.tachyon-ai.eu/play
+  python tools/build.py --version VERSION --skip-smoke --installer --require-clean
+uv run python tools/verify_package.py dist/shardbound --mesa-dir MESA --public-server wss://games.tachyon-ai.eu/play
 ```
 
 CPython 3.13.2, uv 0.12.10 and the action revisions are pinned. Runtime packages

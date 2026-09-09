@@ -4,9 +4,9 @@ from saga2d import Label
 from eador.app import create_game
 from eador.encounter_scene import EncounterScene
 from eador.scene import ShardScene
-from tools.eador_causeway_campaign import prepare_causeway, causeway_failed_attempt
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.causeway_campaign import prepare_causeway, causeway_failed_attempt
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_causeway_briefing_teaches_choices_at_both_sizes_and_removes_dead_caster_advice(tmp_path):
@@ -40,7 +40,7 @@ def test_causeway_briefing_teaches_choices_at_both_sizes_and_removes_dead_caster
 @pytest.mark.parametrize('plan', ['focus', 'guard', 'backstop', 'infused-guard', 'scout', 'scout-heal', 'failed-retry'])
 def test_paid_causeway_orders_and_saved_retry_use_actual_player_input(tmp_path, plan):
     """Read the real reward, execute paid commands, checkpoint and finish this finite site once."""
-    from tools.verify_eador_causeway import verify
+    from tools.verify_causeway import verify
     report = verify(tmp_path, backend='mock', plan=plan)
     assert report['exact_save_reloads'] > 0
     assert all(unit['hp'] > 0 for unit in report['survivors'])

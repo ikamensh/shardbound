@@ -181,7 +181,7 @@ default compressed report is `/tmp/causeway-placement.json.gz`. The
 revision, 1,000 witnesses, 82 public travel-command/reloads and 650 tactical
 order/reloads across sixteen comparisons. The gzip is 186,009 bytes, SHA-256
 `0111c8a68ce1d80fe517c6a119bffe01dbaa0d55ac5594b6b485d61baa84c442`.
-The old proposal tool was absorbed into `tools/audit_eador_causeway.py` and
+The old proposal tool was absorbed into `tools/audit_causeway.py` and
 deleted after production integration; its temporary content must not be run
 against newly generated production worlds. The audit, original prototype regressions and 78 existing public
 Guard/control/extraction tests pass. No game source changed during measurement.

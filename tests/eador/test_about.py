@@ -4,7 +4,7 @@ from saga2d import Label
 from eador.app import create_game
 from eador.diagnostics import DiagnosticScene
 from eador.scene import TitleScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def read_all_pages(player):

@@ -17,9 +17,9 @@ from eador.__main__ import create_session
 from eador.model import State
 from eador.persistence import CampaignSaves
 from eador.scene import BattleScene, ResultScene
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
 
 
 def verify(input_report, output, *, backend='pyglet'):
@@ -30,9 +30,9 @@ def verify(input_report, output, *, backend='pyglet'):
     """
     original = json.loads(gzip.decompress(input_report.read_bytes()))
     files = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             *(ROOT / 'tools' / name for name in ('verify_eador_investment_choice.py',
-               'eador_ui.py', 'verify_eador_control.py', 'verify_eador_extraction.py',
-               'eador_extraction_campaign.py'))]
+             *(ROOT / 'tools' / name for name in ('verify_investment_choice.py',
+               'ui.py', 'verify_control.py', 'verify_extraction.py',
+               'extraction_campaign.py'))]
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     rows = []
     for branch in original['branches']:
@@ -75,7 +75,7 @@ def verify(input_report, output, *, backend='pyglet'):
             finally:
                 game._teardown()
                 game.backend.quit()
-    assert all(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == digest for p, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(p).read_bytes()).hexdigest() == digest for p, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, backend=backend, input_sha256=hashlib.sha256(input_report.read_bytes()).hexdigest(),
                   scope='Public game input from an earned round-three save; model preparation, explicit first order, '

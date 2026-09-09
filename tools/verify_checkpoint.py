@@ -14,8 +14,8 @@ from eador.model import State
 from eador.persistence import AUTO_SLOTS, CampaignSaves
 from eador.scene import ShardScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_linked_campaign import lose_shard, play_stage
-from tools.eador_ui import PlayerInput
+from tools.linked_campaign import lose_shard, play_stage
+from tools.ui import PlayerInput
 
 
 def verify(output, *, backend='pyglet', recovery=False, budget=None):

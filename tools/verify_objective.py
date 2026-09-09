@@ -11,7 +11,7 @@ os.environ["SAGA2D_SILENT"] = "1"
 
 from eador.app import create_game
 from eador.encounter_scene import EncounterScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 from eador.scene import BattleScene, ChoiceScene, ResultScene, ShardScene, TitleScene
 
 

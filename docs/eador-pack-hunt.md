@@ -48,7 +48,7 @@ relabeled with an older version number.
 
 ## Three purchased manual plans
 
-The source and native verifiers use `tools/eador_hunt_campaign.py`:
+The source and native verifiers use `tools/hunt_campaign.py`:
 `prepare_pack_hunt(state=None)` and `hunt_route(state, approach, orders_type=...)`
 replay the same Commander army; `prepare_hunt_spears(state=None)` and
 `spear_hunt_route` provide a distinct Warrior plan. Preparation uses ordinary
@@ -90,7 +90,7 @@ hero position, missing attempt or missing defender data.
 
 ## Real controls and reliability evidence
 
-`tools/verify_eador_pack_hunt.py` reuses the existing `PlayerOrders` rather than
+`tools/verify_pack_hunt.py` reuses the existing `PlayerOrders` rather than
 implementing a second battle driver. It compares and cancels the briefing,
 accepts the selected fee, executes each manual order through keyboard/mouse,
 checks exact forecasts and save reloads, returns through the result/reward
@@ -129,10 +129,10 @@ hashes they tested; later content changes require their own verification.
 
 ```sh
 python -m pytest tests/eador/test_pack_hunt.py tests/eador/test_hunt_journey_scene.py -q
-python tools/verify_eador_pack_hunt.py --plan compact --output /tmp/hunt-free
-python tools/verify_eador_pack_hunt.py --plan lure --output /tmp/hunt-paid
-python tools/verify_eador_pack_hunt.py --plan spears --output /tmp/hunt-spears
-python tools/fuzz_eador.py --campaigns 300 --scenes 20 --events 10000 --steps 180 --report /tmp/hunt-fuzz.json
+python tools/verify_pack_hunt.py --plan compact --output /tmp/hunt-free
+python tools/verify_pack_hunt.py --plan lure --output /tmp/hunt-paid
+python tools/verify_pack_hunt.py --plan spears --output /tmp/hunt-spears
+python tools/fuzz.py --campaigns 300 --scenes 20 --events 10000 --steps 180 --report /tmp/hunt-fuzz.json
 ```
 
 This tranche stops at Pack Hunt. Broken Observatory and the remaining

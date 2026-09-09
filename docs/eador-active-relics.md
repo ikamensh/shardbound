@@ -20,7 +20,7 @@ Every new relic sells for 45 gold; its value is still a balance hypothesis.
 
 ## Public earned journeys
 
-`tools/eador_relic_campaign.py` uses ordinary purchases, travel, combat, rewards,
+`tools/relic_campaign.py` uses ordinary purchases, travel, combat, rewards,
 equipment and linked departures. No inventory, treasury, XP or troop injection
 prepares these journeys. `tests/eador/test_active_relics.py` reloads after every
 manual order and validates final campaign resolution.
@@ -108,8 +108,8 @@ verifier owns native equipment, departure, preview and command presentation.
 
 ```sh
 uv run pytest -q
-uv run python tools/stress_eador_relics.py --policies 100 --report /tmp/relic-orders.json
-uv run python tools/fuzz_eador.py --campaigns 300 --scenes 0 --steps 120 --report /tmp/relic-campaigns.json
+uv run python tools/stress_relics.py --policies 100 --report /tmp/relic-orders.json
+uv run python tools/fuzz.py --campaigns 300 --scenes 0 --steps 120 --report /tmp/relic-campaigns.json
 ```
 
 Raw evidence: [earned orders](evidence/relics-earned-stress.json),
@@ -143,7 +143,7 @@ The forecasts and result screens were inspected; final forecast PNGs are also
 byte-identical to the corresponding previously inspected captures. The tactical
 limitations documented above still apply.
 
-`tools/eador_ui.py` now refuses unadapted campaign/battle methods instead of
+`tools/ui.py` now refuses unadapted campaign/battle methods instead of
 forwarding a mutating call into the model behind its screen. Regression tests
 reproduce this former bypass with a ready recovery and a legal battle move.
 Explicit departure support selects the visible offer and two-relic retinue;
@@ -152,10 +152,10 @@ The strict-driver source passed **904 full tests**. The integrated earned-stress
 tool also passed a bounded eight-continuation check after its merge.
 
 ```sh
-uv run python tools/verify_eador_relics.py --relic veil_censer --output /tmp/censer
-uv run python tools/verify_eador_relics.py --relic porter_rune --output /tmp/rune
-uv run python tools/verify_eador_relics.py --relic mirror_badge --output /tmp/badge
-uv run python tools/verify_eador_relics.py --relic vanguard_drum --output /tmp/drum
+uv run python tools/verify_relics.py --relic veil_censer --output /tmp/censer
+uv run python tools/verify_relics.py --relic porter_rune --output /tmp/rune
+uv run python tools/verify_relics.py --relic mirror_badge --output /tmp/badge
+uv run python tools/verify_relics.py --relic vanguard_drum --output /tmp/drum
 ```
 
 These are source-mode native journeys. The preserved opening-playtest Mac

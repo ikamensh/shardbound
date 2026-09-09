@@ -5,7 +5,7 @@ import pytest
 @pytest.mark.parametrize('plan,rounds,party', [('western', 4, 6), ('western-heal', 5, 6),
                                                ('northern', 5, 6), ('scout', 5, 6)])
 def test_paid_screen_controls_preserve_saved_orders_and_claim_the_reward_once(tmp_path, plan, rounds, party):
-    from tools.verify_eador_screen import verify
+    from tools.verify_screen import verify
 
     report = verify(tmp_path, backend='mock', plan=plan)
     assert report['outcome_reason'] == 'rout' and report['battle_rounds'] == rounds
@@ -20,7 +20,7 @@ def test_paid_screen_controls_preserve_saved_orders_and_claim_the_reward_once(tm
 
 
 def test_failed_screen_controls_keep_losses_and_fund_replacements_before_reward(tmp_path):
-    from tools.verify_eador_screen import verify
+    from tools.verify_screen import verify
 
     report = verify(tmp_path, backend='mock', plan='failed-retry')
     failed = report['failed_attempt']

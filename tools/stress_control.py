@@ -22,8 +22,8 @@ sys.path.insert(0, str(ROOT))
 from eador.battle import Battle
 from eador.model import BUILDINGS, HERO_CLASSES, Hero, State, Troop, UNITS
 from eador.worldgen import THEMES
-from tools.eador_sources import source_name
-from tools.audit_eador_economy import Trial
+from tools.sources import framework_sources, source_name
+from tools.audit_economy import Trial
 from saga2d.testing.cpu_budget import CpuBudget
 
 PLANS = {
@@ -190,9 +190,9 @@ def main():
         budget = CpuBudget(args.cpu_percent)
     except ValueError as error:
         parser.error(str(error))
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
-                      Path(__file__).resolve(), ROOT / 'tools/audit_eador_economy.py',
-                      ROOT / 'tools/eador_campaign.py'])
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
+                      Path(__file__).resolve(), ROOT / 'tools/audit_economy.py',
+                      ROOT / 'tools/campaign.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     report = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'dirty_at_start': subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines(),
@@ -210,8 +210,8 @@ def main():
                     campaigns.append(ControlTrial(seed, hero_class, theme, plan, budget=budget).run())
         print(f'{len(campaigns)} campaigns exercised', flush=True)
     report.update(metrics=dict(metrics), campaigns=campaigns, elapsed_seconds=time.perf_counter() - started,
-                  source_files_changed=[str(p.relative_to(ROOT)) for p in sources
-                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]])
+                  source_files_changed=[source_name(p) for p in sources
+                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]])
     assert not report['source_files_changed']
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)

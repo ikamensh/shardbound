@@ -78,8 +78,8 @@ the same explicit recovery semantics.
 
 ```bash
 uv run python -m pytest tests/eador/test_codex_scale.py tests/eador/test_codex.py tests/eador/test_preferences_scene.py -q
-uv run python tools/verify_eador_reading.py --matrix --output /tmp/shardbound-reading
-uv run python tools/verify_eador_guidance.py --matrix --output /tmp/shardbound-guidance
+uv run python tools/verify_reading.py --matrix --output /tmp/shardbound-reading
+uv run python tools/verify_guidance.py --matrix --output /tmp/shardbound-guidance
 ```
 
 The public integration journeys cover visible controls and keyboard parity,
@@ -152,7 +152,7 @@ paging subsystem.
 
 The Guide tracer built on `dc63810` uses native input from title through Settings,
 Cancel, Apply, Codex return, three native window sizes and settings restart.
-`tools/verify_eador_guidance.py` retains frames and checks reading bounds and
+`tools/verify_guidance.py` retains frames and checks reading bounds and
 text/control separation. Its 100/125 Guide and Settings frames were inspected on
 macOS Retina; the historical Codex matrix above remains separately attributed.
 
@@ -199,7 +199,7 @@ provinces and exact resource shortages; clicking or pressing their number does
 not issue a command or rotate saves. The single existing disk preference and its
 recovery semantics remain unchanged.
 
-Run `python tools/verify_eador_catalog.py --output /tmp/shardbound-catalog` for
+Run `python tools/verify_catalog.py --output /tmp/shardbound-catalog` for
 the native purchase, Settings and restart tracer plus all Build/Recruit pages at
 100/125 in 1280×720, 1280×800 and 1920×1080 windows.
 
@@ -229,7 +229,7 @@ It does not duplicate resource eligibility rules in the view. Ordinary resting
 remains visible for comparison. Infusion and equipment use the same existing
 checkpoint mechanism; the reading preference remains outside campaign saves.
 
-`tools/verify_eador_hero.py` drives keyboard and mouse from the same paid Wizard
+`tools/verify_hero.py` drives keyboard and mouse from the same paid Wizard
 checkpoint, checks disabled repeats and exact reloads, then traverses old and
 earned collections at both sizes in all three windows. Its paid preparations
 cover all twelve relics and both disciplines for all four heroes, including an
@@ -257,7 +257,7 @@ casualties. Only Return to shard resolves that battle. Immediate save/load
 errors reflow in the panel and keep the current outcome and damaged bytes intact.
 The title and navigation controls retain their ordinary sizes.
 
-`tools/verify_eador_results.py` earns eight actual states through public commands:
+`tools/verify_results.py` earns eight actual states through public commands:
 rout, hero death, extraction, holding a seal, both deadline failures, shard
 victory and loss of the capital. It inspects all forty-eight size/window
 combinations and drives an earned victory through Settings, Codex, Saves,

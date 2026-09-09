@@ -64,7 +64,7 @@ def test_packaged_map_controls_read_and_spend_real_orders_then_restore_the_smoke
     from eador.__main__ import create_session
     from eador.preferences import load_preferences, reading_scale
     from eador.scene import ShardScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     game, title = create_session(['--data-dir', str(tmp_path / 'player')], backend='mock', visible=False)
     try:

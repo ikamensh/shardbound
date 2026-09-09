@@ -1,7 +1,7 @@
 """Paced real-Pyglet reliability soak; freezes source before importing the game.
 
-    uv run python tools/soak_eador.py --seconds 60 --input-interval .05
-    uv run python tools/soak_eador.py --seconds 7200 --output dist/soak/candidate
+    uv run python tools/soak.py --seconds 60 --input-interval .05
+    uv run python tools/soak.py --seconds 7200 --output dist/soak/candidate
 
 Progress is durable in progress.json. SIGINT/SIGTERM stop the run, close the
 window, release caffeinate, and write a cancelled report. This is an automated
@@ -35,6 +35,7 @@ import traceback
 
 
 ROOT = Path(__file__).resolve().parents[1]
+from tools.sources import FRAMEWORK
 
 
 def write_json(path, value):
@@ -55,16 +56,18 @@ def freeze(output, revision):
     source.mkdir()
     commit = subprocess.check_output(["git", "rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}"],
                                      cwd=ROOT, text=True).strip()
-    archive = subprocess.check_output(["git", "archive", commit, "eador", "saga2d", "pyproject.toml", "uv.lock"], cwd=ROOT)
+    archive = subprocess.check_output(["git", "archive", commit, "eador", "pyproject.toml", "uv.lock"], cwd=ROOT)
     with tarfile.open(fileobj=io.BytesIO(archive)) as files:
         files.extractall(source, filter="data")
+    for name, package in FRAMEWORK.items():  # the framework lives in sibling repositories: copy the installed packages
+        shutil.copytree(package, source / name, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     (source / "tools").mkdir()
-    shutil.copyfile(__file__, source / "tools" / "soak_eador.py")
+    shutil.copyfile(__file__, source / "tools" / "soak.py")
     manifest = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": commit,
-        "source_origin": "git archive; working game/framework edits are excluded; harness is copied and independently hashed",
-        "game_framework_last_change": subprocess.check_output(["git", "log", "-1", "--format=%H", commit, "--", "eador", "saga2d"], cwd=ROOT, text=True).strip(),
+        "source_origin": "git archive of the game plus the installed framework packages; working game edits are excluded; harness is copied and independently hashed",
+        "game_framework_last_change": subprocess.check_output(["git", "log", "-1", "--format=%H", commit, "--", "eador"], cwd=ROOT, text=True).strip(),
         "working_tree_status": subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).splitlines(),
         "source_sha256": hashes(source),
         "python": sys.version, "python_executable": sys.executable,
@@ -431,7 +434,7 @@ def main():
     args.output = args.output.resolve()
     if not args.worker:
         source = freeze(args.output, args.revision)
-        os.execv(sys.executable, [sys.executable, str(source / "tools" / "soak_eador.py"), "--worker",
+        os.execv(sys.executable, [sys.executable, str(source / "tools" / "soak.py"), "--worker",
                                 "--output", str(args.output), "--seconds", str(args.seconds),
                                 "--input-interval", str(args.input_interval)])
     signal.signal(signal.SIGTERM, cancel_run)

@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.idea/
+.claude/*
+!.claude/launch.json
+*.png
+*.gif
+docs/evidence/
+
+# Shardbound ships its prebuilt art; keep it tracked despite the PNG rule above
+!eador/assets/**

@@ -25,12 +25,12 @@ from eador.scene import BattleScene, ShardScene, TitleScene
 from eador.ui import icon_path
 from saga2d import Button, Image, Label, Row
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name
+from tools.ui import PlayerInput
 
 
 def _fingerprints():
-    paths = {Path(__file__), ROOT / 'tools/eador_ui.py',
+    paths = {Path(__file__), ROOT / 'tools/ui.py',
              *(ROOT / 'eador').glob('*.py'), *framework_sources(),
              *(ROOT / 'eador/assets').rglob('*.json')}
     paths.update((ROOT / 'eador/assets/images/icons').glob('*.png'))

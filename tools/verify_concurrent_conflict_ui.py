@@ -24,8 +24,8 @@ from eador.concurrent_playback import RecordedCombatPlayback
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ChoiceScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.verify_eador_shard_look import PacedInput
+from tools.sources import framework_sources, source_name
+from tools.verify_shard_look import PacedInput
 
 
 def verify(output, *, backend='pyglet'):
@@ -34,8 +34,8 @@ def verify(output, *, backend='pyglet'):
     budget = CpuBudget(25)
     started, cpu_started = time.monotonic(), time.process_time()
     paths = sorted((ROOT / 'eador').glob('*.py')) + framework_sources()
-    paths += [Path(__file__).resolve(), ROOT / 'tools/verify_eador_shard_look.py',
-              ROOT / 'tools/eador_ui.py']
+    paths += [Path(__file__).resolve(), ROOT / 'tools/verify_shard_look.py',
+              ROOT / 'tools/ui.py']
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     match = ConcurrentCampaign.new(7, heroes=('Warrior', 'Warrior'))
     report = dict(backend=backend, local_seat=1, peer_seat=0, completed=False,
@@ -251,7 +251,7 @@ def verify(output, *, backend='pyglet'):
                       autoplay_commands=sum(entry['command']['action'] == 'battle.auto_turn'
                                             for entry in report['commands']),
                       source_unchanged=all(hashlib.sha256(path.read_bytes()).hexdigest() ==
-                                           hashes[str(path.relative_to(ROOT))] for path in paths),
+                                           hashes[source_name(path)] for path in paths),
                       game_closed=game is not None and not game.scenes and not game.running,
                       sockets_closed=host is not None and client is not None and host.closed and client.closed,
                       wall_seconds=time.monotonic() - started, cpu_seconds=time.process_time() - cpu_started,

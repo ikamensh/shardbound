@@ -1,6 +1,6 @@
 """Audit pacing must preserve the real campaign decisions it measures."""
 
-from tools.audit_eador_difficulty import DifficultyTrial
+from tools.audit_difficulty import DifficultyTrial
 
 
 def test_budgeted_paid_campaign_preserves_all_results_and_yields_between_orders():

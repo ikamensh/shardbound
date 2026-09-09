@@ -6,7 +6,7 @@ import pytest
 
 from eador.model import RuleError, State, UNITS
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_campaign import finish_battle
+from tools.campaign import finish_battle
 
 
 def completed_paid_conquest():
@@ -84,7 +84,7 @@ def test_standalone_army_result_changes_only_the_supplied_hero():
 def test_real_paid_defeat_removes_casualties_without_advancement_and_restores_the_hero_floor():
     """The earned Observatory formation loses a Militia to retaliation, then falls to defenders."""
     from eador.battle_results import apply_army_result
-    from tools.eador_observatory_campaign import prepare_observatory
+    from tools.observatory_campaign import prepare_observatory
 
     budget = CpuBudget(25)
     state = prepare_observatory(budget=budget)

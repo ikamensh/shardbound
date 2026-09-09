@@ -7,7 +7,7 @@ fresh recruit in that formation slot. There is no refund, reserve or XP transfer
 All subsequent orders and saved battle continuations use the actual game API.
 This is retained experiment code, not an available player command.
 
-Run: uv run python tools/prototype_eador_army_replacement.py
+Run: uv run python tools/prototype_army_replacement.py
 """
 from __future__ import annotations
 
@@ -24,8 +24,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from eador.model import BUILDINGS, RECRUITABLE, RuleError, State, UNITS
-from tools.eador_sources import source_name
-from tools.audit_eador_difficulty import DifficultyTrial
+from tools.sources import source_name
+from tools.audit_difficulty import DifficultyTrial
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -219,8 +219,8 @@ def main():
         complete_camp.build(building)
     examples['late_all_buildings'] = dict(state=json.loads(complete_camp.to_json()))
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__),
-                      *[ROOT / 'tools' / name for name in ('audit_eador_difficulty.py', 'audit_eador_economy.py',
-                                                         'stress_eador_control.py', 'eador_campaign.py')]])
+                      *[ROOT / 'tools' / name for name in ('audit_difficulty.py', 'audit_economy.py',
+                                                         'stress_control.py', 'campaign.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     runs = {}
     for name, variants in {
@@ -262,7 +262,7 @@ def main():
                   derived_input=dict(source='late_full_roster', commands=[['build', 'archery'], ['build', 'mage_tower']],
                                      state=examples['late_all_buildings']['state']),
                   investment=investment_observation(examples['late_full_roster']['state'], budget=budget), runs=runs)
-    assert all(hashlib.sha256(p.read_bytes()).hexdigest() == hashes[str(p.relative_to(ROOT))] for p in sources)
+    assert all(hashlib.sha256(p.read_bytes()).hexdigest() == hashes[source_name(p)] for p in sources)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     encoded = (json.dumps(report, indent=2, sort_keys=True) + '\n').encode()
     args.report.write_bytes(gzip.compress(encoded, mtime=0) if args.report.suffix == '.gz' else encoded)

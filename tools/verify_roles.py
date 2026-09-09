@@ -10,8 +10,8 @@ os.environ['SAGA2D_SILENT'] = '1'
 
 from eador.app import create_game
 from eador.scene import BattleScene, ChoiceScene, ResultScene, TitleScene
-from tools.eador_roles_campaign import prepare_support_watch
-from tools.eador_ui import PlayerInput
+from tools.roles_campaign import prepare_support_watch
+from tools.ui import PlayerInput
 
 
 def verify(output, *, backend='pyglet'):

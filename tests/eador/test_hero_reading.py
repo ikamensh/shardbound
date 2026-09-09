@@ -8,14 +8,14 @@ from eador.content import RELICS
 from eador.model import State
 from eador.scene import HeroScene, ShardScene
 from eador.settings_scene import SettingsScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_equipment_reports_checkpoint_failure_without_hiding_or_overwriting_it(tmp_path):
     """An earned relic can be removed once; damaged autosaves remain intact and the error is visible immediately."""
     from eador.persistence import AUTO_SLOTS
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     state = State.new(7, 'Wizard')
     state.explore()
@@ -100,7 +100,7 @@ def test_hero_reading_preserves_visible_relic_and_saved_equipment_through_reflow
 def test_paid_tower_infusion_uses_the_visible_quote_once_and_saves_the_result(tmp_path, method):
     """Purchase the Tower and win its mana deficit; a Hero command spends crystals/action, not a turn."""
     from eador.scene import TitleScene
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     player = PlayerInput(game)
@@ -136,7 +136,7 @@ def test_paid_tower_infusion_uses_the_visible_quote_once_and_saves_the_result(tm
 
 def test_earned_hero_collections_keep_all_relics_readable_at_each_size(tmp_path):
     """Actual earned skills/relics, an old collection and an empty hero remain complete through reflow."""
-    from tools.verify_eador_hero import hero_pages, prepared_heroes
+    from tools.verify_hero import hero_pages, prepared_heroes
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:

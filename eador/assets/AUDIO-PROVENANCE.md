@@ -1,7 +1,7 @@
 # Audio asset provenance
 
 These WAV files are original Shardbound compositions generated from
-`eador/sound.py` by `tools/build_eador_audio.py`, using the project's shared
+`eador/sound.py` by `tools/build_audio.py`, using the project's shared
 `sagaforge.synth` sample primitives. No external recordings, sampled instruments,
 Eador assets or externally sourced melodies are included.
 

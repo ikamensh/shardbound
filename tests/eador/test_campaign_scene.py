@@ -3,7 +3,7 @@
 from eador.app import create_game
 from eador.scene import ShardScene, TitleScene
 from eador.model import State
-from tools.eador_linked_campaign import play_stage
+from tools.linked_campaign import play_stage
 import pytest
 
 
@@ -54,7 +54,7 @@ def test_linked_title_and_saved_departure_preserve_the_selected_retinue(tmp_path
 @pytest.mark.parametrize('middle,finale,recovery', [('rootward', 'gate', False), ('foundries', 'throne', True)])
 def test_linked_campaign_can_be_completed_with_visible_input_and_exact_saved_transitions(tmp_path, middle, finale, recovery):
     """Replay the native verifier: real tactics, offered challenges, retinues, recovery and ending."""
-    from tools.verify_eador_campaign import verify
+    from tools.verify_campaign import verify
     report = verify(tmp_path, backend='mock', middle=middle, finale=finale, recovery=recovery)
     assert len(report['records']) == 3 and report['exact_save_reloads'] >= 5
 
@@ -86,7 +86,7 @@ def test_failed_departure_checkpoint_preserves_the_offer_and_retinue_for_retry(t
 def test_recovery_can_be_declined_and_its_ending_resumed(tmp_path):
     """Declining the one recovery reaches a saved ending with a working return-to-title action."""
     from eador.campaign_scene import CampaignScene
-    from tools.verify_eador_campaign import lose_shard
+    from tools.verify_campaign import lose_shard
     state = State.new_campaign()
     lose_shard(state)
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
@@ -129,7 +129,7 @@ def test_current_campaign_plan_locates_required_provinces_without_spending_actio
 def test_every_earned_relic_can_join_the_retinue_using_only_mouse_controls(tmp_path):
     """An expedition that earns more than one page of relics can carry its last treasure."""
     from saga2d import Button
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     from eador.content import RELICS
     state = State.new_campaign(0)
     route = [state.hero.pos] + [p for p in sorted(state.provinces) if p not in (state.hero.pos, (2, 0))] + [(2, 0)]
@@ -162,5 +162,5 @@ def test_every_earned_relic_can_join_the_retinue_using_only_mouse_controls(tmp_p
 @pytest.mark.parametrize('recovery', [False, True])
 def test_damaged_autosaves_do_not_trap_a_transition_after_an_exact_manual_save(tmp_path, recovery):
     """The screen's suggested manual-save recovery actually permits the blocked transition."""
-    from tools.verify_eador_checkpoint import verify
+    from tools.verify_checkpoint import verify
     verify(tmp_path, backend='mock', recovery=recovery)

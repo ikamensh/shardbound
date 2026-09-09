@@ -5,7 +5,7 @@ from pathlib import Path
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ShardScene
-from tools.verify_eador_rival_reading import check_rival
+from tools.verify_rival_reading import check_rival
 
 
 def press(game, key):
@@ -82,8 +82,8 @@ def test_rival_reading_size_cancel_apply_and_restart_preserve_saved_forces(tmp_p
     from saga2d import Label
     from eador.preferences import reading_scale
     from eador.rival_scene import RivalScene
-    from tools.eador_ui import PlayerInput
-    from tools.verify_eador_guidance import check_reading_layout
+    from tools.ui import PlayerInput
+    from tools.verify_guidance import check_reading_layout
 
     state = State.new(7)
     for _ in range(state.rival.turns_until_action):
@@ -130,5 +130,5 @@ def test_rival_reading_size_cancel_apply_and_restart_preserve_saved_forces(tmp_p
 
 def test_earned_rival_operations_and_old_rules_remain_complete_at_both_reading_sizes(tmp_path):
     """Every current order, wounded survivor, paid refit and old-rule warning is read without issuing a command."""
-    from tools.verify_eador_rival_reading import verify
+    from tools.verify_rival_reading import verify
     verify(tmp_path, backend='mock')

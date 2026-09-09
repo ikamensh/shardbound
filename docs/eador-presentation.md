@@ -155,11 +155,11 @@ measurement, not a runtime battery measurement.
 Run the compact visual journeys with:
 
 ```bash
-uv run python tools/verify_eador_presentation.py --output /tmp/shardbound-presentation
-uv run python tools/verify_eador_effects.py --output /tmp/shardbound-effects
-uv run python tools/verify_eador_icons.py --output /tmp/shardbound-icons
-uv run python tools/verify_eador_characters.py --output /tmp/shardbound-characters
-uv run python tools/verify_eador_tactical_layout.py --output /tmp/shardbound-tactics
+uv run python tools/verify_presentation.py --output /tmp/shardbound-presentation
+uv run python tools/verify_effects.py --output /tmp/shardbound-effects
+uv run python tools/verify_icons.py --output /tmp/shardbound-icons
+uv run python tools/verify_characters.py --output /tmp/shardbound-characters
+uv run python tools/verify_tactical_layout.py --output /tmp/shardbound-tactics
 ```
 
 The static journey opens all three worlds through native controls, checks

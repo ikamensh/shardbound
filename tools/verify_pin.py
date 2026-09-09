@@ -16,8 +16,8 @@ from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_campaign import finish_battle, march_to, provision_army, rest
-from tools.eador_ui import PlayerInput
+from tools.campaign import finish_battle, march_to, provision_army, rest
+from tools.ui import PlayerInput
 
 
 def prepare_watch_bell(*, budget=None):

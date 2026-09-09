@@ -1,8 +1,8 @@
 """Paid Causeway preparations and manual orders reusable by input adapters."""
 from eador.model import BUILDINGS, State
-from tools.eador_campaign import march_to, rest
-from tools.eador_explorer_campaign import prepare_explorer
-from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure
+from tools.campaign import march_to, rest
+from tools.explorer_campaign import prepare_explorer
+from tools.extraction_campaign import AdventureOrders, prepare_adventure
 
 
 def prepare_causeway(hero_class='Commander', *, seed=7, difficulty='standard', mana=0, state=None, budget=None):

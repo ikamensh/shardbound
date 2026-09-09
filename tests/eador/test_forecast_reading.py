@@ -5,7 +5,7 @@ from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene
 from eador.settings_scene import SettingsScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def test_larger_tactical_forecast_preserves_aim_and_matches_the_real_spell(tmp_path):

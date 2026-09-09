@@ -5,7 +5,7 @@ from eador.app import create_game
 from eador.model import HERO_CLASSES
 from eador.preferences import reading_scale
 from eador.scene import ShardScene, TitleScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def test_title_reading_preserves_configuration_and_starts_the_selected_realm(tmp_path):
@@ -34,13 +34,13 @@ def test_title_reading_preserves_configuration_and_starts_the_selected_realm(tmp
 
 def test_every_title_configuration_and_failed_load_remains_readable_through_input(tmp_path):
     """The complete public journey also checks files, backups and both launch modes."""
-    from tools.verify_eador_title import verify
+    from tools.verify_title import verify
     verify(tmp_path / 'title', backend='mock')
 
 
 def test_title_keeps_complete_directory_error_readable_with_a_long_valid_save_path(tmp_path):
     """A filesystem failure must not become a layout crash or alter the next run."""
-    from tools.verify_eador_guidance import check_reading_layout
+    from tools.verify_guidance import check_reading_layout
     directory = tmp_path
     while len(str(directory)) < 700:
         directory /= 'a-realm-with-a-long-storage-directory'

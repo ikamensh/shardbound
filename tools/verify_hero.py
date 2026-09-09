@@ -21,10 +21,10 @@ from eador.persistence import AUTO_SLOTS
 from eador.preferences import reading_scale
 from eador.scene import HeroScene, ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_campaign import finish_battle, play_campaign
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.campaign import finish_battle, play_campaign
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -72,8 +72,8 @@ def verify(output, *, backend='pyglet', budget=None):
     budget = CpuBudget(25) if budget is None else budget
     output.mkdir(parents=True, exist_ok=True)
     paths = [*ROOT.glob('eador/**/*.py'), *framework_sources(),
-             ROOT / 'tools/verify_eador_hero.py', ROOT / 'tools/eador_ui.py',
-             ROOT / 'tools/eador_campaign.py', ROOT / 'tools/verify_eador_guidance.py',
+             ROOT / 'tools/verify_hero.py', ROOT / 'tools/ui.py',
+             ROOT / 'tools/campaign.py', ROOT / 'tools/verify_guidance.py',
              ROOT / 'tests/eador/fixtures/v11_relic_collection.json']
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     native, metrics, outcomes = backend == 'pyglet', [], []
@@ -185,7 +185,7 @@ def verify(output, *, backend='pyglet', budget=None):
                 restarted._teardown()
             finally:
                 restarted.backend.quit()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   backend=backend, source_sha256=hashes, source_unchanged=True, input_events=events,
                   cpu_percent=budget.percent,

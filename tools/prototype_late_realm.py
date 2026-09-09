@@ -19,10 +19,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from eador.model import State, UNITS
-from tools.eador_sources import source_name
-from tools.audit_eador_difficulty import DifficultyTrial
+from tools.sources import source_name
+from tools.audit_difficulty import DifficultyTrial
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_campaign import finish_battle
+from tools.campaign import finish_battle
 
 
 class MeasuredState(State):
@@ -197,8 +197,8 @@ def main():
     example_path = ROOT / 'docs/evidence/crystal-service-comparison.examples.json'
     examples = json.loads(example_path.read_text())
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__).resolve(),
-                      *(ROOT / 'tools' / name for name in ('audit_eador_difficulty.py', 'audit_eador_economy.py',
-                                                         'stress_eador_control.py', 'eador_campaign.py'))])
+                      *(ROOT / 'tools' / name for name in ('audit_difficulty.py', 'audit_economy.py',
+                                                         'stress_control.py', 'campaign.py'))])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     plans = []
     for seed, hero, theme, mode in ((0, 'Commander', 'frontier', 'standard'),
@@ -230,8 +230,8 @@ def main():
                               'outpost-o1': {'fresh_troops': 2, 'actions': 1, 'price_and_upkeep': 'ordinary public costs',
                                              'destination': 'adjacent owned province', 'automatic_healing': False}},
                   plans=plans, late_current_cash=late, pursuit=outposts)
-    report['source_files_changed_during_run'] = [str(p.relative_to(ROOT)) for p in sources
-                                                if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]]
+    report['source_files_changed_during_run'] = [source_name(p) for p in sources
+                                                if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]]
     assert not report['source_files_changed_during_run']
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')

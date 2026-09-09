@@ -1,6 +1,6 @@
 """Seeded discoveries vary choices without changing earned worlds or realm rules."""
 
-from tools.audit_eador_discoveries import audit_worlds
+from tools.audit_discoveries import audit_worlds
 
 
 def test_new_discoveries_preserve_300_saved_worlds_and_vary_reachable_locations():

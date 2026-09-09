@@ -16,8 +16,8 @@ sys.path.insert(0, str(ROOT))
 from eador.model import HERO_CLASSES, State
 from eador.worldgen import NORTH_ROAD, SOUTH_ROAD, THEMES
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import source_name
-from tools.eador_campaign import CampaignMetrics, play_campaign
+from tools.sources import source_name
+from tools.campaign import CampaignMetrics, play_campaign
 
 
 def audit(seed_count: int, *, budget=None) -> dict:
@@ -41,7 +41,7 @@ def audit(seed_count: int, *, budget=None) -> dict:
                     **{column: round(mean(row[column] for row in group), 2) for column in columns})
                for (theme, route), group in groups.items()]
     sources = [*sorted((ROOT / 'eador').glob('*.py')), Path(__file__),
-               ROOT / 'tools/eador_campaign.py']
+               ROOT / 'tools/campaign.py']
     return dict(seed_count=seed_count, campaigns=len(rows), cpu_percent=budget.percent if budget else None,
                 source_sha256={source_name(path): hashlib.sha256(path.read_bytes()).hexdigest()
                                for path in sources},

@@ -1,5 +1,5 @@
 from eador.model import State
-from tools.eador_screen_campaign import prepare_screen, screen_western_route
+from tools.screen_campaign import prepare_screen, screen_western_route
 from tests.eador.test_extraction_journeys import Journey
 from tests.eador.test_pack_hunt import assert_one_rout_reward
 
@@ -22,7 +22,7 @@ def test_paid_western_screen_relocates_under_smoke_and_wins_with_saved_orders():
 
 def test_saved_old_grove_and_caravan_keep_their_exact_active_battle_continuations():
     from pathlib import Path
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     fixtures = Path(__file__).parent / 'fixtures'
     for kind in ('grove', 'caravan'):
@@ -61,7 +61,7 @@ class ScreenJourney(Journey):
 
 
 def test_same_paid_party_uses_distinct_orders_for_the_two_free_assemblies():
-    from tools.eador_screen_campaign import screen_northern_route
+    from tools.screen_campaign import screen_northern_route
 
     prepared = prepare_screen()
     original = prepared.to_json()
@@ -79,7 +79,7 @@ def test_same_paid_party_uses_distinct_orders_for_the_two_free_assemblies():
 
 
 def test_scout_party_can_deny_smoke_before_its_charge_without_a_special_relic():
-    from tools.eador_screen_campaign import screen_scout_route
+    from tools.screen_campaign import screen_scout_route
 
     state = prepare_screen('Scout')
     starting_mana = state.hero.mana
@@ -96,7 +96,7 @@ def test_scout_party_can_deny_smoke_before_its_charge_without_a_special_relic():
 
 def _scout_disables_sapper():
     """Stop the actual Scout route before its first enemy phase."""
-    from tools.eador_screen_campaign import screen_scout_opening
+    from tools.screen_campaign import screen_scout_opening
 
     state = prepare_screen('Scout'); state.explore(approach='northern')
     play = Journey(state)
@@ -105,7 +105,7 @@ def _scout_disables_sapper():
 
 
 def test_retreat_keeps_dead_sapper_and_wounded_guards_when_changing_assembly():
-    from tools.eador_campaign import march_to, rest
+    from tools.campaign import march_to, rest
     from saga2d.testing.cpu_budget import CpuBudget
 
     play = _scout_disables_sapper()
@@ -133,7 +133,7 @@ def test_retreat_keeps_dead_sapper_and_wounded_guards_when_changing_assembly():
 
 
 def test_real_defeat_keeps_casualties_and_cannot_reward_the_sapper_kill_until_a_paid_retry_wins():
-    from tools.eador_campaign import rest, march_to
+    from tools.campaign import rest, march_to
     from saga2d.testing.cpu_budget import CpuBudget
 
     play = _scout_disables_sapper()

@@ -9,9 +9,9 @@ from eador.app import create_game
 from eador.content import RELICS, SITES
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_reading import check_page
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_reading import check_page
 
 
 @pytest.mark.parametrize('world', ['new', 'old_locations', 'cleared_sources'])

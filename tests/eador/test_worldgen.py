@@ -26,7 +26,7 @@ def test_elderwild_offers_a_richer_dry_detour_through_a_wolf_and_goblin_shard():
 
 def test_an_elderwild_campaign_can_win_by_developing_and_defending_a_realm():
     """New guarding parties remain beatable through the ordinary campaign commands."""
-    from tools.eador_campaign import play_campaign
+    from tools.campaign import play_campaign
     state = play_campaign(State.new(7, theme='elderwild'))
     assert state.status == 'victory'
     assert state.hero.level > 1
@@ -144,7 +144,7 @@ def test_all_heroes_can_win_opening_adventures_and_each_adjacent_conquest_in_eve
     """A sensible first purchase leaves every opening direction viable, across 100 seeds."""
     from eador.model import HERO_CLASSES
     from eador.worldgen import THEMES
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     from saga2d.testing.cpu_budget import CpuBudget
     budget = CpuBudget(25)
     for theme in THEMES:
@@ -168,7 +168,7 @@ def test_all_heroes_can_win_opening_adventures_and_each_adjacent_conquest_in_eve
 @pytest.mark.parametrize('route', [None, NORTH_ROAD, SOUTH_ROAD], ids=['direct', 'north', 'south'])
 def test_each_theme_and_hero_can_finish_by_exploring_either_flank_or_the_direct_road(theme, hero_class, route):
     """The route audit uses the same public campaign commands as this executable journey."""
-    from tools.eador_campaign import CampaignMetrics, play_campaign
+    from tools.campaign import CampaignMetrics, play_campaign
     metrics = CampaignMetrics()
     state = play_campaign(State.new(7, hero_class, theme=theme), route, metrics)
     assert state.status == 'victory' and state.theme == theme

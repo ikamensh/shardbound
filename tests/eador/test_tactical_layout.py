@@ -7,8 +7,8 @@ from eador.diagnostics import DiagnosticScene
 from eador.model import State
 from eador.scene import BattleScene, TitleScene
 from eador.ui import icon_path
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_compact_footer_enlarges_the_board_and_keeps_the_complete_log(tmp_path):
@@ -57,7 +57,7 @@ def test_compact_footer_enlarges_the_board_and_keeps_the_complete_log(tmp_path):
 
 def test_tactical_journey_preserves_earned_objectives_controls_and_saves(tmp_path):
     """The native route also runs through mock input, including earned pulses and a real save error."""
-    from tools.verify_eador_tactical_layout import verify
+    from tools.verify_tactical_layout import verify
 
     receipt = verify(tmp_path, backend='mock')
     assert len(receipt['captures']) == 8

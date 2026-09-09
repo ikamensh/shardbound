@@ -18,14 +18,14 @@ from eador.codex import CodexScene
 from eador.encounter_scene import EncounterScene
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ChoiceScene, ResultScene, ShardScene, TitleScene
-from tools.eador_sources import source_name
-from tools.audit_eador_extraction import PaidState
-from tools.eador_screen_campaign import (prepare_screen, screen_western_route,
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_extraction import PaidState
+from tools.screen_campaign import (prepare_screen, screen_western_route,
                                           screen_northern_route, screen_scout_route, screen_scout_opening)
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_reading import check_page
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
+from tools.verify_guidance import check_reading_layout
+from tools.verify_reading import check_page
 
 PLANS = ('western', 'western-heal', 'northern', 'scout', 'failed-retry')
 
@@ -109,7 +109,7 @@ def inspect_briefing(player):
 
 def failed_retry(state):
     """A real lost Scout attempt, paid recovery and a manual finite-roster retry."""
-    from tools.eador_campaign import rest, march_to
+    from tools.campaign import rest, march_to
 
     player = state.player
     source = state.hero.pos
@@ -173,12 +173,12 @@ def failed_retry(state):
 
 def verify(output, *, backend='pyglet', plan='western'):
     output.mkdir(parents=True, exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
                       *[ROOT / 'tools' / name for name in (
-                          'eador_campaign.py', 'eador_extraction_campaign.py', 'eador_control_campaign.py',
-                          'eador_roles_campaign.py', 'eador_screen_campaign.py', 'audit_eador_extraction.py',
-                          'eador_ui.py', 'verify_eador_extraction.py', 'verify_eador_control.py',
-                          'verify_eador_guidance.py', 'verify_eador_reading.py', 'verify_eador_screen.py')]])
+                          'campaign.py', 'extraction_campaign.py', 'control_campaign.py',
+                          'roles_campaign.py', 'screen_campaign.py', 'audit_extraction.py',
+                          'ui.py', 'verify_extraction.py', 'verify_control.py',
+                          'verify_guidance.py', 'verify_reading.py', 'verify_screen.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -235,7 +235,7 @@ def verify(output, *, backend='pyglet', plan='western'):
             assert state.to_json() == before and isinstance(game.scene, ShardScene)
             player.reload(before)
             player.capture('screen-reward-kept-once')
-            changed = [name for name, digest in hashes.items() if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest]
+            changed = [name for name, digest in hashes.items() if hashlib.sha256(source_path(name).read_bytes()).hexdigest() != digest]
             assert not changed
             report.update(input_activations=len(player.events), exact_save_reloads=player.reloads,
                           orders=play.orders, inputs=player.events, source_revision=revision,

@@ -30,7 +30,7 @@ def test_new_militia_ability_saves_while_a_real_v10_extraction_continues_exactly
     import json
     from pathlib import Path
     from eador.model import State
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     fresh = State.new(7); fresh.explore()
     assert any(u.can_rally for u in fresh.battle.units)
     assert State.from_json(fresh.to_json()).to_json() == fresh.to_json()

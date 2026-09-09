@@ -7,9 +7,9 @@ from eador.campaign_scene import CampaignPlanScene, campaign_targets
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ShardScene
-from tools.eador_linked_campaign import play_stage
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.linked_campaign import play_stage
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_earned_foundry_plan_reflows_without_spending_and_locates_its_saved_objectives(tmp_path):
@@ -63,6 +63,6 @@ def test_earned_foundry_plan_reflows_without_spending_and_locates_its_saved_obje
 
 def test_campaign_plan_keeps_actual_progress_recovery_and_finale_rules_readable(tmp_path):
     """All five earned contracts and a real recovered attempt preserve every target through reading and locating."""
-    from tools.verify_eador_campaign_plan import verify
+    from tools.verify_campaign_plan import verify
 
     verify(tmp_path, backend='mock')

@@ -19,10 +19,10 @@ from eador.model import HERO_CLASSES
 from eador.preferences import reading_scale
 from eador.scene import ShardScene, TitleScene
 from eador.worldgen import THEMES
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_saves import select_slot
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_saves import select_slot
 
 
 def title_choices(scene):
@@ -181,7 +181,7 @@ def verify(output, *, backend='pyglet'):
             events += replay.events
         finally:
             game._teardown(); game.backend.quit()
-    assert all(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == sha for name, sha in hashes.items())
+    assert all(hashlib.sha256(source_path(name).read_bytes()).hexdigest() == sha for name, sha in hashes.items())
     report = dict(about_views=about_views,
                   source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, backend=backend, layouts=matrix, input_activations=len(events), inputs=events)

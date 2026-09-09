@@ -18,7 +18,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.eador_sources import source_name
+from tools.sources import source_name
 from eador.model import BUILDINGS, RuleError, State, UNITS
 from saga2d.testing.cpu_budget import CpuBudget
 
@@ -263,7 +263,7 @@ class EarnedWindow:
         self.state, self.saved = state, None
 
     def __getattr__(self, name):
-        from tools.audit_eador_resource_breakpoints import COMMANDS
+        from tools.audit_resource_breakpoints import COMMANDS
         target = getattr(self.state, name)
         if name not in COMMANDS:
             return target
@@ -417,14 +417,14 @@ def authored_branch(encoded, plan, *, target_kind, wait_until=None, budget=None)
 
 def authored_comparison(args, *, budget=None):
     """Broaden the earlier experiment with existing authored targets and paid openings."""
-    from tools.audit_eador_difficulty import DifficultyTrial
+    from tools.audit_difficulty import DifficultyTrial
     from eador.model import HERO_CLASSES
     from eador.worldgen import THEMES
     from eador.difficulty import DIFFICULTIES
     target_by_theme = {'frontier': 'relief_column', 'elderwild': 'supply_cache', 'ruins': 'runebound_causeway'}
     sources = [*sorted((ROOT / 'eador').glob('*.py')), Path(__file__).resolve(),
-               *(ROOT / 'tools' / name for name in ('audit_eador_difficulty.py', 'audit_eador_economy.py',
-                 'audit_eador_resource_breakpoints.py', 'stress_eador_control.py', 'eador_campaign.py'))]
+               *(ROOT / 'tools' / name for name in ('audit_difficulty.py', 'audit_economy.py',
+                 'audit_resource_breakpoints.py', 'stress_control.py', 'campaign.py'))]
     fingerprints = lambda: {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     before = fingerprints()
     rows, skipped = [], []

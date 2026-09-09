@@ -18,6 +18,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from tools.sources import source_path
 
 from eador.content import SITES
 from eador.model import State
@@ -37,7 +38,7 @@ SOURCE_FILES = (
     'eador/model.py', 'eador/battle.py', 'eador/battle_trace.py', 'eador/campaign.py',
     'eador/content.py', 'eador/difficulty.py', 'eador/encounters.py', 'eador/rival.py',
     'eador/sight.py', 'eador/worldgen.py', 'saga2d/hexgrid.py',
-    'tools/audit_eador_discoveries.py',
+    'tools/audit_discoveries.py',
 )
 
 
@@ -46,7 +47,7 @@ def _sha256(data: bytes) -> str:
 
 
 def _source_hashes() -> dict:
-    return {name: _sha256((ROOT / name).read_bytes()) for name in SOURCE_FILES}
+    return {name: _sha256(source_path(name).read_bytes()) for name in SOURCE_FILES}
 
 
 def _package(province: dict) -> str:

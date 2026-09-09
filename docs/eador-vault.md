@@ -33,7 +33,7 @@ uses hills and marsh rather than forest sight blockers.
 
 ## A measured pair of ordinary purchased armies
 
-`tools/eador_vault_campaign.py` exposes `prepare_vault(state=None)` and
+`tools/vault_campaign.py` exposes `prepare_vault(state=None)` and
 `vault_route(state, approach, orders_type=AdventureOrders)` so model tests and
 real controls execute the same public preparation and orders. The paired
 seed-seven Commander arrives on turn five, having spent 100 gold on buildings
@@ -73,7 +73,7 @@ check actual attack/Pin/Heal forecasts, and resolve the reward only once.
 
 ## Native controls and retained evidence
 
-`tools/verify_eador_vault.py` is a thin verifier using the existing
+`tools/verify_vault.py` is a thin verifier using the existing
 `PlayerInput` and `PlayerOrders` adapters. It buys and prepares the army through
 controls, selects and cancels each approach before entry, compares exact fees,
 cycles the actual exits, checks disabled evacuation and target forecasts,
@@ -101,8 +101,8 @@ Run from a checkout with its Python dependencies installed:
 
 ```sh
 python -m pytest tests/eador/test_vault.py tests/eador/test_vault_scene.py -q
-python tools/verify_eador_vault.py --approach crossfire --output /tmp/vault-free
-python tools/verify_eador_vault.py --approach unseal --output /tmp/vault-paid
+python tools/verify_vault.py --approach crossfire --output /tmp/vault-free
+python tools/verify_vault.py --approach unseal --output /tmp/vault-paid
 ```
 
 The verifier writes `journey.json` with each input/order, resource amounts,

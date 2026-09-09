@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 
 from eador.model import State
-from tools.eador_campaign import finish_battle
-from tools.eador_linked_campaign import travel_selection
-from tools.eador_save_expectations import expected_rootward_arrival, expected_fresh_replay
+from tools.campaign import finish_battle
+from tools.linked_campaign import travel_selection
+from tools.save_expectations import expected_rootward_arrival, expected_fresh_replay
 
 
 def without_difficulty_metadata(state):
@@ -131,7 +131,7 @@ def test_actual_challenge1_saves_keep_exact_rest_replay_arrival_and_recovery(nam
 @pytest.mark.parametrize('mode', ['accessible', 'standard', 'challenge'])
 def test_linked_arrival_and_recovery_keep_the_saved_policy_and_separate_grants(mode):
     """A completed shard carries bounded funds; defeat restores its recorded finite world."""
-    from tools.eador_linked_campaign import lose_shard, play_stage
+    from tools.linked_campaign import lose_shard, play_stage
     state = play_stage(State.new_campaign(7, difficulty=mode))
     assert state.campaign.phase == 'departure'
     state = State.from_json(state.to_json())

@@ -4,7 +4,7 @@ import json
 
 from eador.model import State
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_campaign import finish_battle
+from tools.campaign import finish_battle
 
 
 def paid_wounded_realm():

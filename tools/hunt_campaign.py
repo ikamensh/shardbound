@@ -1,7 +1,7 @@
 """Purchased Pack Hunt armies and explicit routes reusable through native input."""
 from eador.model import State
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders, prepare_adventure
 
 
 def prepare_pack_hunt(hero='Commander', *, support='ranger', state=None, budget=None):

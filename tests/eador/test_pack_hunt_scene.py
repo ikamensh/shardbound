@@ -4,9 +4,9 @@ import pytest
 from eador.app import create_game
 from eador.encounter_scene import EncounterScene
 from eador.scene import BattleScene, ShardScene
-from tools.eador_campaign import march_to, rest, site_position
-from tools.eador_extraction_campaign import prepare_adventure
-from tools.eador_ui import PlayerInput
+from tools.campaign import march_to, rest, site_position
+from tools.extraction_campaign import prepare_adventure
+from tools.ui import PlayerInput
 
 
 @pytest.mark.parametrize('number', ['1', '2'])

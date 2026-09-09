@@ -19,7 +19,7 @@ keep their ordinary sizes. CampaignSaves owns metadata and checkpoint policy;
 Saga2D continues to supply ordinary UI composition and safe file I/O without a
 new API, save format or migration.
 
-`tools/verify_eador_saves.py` runs with `--backend mock` or native Pyglet. Its
+`tools/verify_saves.py` runs with `--backend mock` or native Pyglet. Its
 public-input tracer begins a linked campaign, saves an active battle, changes
 reading size, explicitly saves another slot, refuses a 5,000-character invalid
 version, recovers the original backup with Shift+1 and preserves every file.

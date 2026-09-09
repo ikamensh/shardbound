@@ -5,8 +5,8 @@ from eador.model import State
 from eador.persistence import CampaignSaves
 from eador.preferences import reading_scale
 from eador.scene import SaveScene, ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_save_browser_keeps_slot_and_current_campaign_through_reading_changes(tmp_path):
@@ -77,5 +77,5 @@ def test_failed_load_stays_readable_and_recovery_preserves_every_file(tmp_path):
 
 def test_complete_saved_phase_reading_and_native_equivalent_recovery(tmp_path):
     """All slot metadata remains reachable and file-identical through reflow; the real error/recovery tracer stays executable."""
-    from tools.verify_eador_saves import verify
+    from tools.verify_saves import verify
     verify(tmp_path, backend='mock')

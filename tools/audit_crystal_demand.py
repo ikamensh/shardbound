@@ -22,8 +22,8 @@ sys.path.insert(0, str(ROOT))
 from eador.difficulty import DIFFICULTIES
 from eador.model import HERO_CLASSES
 from eador.worldgen import THEMES
-from tools.eador_sources import source_name
-from tools.audit_eador_difficulty import DifficultyTrial, ROUTES
+from tools.sources import source_name
+from tools.audit_difficulty import DifficultyTrial, ROUTES
 from saga2d.testing.cpu_budget import CpuBudget
 
 PLANS = ('economy', 'sustain', 'spells', 'control', 'flight')
@@ -151,8 +151,8 @@ def main(argv=None):
         parser.error('--seeds must be positive')
     budget = CpuBudget(args.cpu_percent)
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__),
-                      ROOT / 'tools/audit_eador_difficulty.py', ROOT / 'tools/audit_eador_economy.py',
-                      ROOT / 'tools/eador_campaign.py', ROOT / 'tools/stress_eador_control.py'])
+                      ROOT / 'tools/audit_difficulty.py', ROOT / 'tools/audit_economy.py',
+                      ROOT / 'tools/campaign.py', ROOT / 'tools/stress_control.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     started, rows, examples = time.perf_counter(), [], {}
     for seed in range(args.seeds):
@@ -208,8 +208,8 @@ def main(argv=None):
                          '8mana/3crystals/Tower,12HP-per-unit/2crystals/Temple, party24HP total max12each/4crystals/Temple; '
                          'first affordable quote per phase/campaign avoids counting repeat waits as independent purchases; remaining actions expose cost0vs1.',
                   elapsed_seconds=time.perf_counter() - started, summary=summary,
-                  source_files_changed=[str(p.relative_to(ROOT)) for p in sources
-                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]])
+                  source_files_changed=[source_name(p) for p in sources
+                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]])
     assert not report['source_files_changed']
     args.report.parent.mkdir(parents=True, exist_ok=True)
     rows_path = args.report.with_suffix('.rows.json.gz')

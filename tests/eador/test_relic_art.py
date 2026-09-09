@@ -7,5 +7,5 @@ def test_saved_collection_paging_and_earned_reward_remain_playable_with_relic_ic
     Repeated activation of Equipped must neither change state nor rotate saves.
     Every original icon also draws through the same public Scene/Game path.
     """
-    from tools.verify_eador_relic_art import verify
+    from tools.verify_relic_art import verify
     verify(tmp_path, backend='mock')

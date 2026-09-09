@@ -22,11 +22,11 @@ from eador.app import create_game
 from eador.model import State
 from eador.preferences import reading_scale as current_reading_scale, reduced_motion
 from eador.scene import BattleScene, HelpScene, ResultScene, ShardScene
-from tools.eador_sources import framework_sources, source_name
-from tools.capture_eador_gameplay import FPS, HEIGHT, WIDTH, MovieInput, digest, encode, mix_audio
+from tools.sources import framework_sources, source_name, source_path
+from tools.capture_gameplay import FPS, HEIGHT, WIDTH, MovieInput, digest, encode, mix_audio
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_observatory_campaign import prepare_observatory
-from tools.verify_eador_final_blow import SOURCE, SOURCE_SHA, earned_last_arrow
+from tools.observatory_campaign import prepare_observatory
+from tools.verify_final_blow import SOURCE, SOURCE_SHA, earned_last_arrow
 
 
 def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25, reading_scale=100):
@@ -43,7 +43,7 @@ def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25, reading_sc
     budget = CpuBudget(cpu_percent)
     paths = {Path(__file__).resolve(), SOURCE, *(ROOT / 'eador').glob('*.py'),
              *framework_sources(), *(ROOT / 'tools').glob('eador_*.py'),
-             *(ROOT / 'tools' / name for name in ('capture_eador_gameplay.py', 'verify_eador_final_blow.py'))}
+             *(ROOT / 'tools' / name for name in ('capture_gameplay.py', 'verify_final_blow.py'))}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
     sources = {source_name(path): digest(path) for path in sorted(paths)}
     started, cpu_started = time.monotonic(), time.process_time()
@@ -55,7 +55,7 @@ def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25, reading_sc
                   source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   dirty_at_start=subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines(),
                   preparation=dict(commander=prepared, method='prepare_observatory: public model commands, automatic preparation battles; reused for the two presentation modes.'),
-                  earned_origin=dict(file=str(SOURCE.relative_to(ROOT)), sha256=SOURCE_SHA, selector='orders[13]'),
+                  earned_origin=dict(file=source_name(SOURCE), sha256=SOURCE_SHA, selector='orders[13]'),
                   cases=[])
     with TemporaryDirectory(prefix='shardbound-attack-motion-') as temporary:
         raw_path = Path(temporary) / 'frames.rgb'
@@ -202,7 +202,7 @@ def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25, reading_sc
                       timing_scope='After imports/source hashing; includes model preparation, capture, game cleanup and audio mix. Excludes the separately paced encoder.')
         if backend == 'pyglet':
             report['encoder'] = encode(ffmpeg, raw_path, output / 'gameplay-mix.wav', output / 'gameplay.mp4', budget.percent)
-    assert all(digest(ROOT / path) == expected for path, expected in sources.items()), 'Preview sources changed'
+    assert all(digest(source_path(path)) == expected for path, expected in sources.items()), 'Preview sources changed'
     report['source_unchanged'] = True
     report['artifacts'] = {path.name: digest(path) for path in output.iterdir()
                            if path.suffix in ('.png', '.mp4', '.wav')}

@@ -5,7 +5,7 @@ from eador.battle import Battle
 from eador.model import State
 from eador.scene import BattleScene, ShardScene, TitleScene
 from tests.eador.test_game_audio import cues
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 import pytest
 
 

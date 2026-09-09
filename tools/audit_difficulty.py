@@ -22,9 +22,9 @@ sys.path.insert(0, str(ROOT))
 from eador.difficulty import DIFFICULTIES, RULESETS
 from eador.model import HERO_CLASSES, State
 from eador.worldgen import NORTH_ROAD, SOUTH_ROAD, THEMES
-from tools.eador_sources import source_name
-from tools.audit_eador_economy import PLANS, Trial
-from tools.stress_eador_control import PLANS as SPECIALIST_PLANS, ControlTrial
+from tools.sources import source_name
+from tools.audit_economy import PLANS, Trial
+from tools.stress_control import PLANS as SPECIALIST_PLANS, ControlTrial
 from saga2d.testing.cpu_budget import CpuBudget
 
 ROUTES = {'direct': None, 'north': NORTH_ROAD, 'south': SOUTH_ROAD}
@@ -160,8 +160,8 @@ def main(argv=None):
         parser.error('--mana-reserve must be nonnegative')
     budget = CpuBudget(args.cpu_percent)
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__).resolve(),
-                      ROOT / 'tools/audit_eador_economy.py', ROOT / 'tools/stress_eador_control.py',
-                      ROOT / 'tools/eador_campaign.py'])
+                      ROOT / 'tools/audit_economy.py', ROOT / 'tools/stress_control.py',
+                      ROOT / 'tools/campaign.py'])
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     started, rows = time.perf_counter(), []
     cases = [(seed, hero, theme, plan, mode, route) for seed in range(args.seeds)
@@ -197,8 +197,8 @@ def main(argv=None):
                   + (f'{args.mana_reserve} mana assault reserve' if args.mana_reserve is not None else 'within-four-of-maximum assault mana')
                   + '; unchanged six-HP wound tolerance; 60-turn/40-assault policy bounds.',
         'source_sha256': hashes,
-        'source_files_changed': [str(path.relative_to(ROOT)) for path in sources
-                                 if hashlib.sha256(path.read_bytes()).hexdigest() != hashes[str(path.relative_to(ROOT))]],
+        'source_files_changed': [source_name(path) for path in sources
+                                 if hashlib.sha256(path.read_bytes()).hexdigest() != hashes[source_name(path)]],
         'elapsed_seconds': time.perf_counter() - started, 'summary': summarize(rows),
     }
     assert not report['source_files_changed']

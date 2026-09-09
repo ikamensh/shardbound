@@ -7,7 +7,8 @@ from pathlib import Path
 import pytest
 
 from eador.model import State
-from tools.audit_eador_army_plans import SavedCommands
+from tools.audit_army_plans import SavedCommands
+from tools.sources import framework_sources, source_name
 from saga2d.testing.cpu_budget import CpuBudget
 
 
@@ -33,12 +34,12 @@ def earned_report(anchor='control', *, skill='pathfinder'):
         played.order(command, *args, **kwargs)
         played.commands[-1]['reason'] = 'Exercise the recorded public command through real input.'
     return dict(
-        source=dict(path=str(path.relative_to(ROOT)), journal_sha256=hashlib.sha256(blob).hexdigest(),
+        source=dict(path=source_name(path), journal_sha256=hashlib.sha256(blob).hexdigest(),
                     journal_source=history['source_commit'], command_index=index,
                     initial_sha256=hashlib.sha256(initial.encode()).hexdigest()),
         execution_source='test working source',
-        source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                       for p in [*ROOT.glob('eador/**/*.py'), *ROOT.glob('saga2d/**/*.py')]},
+        source_sha256={source_name(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                       for p in [*ROOT.glob('eador/**/*.py'), *framework_sources()]},
         initial_state=initial, final_state=played.state.to_json(), commands=played.commands,
     )
 
@@ -56,15 +57,15 @@ def fresh_report(seed=5):
         source=dict(kind='new_campaign', seed=seed, hero_class='Commander', difficulty='standard',
                     initial_sha256=hashlib.sha256(initial.encode()).hexdigest()),
         execution_source='test working source',
-        source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                       for p in [*ROOT.glob('eador/**/*.py'), *ROOT.glob('saga2d/**/*.py')]},
+        source_sha256={source_name(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                       for p in [*ROOT.glob('eador/**/*.py'), *framework_sources()]},
         initial_state=initial, final_state=played.state.to_json(), commands=played.commands,
     )
 
 
 def test_fresh_campaign_journal_starts_through_title_and_pays_for_its_army(tmp_path):
     """A generated opening must be reproduced by New Campaign input, before any save is loaded."""
-    from tools.verify_eador_directed_journey import verify
+    from tools.verify_directed_journey import verify
 
     source = fresh_report()
     path = tmp_path / 'fresh.json.gz'
@@ -79,7 +80,7 @@ def test_fresh_campaign_journal_starts_through_title_and_pays_for_its_army(tmp_p
 
 def test_directed_journal_replays_infusion_and_acolyte_cast_through_saved_input(tmp_path):
     """Campaign investment, the chosen caster, Guard and enemy response match after every F5/F9."""
-    from tools.verify_eador_directed_journey import verify
+    from tools.verify_directed_journey import verify
 
     source = earned_report()
     path = tmp_path / 'directed.json.gz'
@@ -95,7 +96,7 @@ def test_directed_journal_replays_infusion_and_acolyte_cast_through_saved_input(
 @pytest.mark.parametrize('skill', ['pathfinder', 'skirmisher'])
 def test_scout_journal_replays_the_earned_skill_choice_through_saved_input(tmp_path, skill):
     """Either first Scout discipline is earned through ChoiceScene and survives actual F5/F9 controls."""
-    from tools.verify_eador_directed_journey import verify
+    from tools.verify_directed_journey import verify
 
     source = earned_report('mobile', skill=skill)
     initial = State.from_json(source['initial_state'])
@@ -114,7 +115,7 @@ def test_scout_journal_replays_the_earned_skill_choice_through_saved_input(tmp_p
 
 def test_scout_replay_captures_the_first_warden_swap(tmp_path):
     """The tactical action gets its own indexed capture while saved input remains exact."""
-    from tools.verify_eador_directed_journey import verify
+    from tools.verify_directed_journey import verify
 
     source = earned_report('mobile')
     played = SavedCommands(State.from_json(source['final_state']), CpuBudget(100))
@@ -136,7 +137,7 @@ def test_scout_replay_captures_the_first_warden_swap(tmp_path):
                                    'model', 'chain', 'autoplay', 'query', 'final'))
 def test_directed_replay_rejects_unearned_stale_or_automatic_journals(tmp_path, anchor, tamper):
     """Self-consistent hashes cannot authenticate a fabricated opening or replace explicit commands."""
-    from tools.verify_eador_directed_journey import verify
+    from tools.verify_directed_journey import verify
 
     source = earned_report(anchor)
     if tamper == 'opening':
@@ -185,7 +186,7 @@ def test_input_reload_cannot_count_an_unhandled_save_or_load_key(tmp_path, missi
     """Equal live state alone is insufficient: both persistence and actual input continuation must work."""
     from eador.app import create_game
     from eador.scene import ShardScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
 
     class IncompleteShortcuts(ShardScene):
         controls = {**ShardScene.controls, missing: 'unavailable'}

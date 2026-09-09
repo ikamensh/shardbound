@@ -50,7 +50,7 @@ Verification:
 
 ```bash
 uv run python -m pytest tests/eador/test_preferences_scene.py -q
-uv run python tools/verify_eador_settings.py --out /tmp/shardbound-settings
+uv run python tools/verify_settings.py --out /tmp/shardbound-settings
 ```
 
 The integration journeys use real files and public keyboard/mouse input to

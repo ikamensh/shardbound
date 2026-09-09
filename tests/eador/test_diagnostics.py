@@ -5,8 +5,8 @@ from saga2d import Label, SaveError, Scene
 from eador.app import create_game
 from eador.preferences import reading_scale
 from eador.style import RED
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_actual_file_diagnostic_reflows_and_does_not_leak_queued_input(tmp_path):
@@ -136,7 +136,7 @@ def test_long_save_error_returns_to_same_slot_and_explicit_backup_preserves_file
     from eador.model import State
     from eador.persistence import CampaignSaves
     from eador.scene import ShardScene
-    from tools.verify_eador_saves import select_slot
+    from tools.verify_saves import select_slot
 
     directory = long_save_directory(tmp_path)
     saves = CampaignSaves(SaveManager(directory))
@@ -172,5 +172,5 @@ def test_long_save_error_returns_to_same_slot_and_explicit_backup_preserves_file
 
 def test_save_and_replacement_long_diagnostic_public_journeys(tmp_path):
     """The native-equivalent tracer keeps every veteran reachable and reloads both the backup and applied purchase."""
-    from tools.verify_eador_diagnostics import verify
+    from tools.verify_diagnostics import verify
     verify(tmp_path, backend="mock")

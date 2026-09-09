@@ -28,10 +28,10 @@ from eador.scene import CatalogScene, HeroScene, ShardScene, TitleScene
 from eador.ui import icon_path
 from saga2d import Button, Image, Label, Row
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_observatory_campaign import prepare_observatory
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.observatory_campaign import prepare_observatory
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 NAMES = dict(gold='Gold', crystals='Crystals', income='Income', upkeep='Upkeep',
              level='Level', health='Health', mana='Mana', actions='Campaign actions',
@@ -89,7 +89,7 @@ def verify(output, *, backend='pyglet', budget=None):
     budget = CpuBudget(25) if budget is None else budget
     started, cpu_started = time.monotonic(), time.process_time()
     paths = {Path(__file__).resolve(), *(ROOT / 'eador').glob('*.py'), *framework_sources(),
-             *(ROOT / 'tools').glob('eador_*.py'), ROOT / 'tools/verify_eador_guidance.py'}
+             *(ROOT / 'tools').glob('eador_*.py'), ROOT / 'tools/verify_guidance.py'}
     paths.update(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(paths)}
     report = dict(source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -222,7 +222,7 @@ def verify(output, *, backend='pyglet', budget=None):
                 report['cases'].append(case)
             finally:
                 game.close()
-    assert hashes == {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in hashes}, 'Sources changed during verification'
+    assert hashes == {name: hashlib.sha256(source_path(name).read_bytes()).hexdigest() for name in hashes}, 'Sources changed during verification'
     report.update(source_unchanged=True, wall_seconds=time.monotonic() - started, cpu_seconds=time.process_time() - cpu_started)
     (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
     return report

@@ -12,8 +12,8 @@ from eador.app import create_game
 from eador.codex import CodexScene
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_extraction_campaign import AdventureOrders, crossing_route, prepare_adventure, prepared_crossing
-from tools.eador_ui import PlayerInput
+from tools.extraction_campaign import AdventureOrders, crossing_route, prepare_adventure, prepared_crossing
+from tools.ui import PlayerInput
 
 
 def verify(output):

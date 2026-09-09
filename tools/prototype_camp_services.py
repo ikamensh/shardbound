@@ -19,8 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from eador.model import RuleError, State
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import source_name
-from tools.eador_campaign import CampaignMetrics, finish_battle
+from tools.sources import source_name
+from tools.campaign import CampaignMetrics, finish_battle
 
 
 def prototype_service(state, kind):
@@ -128,7 +128,7 @@ def main():
         parser.error(str(error))
     examples = json.loads(args.examples.read_text())
     sources = sorted([*ROOT.joinpath('eador').glob('*.py'), Path(__file__),
-                      ROOT / 'tools/eador_campaign.py'])
+                      ROOT / 'tools/campaign.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     runs = {}
     variants = {'pre_assault_mana': ('assault_now', 'rest_once', 'rest_reserve', 'infusion', 'treatment'),
@@ -156,8 +156,8 @@ def main():
                   policy='NON-PRODUCTION saved-payload services; one action; subsequent real commands and explicit auto combat. '
                          'Fixed local branches, not a tuned campaign policy or new service API.',
                   runs=runs, full_army_purchase_rejection=rejection,
-                  source_files_changed=[str(p.relative_to(ROOT)) for p in sources
-                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]])
+                  source_files_changed=[source_name(p) for p in sources
+                                        if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]])
     assert not report['source_files_changed']
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')

@@ -9,8 +9,8 @@ from eador.app import create_game
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ChoiceScene, ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def first_reward():
@@ -76,7 +76,7 @@ def test_choice_reading_preview_restart_and_numbered_reward(tmp_path):
 
 def test_all_earned_choices_keep_whole_options_and_actual_effects(tmp_path):
     """Every relic, duplicate and hero discipline reads at both sizes, and each visible option has its saved effect."""
-    from tools.verify_eador_choices import verify
+    from tools.verify_choices import verify
 
     verify(tmp_path, backend='mock')
 
@@ -114,7 +114,7 @@ def test_choice_save_and_load_errors_are_immediately_readable(tmp_path, damaged_
 def test_queued_choice_reports_checkpoint_failure_without_repeating_first_option(tmp_path):
     """A learned skill can reveal its earned relic while preserving damaged autosaves and the complete warning."""
     from eador.persistence import AUTO_SLOTS
-    from tools.verify_eador_choices import prepared_choices
+    from tools.verify_choices import prepared_choices
 
     for _, snapshot in prepared_choices():
         expected = State.from_json(snapshot)

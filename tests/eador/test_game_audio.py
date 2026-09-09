@@ -8,7 +8,7 @@ from saga2d import Settings
 
 
 def press(game, name):
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     PlayerInput(game).press(name)
 
 

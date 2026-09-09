@@ -12,10 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from eador.model import RuleError, State
-from tools.eador_sources import framework_sources, source_name
-from tools.audit_eador_aerie import Purchases, RecordedOrders
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_aerie import Purchases, RecordedOrders
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_relief_campaign import (prepare_relief, relief_forward_route, relief_western_route,
+from tools.relief_campaign import (prepare_relief, relief_forward_route, relief_western_route,
                                          relief_passive_route, relief_scout_route,
                                          relief_failed_support, relief_retry_route)
 
@@ -49,7 +49,7 @@ def measure(*, budget=None):
     budget = CpuBudget(25) if budget is None else budget
     sources = sorted([*ROOT.glob('eador/*.py'), *framework_sources(),
                       *ROOT.glob('tools/eador_*.py'), Path(__file__).resolve(),
-                      ROOT/'tools/audit_eador_aerie.py', ROOT/'tools/audit_eador_extraction.py'])
+                      ROOT/'tools/audit_aerie.py', ROOT/'tools/audit_extraction.py'])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -93,7 +93,7 @@ def measure(*, budget=None):
     retry_report = retry.report()
     assert not retry_report['dead']
     retry_report.update(purchases=replacement.purchases, settled=settle_once(retry, budget=budget))
-    assert all(hashlib.sha256((ROOT/path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     return dict(source_revision=revision, dirty_at_start=dirty, source_sha256=hashes, cpu_percent=budget.percent,
                 parties=parties, plans=plans, failed_support=failure, paid_automatic_retry=retry_report,
                 scope='60 earned manual holds: 3 modes, 5 seeds, Commander active/western/passive and Scout. '

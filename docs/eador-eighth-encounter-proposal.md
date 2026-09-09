@@ -98,7 +98,7 @@ main's Standard-compatible schema v12. Run:
 
 The removed prototype can be recovered from that recorded source revision.
 For current production replay use `prepare_explorer()` and `explorer_route()`
-from `tools/eador_explorer_campaign.py`.
+from `tools/explorer_campaign.py`.
 
 ## Before this could become an accepted eighth pattern
 

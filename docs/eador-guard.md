@@ -65,7 +65,7 @@ At the named source:
   scene runs before the final game-only reaction correction.
 
 Reproduce the suite with `uv run python -m pytest tests -q`, the campaign
-stress with `uv run python tools/fuzz_eador.py --campaigns 100 --scenes 20
+stress with `uv run python tools/fuzz.py --campaigns 100 --scenes 20
 --events 10000 --steps 160 --report /tmp/guard-stress.json`, and the clash
 matrix by calling the public scenario
 `test_mixed_defensive_orders_preserve_hero_free_clash_rules_and_saved_continuation`

@@ -1,4 +1,4 @@
-# Executed by PyInstaller. Build inputs are snapshotted by tools/build_eador.py.
+# Executed by PyInstaller. Build inputs are snapshotted by tools/build.py.
 import os
 import json
 from pathlib import Path

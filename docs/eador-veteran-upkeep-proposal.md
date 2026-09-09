@@ -111,7 +111,7 @@ transparent price/grant, explicit forfeited identity, and no extra carry slot;
 no recurring clicks or automatic tax on earned XP. This is a hypothesis, not an
 implemented order or a claim to solve standalone G07.
 
-[Source](../tools/prototype_eador_veteran_upkeep.py) and
+[Source](../tools/prototype_veteran_upkeep.py) and
 [retained evidence](evidence/veteran-upkeep-prototype.json) use clean source
 **a0995fa** with unchanged game/helper fingerprints. They include both actual
 recovery inputs, complete purchase records, saved retirement/scarcity branches,
@@ -119,5 +119,5 @@ visible shortfalls, exact costs and variant identities. Public checks repeat
 all results; no native/UI or new production-save compatibility claim is made.
 
 ```sh
-uv run python tools/prototype_eador_veteran_upkeep.py --report /tmp/veteran-upkeep.json
+uv run python tools/prototype_veteran_upkeep.py --report /tmp/veteran-upkeep.json
 ```

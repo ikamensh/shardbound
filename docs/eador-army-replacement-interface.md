@@ -135,7 +135,7 @@ upkeep and blockers remain visible. This and measured spacing accommodate the
 same error with the longest Skyrider description. No error or quote text is
 truncated or shrunk and no framework API was added.
 
-`tools/verify_eador_replacement.py` runs the same public input journey with mock
+`tools/verify_replacement.py` runs the same public input journey with mock
 or native Pyglet. It starts from the retained paid full army, purchases Archery
 and Tower through controls, reviews/cancels/confirms the Warden with keyboard and
 mouse, checks exact reloads, then drives the saved Swap → Heal assault described

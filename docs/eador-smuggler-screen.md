@@ -27,7 +27,7 @@ positions in hero/army order are `(-3,0)`, `(-2,0)`, `(-3,1)`, `(-2,-1)`, `(-3,2
 
 ## Earned manual plans
 
-`tools/eador_screen_campaign.py` prepares the actual site through ordinary
+`tools/screen_campaign.py` prepares the actual site through ordinary
 purchases, conquests and recovery. `prepare_screen(state=...)` accepts the same
 State-like native input adapter as the existing adventure preparations. The
 route functions accept `orders_type=...`; they never invoke auto during the
@@ -101,7 +101,7 @@ commands and automatic play remain available independently of these dev scripts.
 The shared guidance matrix includes real paid Commander, smaller Scout and
 wounded retry preparations at 100/125% reading sizes and three supported window
 sizes. Its mock geometry/nonmutation checks pass. The reusable native verifier
-`tools/verify_eador_screen.py` drives the four plans and a natural loss/retry
+`tools/verify_screen.py` drives the four plans and a natural loss/retry
 through actual keyboard/mouse events, including briefing/Codex at 125%, exact
 F5/F9 checkpoints, Rally after shooting, Smoke denial and the once-only reward.
 The briefing describes only the surviving abilities on retry and removes

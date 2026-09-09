@@ -5,7 +5,7 @@ Audio is reconstructed from pass-through logs of public backend playback calls
 using the exact shipping WAVs and gains. It is not a device/loopback recording.
 No new rendering or recording interface is added to Saga2D.
 
-    python tools/capture_eador_gameplay.py --output /tmp/shardbound-movie --ffmpeg /path/to/ffmpeg
+    python tools/capture_gameplay.py --output /tmp/shardbound-movie --ffmpeg /path/to/ffmpeg
 
 Capture and encoding run sequentially; temporary raw frames are removed on exit.
 """
@@ -35,8 +35,8 @@ from eador.battle_playback_scene import BattlePlaybackScene  # noqa: E402
 from eador.model import State  # noqa: E402
 from eador.scene import BattleScene, ChoiceScene, ResultScene, ShardScene, TitleScene  # noqa: E402
 from saga2d.testing.cpu_budget import CpuBudget  # noqa: E402
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput  # noqa: E402
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput  # noqa: E402
 from saga2d.testing.native_frames import tick  # noqa: E402
 
 FPS, WIDTH, HEIGHT, RATE = 30, 1280, 800, 44100
@@ -57,7 +57,7 @@ class AudioLog:
 
             def load(path, original=original):
                 handle = original(path)
-                relative = Path(path).resolve().relative_to(ROOT).as_posix()
+                relative = source_name(path)
                 self.handles[id(handle)] = relative
                 self.assets[relative] = digest(path)
                 return handle
@@ -98,7 +98,7 @@ def mix_audio(events, assets, frames, output, budget):
     """Mix emitted voices at unity export gain; fail visibly if their sum clips."""
     samples = {}
     for path, expected in assets.items():
-        assert digest(ROOT / path) == expected, f'Audio changed: {path}'
+        assert digest(ROOT / path) == expected, f'Audio changed: {path}'  # shipped WAVs live in this repository
         with wave.open(str(ROOT / path), 'rb') as source:
             assert source.getframerate() == RATE and source.getsampwidth() == 2
             channels = source.getnchannels()
@@ -323,7 +323,7 @@ def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25):
         raise FileExistsError('Choose an empty capture directory so older media cannot enter this receipt')
     if backend == 'pyglet' and ffmpeg is None:
         raise ValueError('Native capture requires an explicit ffmpeg executable')
-    files = [Path(__file__), ROOT / 'tools/eador_ui.py', *(ROOT / 'eador').glob('*.py'),
+    files = [Path(__file__), ROOT / 'tools/ui.py', *(ROOT / 'eador').glob('*.py'),
              *framework_sources(),
              *(path for path in (ROOT / 'eador/assets').rglob('*') if path.is_file())]
     sources = {source_name(path): digest(path) for path in files}
@@ -354,7 +354,7 @@ def capture(output, *, backend='pyglet', ffmpeg=None, cpu_percent=25):
         if backend == 'pyglet':
             print('Encoding after capture; one encoder thread with paced CPU allowance.', flush=True)
             report['encoder'] = encode(ffmpeg, raw_path, output / 'gameplay-mix.wav', output / 'gameplay.mp4', cpu_percent)
-    assert all(digest(ROOT / path) == expected for path, expected in sources.items()), 'Capture sources changed'
+    assert all(digest(source_path(path)) == expected for path, expected in sources.items()), 'Capture sources changed'
     report['artifacts'] = {path.name: digest(path) for path in output.iterdir()
                            if path.suffix in ('.png', '.mp4', '.wav')}
     (output / 'capture.json.gz').write_bytes(gzip.compress(json.dumps(report, indent=2).encode(), mtime=0))

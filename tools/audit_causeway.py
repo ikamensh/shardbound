@@ -21,10 +21,10 @@ sys.path.insert(0, str(ROOT))
 
 from eador.model import RuleError, State
 from eador.worldgen import generate
-from tools.eador_sources import framework_sources, source_name
-from tools.audit_eador_aerie import Purchases, RecordedOrders
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_aerie import Purchases, RecordedOrders
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_causeway_campaign import (prepare_causeway, causeway_focus_route,
+from tools.causeway_campaign import (prepare_causeway, causeway_focus_route,
     causeway_guard_route, causeway_scout_route, causeway_failed_attempt, causeway_retry_route)
 
 class PaidTravel(Purchases):
@@ -89,7 +89,7 @@ def source_audit(*, budget=None):
         assert world[(1, 0)].site_kind == 'barrow' and world[(1, 0)].site_relic == 'iron_crown'
         positions[str(pos)] += 1
     return dict(seeds=len(previous['witnesses']), selected_positions=dict(positions),
-                provenance=str(provenance.relative_to(ROOT)), provenance_sha256=hashlib.sha256(provenance.read_bytes()).hexdigest(),
+                provenance=source_name(provenance), provenance_sha256=hashlib.sha256(provenance.read_bytes()).hexdigest(),
                 scope='Every other province and every reward exact; unchanged ordinary witness and direct Crown preserved.')
 
 
@@ -117,7 +117,7 @@ def settle_once(play, *, budget=None):
 def measure(*, budget=None):
     budget = CpuBudget(25) if budget is None else budget
     sources = sorted([*ROOT.glob('eador/*.py'), *framework_sources(), *ROOT.glob('tools/eador_*.py'),
-                      ROOT / 'tools/audit_eador_aerie.py', ROOT / 'tools/audit_eador_extraction.py', Path(__file__).resolve()])
+                      ROOT / 'tools/audit_aerie.py', ROOT / 'tools/audit_extraction.py', Path(__file__).resolve()])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     parties, plans = {}, {}
     for hero, mana in (('Commander', 0), ('Commander', 12), ('Commander', 16), ('Scout', 0), ('Scout', 8)):
@@ -165,7 +165,7 @@ def measure(*, budget=None):
     report = retry.report(); report.pop('flight_only_landings')
     assert report['reason'] == 'rout' and not report['dead']
     plans['finite-retry'] = dict(**report, recovery_orders=recovering.events, settled=settle_once(retry, budget=budget))
-    assert all(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest for name, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(name).read_bytes()).hexdigest() == digest for name, digest in hashes.items())
     return dict(source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                 source_sha256=hashes, python=platform.python_version(), platform=platform.platform(), cpu_percent=budget.percent,
                 source_audit=source_audit(budget=budget), parties=parties, plans=plans,

@@ -19,7 +19,7 @@ prove eight balanced manual builds. The shared policy buys a Barracks, refills
 with Swordsmen, invests in recovery and uses explicit tactical autoplay. Its
 success cannot establish three different viable army plans.
 
-`tools/audit_eador_disciplines.py` varies only the preferred offered discipline.
+`tools/audit_disciplines.py` varies only the preferred offered discipline.
 It reuses the existing paid itinerary and input driver. The model and UI paths
 call the same game commands; the UI driver rejects unadapted mutations. Recovery
 uses its real retinue controls. Every report retains each decision's full before

@@ -1,5 +1,5 @@
 """The new tactical roles are discoverable, executable and saveable through player controls."""
-from tools.verify_eador_roles import verify
+from tools.verify_roles import verify
 import pytest
 
 
@@ -13,7 +13,7 @@ def test_reduced_motion_keeps_damage_feedback_still_without_changing_combat(tmp_
     """The saved display preference changes floating feedback, while idle frames never change tactics."""
     from eador.app import create_game
     from eador.scene import TitleScene
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     player = PlayerInput(game)
     try:

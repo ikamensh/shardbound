@@ -23,17 +23,17 @@ from eador.preferences import reading_scale
 from eador.rival_scene import rival_order
 from eador.scene import BattleScene, ShardScene
 from eador.ui import icon_path
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_rival_reading import prepared_rivals
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_rival_reading import prepared_rivals
 
 
 @cache
 def prepared_shards():
     """Earn supply pressure and a complete control army; load untouched historical records."""
-    from tools.eador_control_campaign import prepare_control_watch
-    from tools.verify_eador_replacement import earned_army
+    from tools.control_campaign import prepare_control_watch
+    from tools.verify_replacement import earned_army
     cases = list(prepared_rivals())
     control = prepare_control_watch()
     control.retreat()
@@ -218,7 +218,7 @@ def verify(output, *, backend='pyglet'):
             events += len(player.events)
         finally:
             game._teardown(); game.backend.quit()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_sha256=hashes, backend=backend, layouts=matrix,
                   input_activations=events, exact_save_reloads=reloads, complete_message_pages=error_pages)

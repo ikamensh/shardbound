@@ -13,8 +13,8 @@ from eador.app import create_game
 from eador.model import State
 from eador.scene import ChoiceScene, HeroScene, Screen, ShardScene
 from eador.style import GOLD, MUTED, TEAL
-from tools.eador_campaign import play_campaign
-from tools.eador_ui import PlayerInput
+from tools.campaign import play_campaign
+from tools.ui import PlayerInput
 
 
 class RelicSheet(Screen):

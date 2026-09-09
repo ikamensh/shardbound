@@ -234,7 +234,7 @@ def test_current_relic_sources_and_equipped_pin_capability_are_visible_with_mous
 def test_paid_watch_army_can_read_its_role_orders_and_costs_without_spending_them(tmp_path):
     """A real support army sees mobility, extraction costs and its shared healing budget."""
     from eador.codex import CodexScene
-    from tools.eador_roles_campaign import prepare_support_watch
+    from tools.roles_campaign import prepare_support_watch
 
     state = prepare_support_watch()
     game = create_game('Support role reference', backend='mock', save_dir=tmp_path)
@@ -296,7 +296,7 @@ def test_saved_guided_extraction_reference_quotes_the_paid_contract_and_current_
     """A paid, reloaded attempt exposes its escape rules and exact reward without spending an order."""
     from eador.codex import CodexScene
     from eador.content import RELICS
-    from tools.eador_extraction_campaign import prepared_crossing
+    from tools.extraction_campaign import prepared_crossing
 
     state = prepared_crossing()
     # A saved-site reward fixture checks that current loot is not replaced by the base table.
@@ -340,7 +340,7 @@ def test_saved_guided_extraction_reference_quotes_the_paid_contract_and_current_
 def test_full_cache_reference_matches_saved_cargo_reward_and_spent_hero_via_mouse(tmp_path):
     """The burden and reward belong to the chosen attempt; inspecting them cannot refund its spent order."""
     from eador.codex import CodexScene
-    from tools.eador_extraction_campaign import prepare_adventure
+    from tools.extraction_campaign import prepare_adventure
 
     state = prepare_adventure(theme='elderwild')
     state.explore(approach='full')
@@ -375,7 +375,7 @@ def test_full_cache_reference_matches_saved_cargo_reward_and_spent_hero_via_mous
 def test_direct_route_reference_reports_real_pin_and_current_round_after_reload(tmp_path):
     """A naturally pinned courier sees the saved allowance, rather than its full base movement."""
     from eador.codex import CodexScene
-    from tools.eador_extraction_campaign import AdventureOrders, crossing_route, prepared_crossing
+    from tools.extraction_campaign import AdventureOrders, crossing_route, prepared_crossing
 
     checkpoints = []
 
@@ -408,7 +408,7 @@ def test_direct_route_reference_reports_real_pin_and_current_round_after_reload(
 def test_paid_control_army_reference_shows_both_currency_costs_and_recorded_roles(tmp_path):
     """A troop's quoted crystals come from the same purchase API as recruitment."""
     from eador.codex import CodexScene
-    from tools.eador_control_campaign import prepare_control_watch
+    from tools.control_campaign import prepare_control_watch
 
     state = State.from_json(prepare_control_watch().to_json())
     game = create_game('Control recruit reference', backend='mock', save_dir=tmp_path)
@@ -518,7 +518,7 @@ def test_earned_censer_reference_uses_saved_hero_order_and_charge_without_writin
     that charge or imply that equipping multiple relics combines their powers.
     """
     from eador.codex import CodexScene
-    from tools.eador_relic_campaign import prepare_censer_watch
+    from tools.relic_campaign import prepare_censer_watch
 
     state = prepare_censer_watch()
     state.battle.smoke(0, state.battle.unit(0).pos)

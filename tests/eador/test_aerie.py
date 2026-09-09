@@ -1,5 +1,5 @@
 from eador.model import State
-from tools.eador_aerie_campaign import prepare_aerie, aerie_western_route
+from tools.aerie_campaign import prepare_aerie, aerie_western_route
 from tests.eador.test_extraction_journeys import Journey
 from tests.eador.test_pack_hunt import assert_one_rout_reward
 
@@ -16,7 +16,7 @@ def test_paid_control_party_wins_a_saved_aerie_rout_using_a_delayed_sortie():
 
 
 def test_same_paid_party_uses_landing_control_or_preemptive_fire_in_two_free_assemblies():
-    from tools.eador_aerie_campaign import aerie_northern_route
+    from tools.aerie_campaign import aerie_northern_route
 
     original = prepare_aerie().to_json()
     west = aerie_western_route(State.from_json(original), orders_type=Journey)
@@ -33,7 +33,7 @@ def test_same_paid_party_uses_landing_control_or_preemptive_fire_in_two_free_ass
 
 
 def test_smaller_scout_party_can_rotate_its_ground_escort_without_flight_or_repulse():
-    from tools.eador_aerie_campaign import aerie_scout_route
+    from tools.aerie_campaign import aerie_scout_route
 
     state = prepare_aerie('Scout', party='ground')
     assert len(state.hero.army) == 5 and state.hero.level == 3 and state.turn == 6
@@ -72,7 +72,7 @@ def test_aerie_sources_preserve_required_sites_and_all_twelve_relics_for_a_hundr
 
 def test_actual_prior_barrow_keeps_its_world_battle_and_exact_reward_continuation():
     from pathlib import Path
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     fixtures = Path(__file__).parent / 'fixtures'
     text = (fixtures / 'v12_pre_aerie_barrow_battle.json').read_text()
@@ -85,7 +85,7 @@ def test_actual_prior_barrow_keeps_its_world_battle_and_exact_reward_continuatio
 
 
 def test_failed_sortie_and_defense_preserve_finite_losses_across_a_paid_changed_assembly_retry():
-    from tools.eador_aerie_campaign import aerie_failed_sortie, aerie_retry_route
+    from tools.aerie_campaign import aerie_failed_sortie, aerie_retry_route
 
     play = aerie_failed_sortie(prepare_aerie(), orders_type=Journey)
     state = play.state
@@ -110,7 +110,7 @@ def test_failed_sortie_and_defense_preserve_finite_losses_across_a_paid_changed_
 
 
 def test_production_forecasts_match_reaction_and_flight_crosses_an_otherwise_blocked_landing():
-    from tools.audit_eador_aerie import RecordedOrders, without_flight_reachable
+    from tools.audit_aerie import RecordedOrders, without_flight_reachable
 
     state = prepare_aerie(); state.explore(approach='western')
     rear = [u.id for u in state.battle.units if u.team == 'enemy' and u.kind == 'skyrider'][1]

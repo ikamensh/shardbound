@@ -33,7 +33,7 @@ def clock(monkeypatch):
 
 def test_campaign_preparation_respects_the_supplied_allowance(clock):
     """Paid campaign preparation must use the caller's 50% allowance instead of running unpaced."""
-    from tools.verify_eador_campaign_reading import prepared_transitions
+    from tools.verify_campaign_reading import prepared_transitions
 
     with pytest.raises(YieldObserved):
         prepared_transitions(budget=CpuBudget(50))
@@ -42,7 +42,7 @@ def test_campaign_preparation_respects_the_supplied_allowance(clock):
 
 def test_briefing_preparation_respects_the_supplied_allowance(clock):
     """The authored-adventure matrix must yield within its first real paid preparation."""
-    from tools.verify_eador_guidance import prepared_briefings
+    from tools.verify_guidance import prepared_briefings
 
     with pytest.raises(YieldObserved):
         prepared_briefings(budget=CpuBudget(50))
@@ -52,7 +52,7 @@ def test_briefing_preparation_respects_the_supplied_allowance(clock):
 @pytest.mark.parametrize('recovery', [False, True])
 def test_checkpoint_preparation_respects_the_supplied_allowance(clock, tmp_path, recovery):
     """Both checkpoint remedies must yield while earning their input state, before creating a window."""
-    from tools.verify_eador_checkpoint import verify
+    from tools.verify_checkpoint import verify
 
     with pytest.raises(YieldObserved):
         verify(tmp_path, backend='mock', recovery=recovery, budget=CpuBudget(50))
@@ -63,8 +63,8 @@ def test_checkpoint_preparation_respects_the_supplied_allowance(clock, tmp_path,
 def test_complete_preparation_defaults_to_yielding_without_changing_saved_results(clock, name):
     """Every real paid/legacy snapshot matches explicit unpaced preparation; only the clock is replaced."""
     from eador.model import State
-    from tools.verify_eador_campaign_reading import prepared_transitions
-    from tools.verify_eador_guidance import prepared_briefings
+    from tools.verify_campaign_reading import prepared_transitions
+    from tools.verify_guidance import prepared_briefings
 
     prepare = prepared_transitions if name == 'campaign' else prepared_briefings
     clock['stop'] = False
@@ -85,7 +85,7 @@ def test_complete_preparation_defaults_to_yielding_without_changing_saved_result
 def test_campaign_verifier_forwards_its_allowance_and_closes_on_interruption(clock, tmp_path, monkeypatch):
     """The actual mock session closes when paced preparation is interrupted at the clock boundary."""
     from saga2d.backends.mock_backend import MockBackend
-    from tools.verify_eador_campaign_reading import verify
+    from tools.verify_campaign_reading import verify
 
     backends = []
 
@@ -104,7 +104,7 @@ def test_campaign_verifier_forwards_its_allowance_and_closes_on_interruption(clo
 def test_briefing_matrix_forwards_its_allowance_to_paid_preparation(clock, tmp_path):
     """A supplied matrix allowance reaches model work before any authored UI cases run."""
     from eador.app import create_game
-    from tools.verify_eador_guidance import verify_briefing_matrix
+    from tools.verify_guidance import verify_briefing_matrix
 
     game = create_game(backend='mock', save_dir=tmp_path)
     try:
@@ -120,7 +120,7 @@ def test_reading_verifier_cli_rejects_invalid_allowance_before_starting(name, ca
     """Invalid CLI allowances fail before any preparation, file output or native session starts."""
     from importlib import import_module
 
-    main = import_module('tools.verify_eador_' + name).main
+    main = import_module('tools.verify_' + name).main
     with pytest.raises(SystemExit) as error:
         main(['--cpu-percent', '0'])
     assert error.value.code == 2

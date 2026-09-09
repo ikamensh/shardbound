@@ -24,8 +24,8 @@ from eador.model import State
 from eador.scene import ShardScene
 from saga2d import Button, Label
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
+from tools.sources import framework_sources, source_name
+from tools.ui import PlayerInput
 
 
 class PacedInput(PlayerInput):
@@ -46,7 +46,7 @@ def verify(output, *, backend='pyglet', budget=None):
     budget = CpuBudget(25) if budget is None else budget
     started, cpu_started = time.monotonic(), time.process_time()
     paths = sorted((ROOT / 'eador').glob('*.py')) + framework_sources()
-    paths += [Path(__file__).resolve(), ROOT / 'tools/eador_ui.py']
+    paths += [Path(__file__).resolve(), ROOT / 'tools/ui.py']
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     attacker, defender = State.new(7, 'Wizard'), State.new(12, 'Wizard')
     for action, args in [('end_turn', ()), ('build', ('temple',)), ('recruit', ('healer',))]:

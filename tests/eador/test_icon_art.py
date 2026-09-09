@@ -5,8 +5,8 @@ import json
 from PIL import Image
 import pytest
 
-from tools.build_eador import collect_package_data
-from tools.build_eador_icons import build_assets, verify_assets
+from tools.build import collect_package_data
+from tools.build_icons import build_assets, verify_assets
 
 
 def test_icon_catalogue_builds_reproducibly_and_survives_package_collection(tmp_path):

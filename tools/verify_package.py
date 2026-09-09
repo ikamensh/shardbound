@@ -1,6 +1,6 @@
 """Verify a built Shardbound archive, its online client and the Windows installer.
 
-    uv run python tools/verify_shardbound_package.py dist/shardbound --public-server wss://games.tachyon-ai.eu/play
+    uv run python tools/verify_package.py dist/shardbound --public-server wss://games.tachyon-ai.eu/play
 
 The extracted application runs the frozen smoke journey outside the checkout with
 an isolated profile, then the online diagnostic against a loopback room server.
@@ -21,7 +21,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.build_eador import check_shipped_audio, clean_environment, extract_archive, run_smoke, sha256, write_json  # noqa: E402
+from tools.build import check_shipped_audio, clean_environment, extract_archive, run_smoke, sha256, write_json  # noqa: E402
 from saga2d.packaging.verify import local_server, mesa_test_context  # noqa: E402
 
 

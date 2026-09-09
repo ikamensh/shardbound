@@ -5,8 +5,8 @@ from saga2d import Button
 from eador.app import create_game
 from eador.model import BUILDINGS, State
 from eador.scene import CatalogScene, ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_catalog_symbols_preserve_exact_stats_prices_and_purchase(tmp_path):
@@ -100,7 +100,7 @@ def test_catalog_reading_preview_purchase_and_restart(tmp_path):
 
 def test_catalog_pages_keep_every_item_and_the_reading_anchor(tmp_path):
     """Reflow preserves the first visible item and all entries without spending through navigation keys."""
-    from tools.verify_eador_catalog import catalog_pages
+    from tools.verify_catalog import catalog_pages
 
     state = State.new(7)
     before = state.to_json()

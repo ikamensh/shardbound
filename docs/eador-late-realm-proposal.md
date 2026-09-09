@@ -128,7 +128,7 @@ solvent local experiments do not extend their acceptance to hypothetical guards.
 
 ## Reproduction and limits
 
-[Tool](../tools/prototype_eador_late_realm.py),
+[Tool](../tools/prototype_late_realm.py),
 [retained report](evidence/late-realm-prototype.json), and
 [original paid inputs](evidence/crystal-service-comparison.examples.json).
 Source **456742c** records hashes for the game, policy helpers and prototype;
@@ -144,5 +144,5 @@ rules identity and explicit migration/continuation tests before UI integration.
 No native/UI, all-difficulty balance, bankruptcy or G07 completion claim is made.
 
 ```sh
-uv run python tools/prototype_eador_late_realm.py --report /tmp/late-realm.json
+uv run python tools/prototype_late_realm.py --report /tmp/late-realm.json
 ```

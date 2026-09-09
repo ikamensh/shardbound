@@ -15,7 +15,7 @@ from eador.codex import CATEGORIES, CodexScene
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def visible_labels(component):
@@ -34,8 +34,8 @@ def check_page(scene):
 
 
 def verify_matrix(game, output):
-    from tools.eador_relic_campaign import prepare_censer_watch
-    from tools.eador_observatory_campaign import prepare_observatory
+    from tools.relic_campaign import prepare_censer_watch
+    from tools.observatory_campaign import prepare_observatory
 
     observatory = prepare_observatory()
     observatory.explore(approach='clear')

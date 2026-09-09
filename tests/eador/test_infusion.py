@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from eador.model import RuleError, State
-from tools.eador_campaign import CampaignMetrics, finish_battle
+from tools.campaign import CampaignMetrics, finish_battle
 
 
 def paid_caster(hero='Wizard'):

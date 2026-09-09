@@ -2,9 +2,9 @@
 from saga2d import Label
 from eador.app import create_game
 from eador.scene import BattleScene, ShardScene
-from tools.eador_control_campaign import prepare_control_watch
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.control_campaign import prepare_control_watch
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def test_larger_hold_instructions_preserve_the_located_seal(tmp_path):

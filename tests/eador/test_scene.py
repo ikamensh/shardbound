@@ -8,12 +8,12 @@ from eador.app import create_game
 
 
 def press(game, key):
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     PlayerInput(game).press(key)
 
 
 def click(game, x, y):
-    from tools.eador_ui import PlayerInput
+    from tools.ui import PlayerInput
     PlayerInput(game).click(x, y)
 
 

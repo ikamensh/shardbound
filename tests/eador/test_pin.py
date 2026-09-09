@@ -175,7 +175,7 @@ def test_real_adventures_award_equip_and_activate_both_relic_capabilities(theme)
     from dataclasses import replace
     from eador.model import State
     from saga2d.testing.cpu_budget import CpuBudget
-    from tools.eador_campaign import finish_battle, provision_army, rest, march_to, site_position
+    from tools.campaign import finish_battle, provision_army, rest, march_to, site_position
 
     budget = CpuBudget(25)
     state = State.new(7, theme=theme)

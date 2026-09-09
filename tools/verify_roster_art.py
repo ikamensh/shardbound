@@ -8,12 +8,12 @@ from tempfile import TemporaryDirectory
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ['SAGA2D_SILENT'] = '1'
 
-from tools.verify_eador_role_art import TroopSheet
+from tools.verify_role_art import TroopSheet
 from eador.app import create_game
 from eador.codex import CodexScene
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 class ControlSheet(TroopSheet):
@@ -22,7 +22,7 @@ class ControlSheet(TroopSheet):
 
 
 def verify(output):
-    from tools.eador_control_campaign import prepare_control_watch
+    from tools.control_campaign import prepare_control_watch
 
     output.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(prefix='roster-art-') as directory:

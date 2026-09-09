@@ -1,6 +1,6 @@
 """Capture shipped presentation through paced native input, including larger reading size.
 
-    python tools/verify_eador_presentation.py --output /tmp/shardbound-presentation
+    python tools/verify_presentation.py --output /tmp/shardbound-presentation
 
 No simulation policy, campaign completion or audio listening is claimed. This
 short visual journey opens three worlds, saves/loads, and enters a real battle.
@@ -22,7 +22,8 @@ from eador.app import create_game
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ShardScene, TitleScene
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_ui import PlayerInput
+from tools.sources import source_name
+from tools.ui import PlayerInput
 
 
 def verify(output, *, backend='pyglet'):
@@ -31,7 +32,7 @@ def verify(output, *, backend='pyglet'):
     report = {'scope': 'Native visual input and exact saves; silent audio, no listening approval.',
               'frames': [], 'source_sha256': {}}
     for path in sorted((ROOT / 'eador').glob('*.py')):
-        report['source_sha256'][str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
+        report['source_sha256'][source_name(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
     with TemporaryDirectory(prefix='shardbound-presentation-') as directory:
         game = create_game(backend=backend, visible=False, save_dir=Path(directory) / 'saves')
         player = PlayerInput(game, native=backend == 'pyglet', output=output)

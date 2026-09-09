@@ -10,9 +10,9 @@ import pytest
 
 @pytest.fixture
 def current_report(tmp_path, monkeypatch):
-    from tools.audit_eador_army_decisions import main
+    from tools.audit_army_decisions import main
     input_report = tmp_path / 'control.json.gz'
-    monkeypatch.setattr(sys, 'argv', ['audit_eador_army_decisions.py', '--plan', 'control',
+    monkeypatch.setattr(sys, 'argv', ['audit_army_decisions.py', '--plan', 'control',
                                     '--output', str(input_report)])
     main()
     return input_report
@@ -20,7 +20,7 @@ def current_report(tmp_path, monkeypatch):
 
 def test_verifier_replays_one_current_report_through_paid_aftermath(tmp_path, current_report):
     """The CLI's current model report supplies both branches without requiring historical autoplay."""
-    from tools.verify_eador_army_decisions import verify
+    from tools.verify_army_decisions import verify
 
     input_report = current_report
     source = json.loads(gzip.decompress(input_report.read_bytes()))
@@ -37,7 +37,7 @@ def test_verifier_replays_one_current_report_through_paid_aftermath(tmp_path, cu
 
 def test_verifier_rejects_stale_or_incomplete_reports_before_replay(tmp_path, current_report):
     """Old pricing, framework changes and broken input journals must fail before a game is created."""
-    from tools.verify_eador_army_decisions import verify
+    from tools.verify_army_decisions import verify
 
     original = gzip.decompress(current_report.read_bytes())
     invalid = tmp_path / 'invalid.json.gz'

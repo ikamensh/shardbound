@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT))
 
 from eador.model import HERO_CLASSES, RuleError, State
 from saga2d.testing.cpu_budget import CpuBudget
-from tools.eador_sources import source_name
-from tools.eador_extraction_campaign import AdventureOrders, prepare_adventure, prepared_crossing, crossing_route, cache_route
+from tools.sources import framework_sources, source_name
+from tools.extraction_campaign import AdventureOrders, prepare_adventure, prepared_crossing, crossing_route, cache_route
 
 
 class PaidState:
@@ -85,9 +85,9 @@ def main(argv=None):
         budget = CpuBudget(args.cpu_percent)
     except ValueError as error:
         parser.error(str(error))
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
-                      ROOT / 'tools/eador_campaign.py', ROOT / 'tools/eador_roles_campaign.py',
-                      ROOT / 'tools/eador_extraction_campaign.py', Path(__file__).resolve()])
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
+                      ROOT / 'tools/campaign.py', ROOT / 'tools/roles_campaign.py',
+                      ROOT / 'tools/extraction_campaign.py', Path(__file__).resolve()])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -103,7 +103,7 @@ def main(argv=None):
         prepared = prepare_adventure(hero, 'elderwild', state=PaidState(State.new(7, hero, theme='elderwild')), budget=budget)
         for approach in ('light', 'full'):
             rows.append(measure(prepared, approach, cache_route, 'same six-body Cache army', budget=budget))
-    changed = [str(p.relative_to(ROOT)) for p in sources if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]]
+    changed = [source_name(p) for p in sources if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]]
     assert not changed
     report = {'revision': revision, 'dirty_at_start': dirty, 'cpu_percent': budget.percent,
               'source_sha256': hashes, 'source_files_changed': changed, 'seed': 7,

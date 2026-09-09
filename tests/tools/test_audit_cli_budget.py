@@ -8,7 +8,7 @@ import pytest
 def test_audit_cli_yields_and_preserves_the_paid_campaign(tmp_path, monkeypatch, audit):
     """A selected real campaign gets the default allowance, including its repeat check."""
     from importlib import import_module
-    main = import_module('tools.audit_eador_' + audit).main
+    main = import_module('tools.audit_' + audit).main
 
     samples = {'cpu': 0.0, 'wall': 0.0, 'sleeps': []}
 

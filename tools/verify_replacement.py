@@ -22,11 +22,11 @@ from eador.persistence import AUTO_SLOTS
 from eador.preferences import reading_scale
 from eador.replacement_scene import ReplacementScene
 from eador.scene import CatalogScene, ShardScene
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_campaign import finish_battle
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_extraction import PlayerOrders
-from tools.verify_eador_guidance import check_reading_layout
+from tools.sources import framework_sources, source_name, source_path
+from tools.campaign import finish_battle
+from tools.ui import PlayerInput
+from tools.verify_extraction import PlayerOrders
+from tools.verify_guidance import check_reading_layout
 
 
 def earned_army():
@@ -212,7 +212,7 @@ def verify(output, *, backend='pyglet'):
             events = player.events + replay.events
         finally:
             restarted._teardown()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   backend=backend, source_sha256=hashes, source_unchanged=True, input_activations=len(events),
                   exact_reloads=player.reloads, purchases=purchases, assault=assault, matrix=metrics, inputs=events)

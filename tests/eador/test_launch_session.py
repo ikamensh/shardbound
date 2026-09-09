@@ -3,7 +3,7 @@
 from eador.__main__ import create_session
 from eador.preferences import load_preferences
 from eador.scene import ShardScene, TitleScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def test_separate_data_directory_keeps_preferences_and_campaigns_together(tmp_path):

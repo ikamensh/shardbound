@@ -8,6 +8,7 @@ import numpy as np
 from saga2d import Game
 from sagaforge.synth import SAMPLE_RATE, write_wav
 from eador.sound import confirm
+from tools.sources import source_path
 
 
 def read_pcm(path):
@@ -98,7 +99,7 @@ def test_build_catalogue_decodes_routes_and_regenerates_identically(tmp_path, mo
     import hashlib
     import json
     from eador.sound import CUES, TRACKS, set_music
-    from tools.build_eador_audio import build_assets
+    from tools.build_audio import build_assets
     from saga2d.testing.cpu_budget import CpuBudget
 
     clock = {'cpu': 0., 'wall': 0., 'sleeps': []}
@@ -175,7 +176,7 @@ def test_shipping_files_and_sources_match_the_recorded_manifest():
     manifest = json.loads((root / 'eador' / 'assets' / 'audio-manifest.json').read_text())
     assert manifest['generator_version'] == GENERATOR_VERSION
     for relative, expected in manifest['source_sha256'].items():
-        assert hashlib.sha256((root / relative).read_bytes()).hexdigest() == expected, relative
+        assert hashlib.sha256(source_path(relative).read_bytes()).hexdigest() == expected, relative
     for relative, details in manifest['files'].items():
         path = root / 'eador' / 'assets' / relative
         assert hashlib.sha256(path.read_bytes()).hexdigest() == details['sha256'], relative

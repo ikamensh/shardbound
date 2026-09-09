@@ -8,7 +8,7 @@ from saga2d import Button
 from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ResultScene, ShardScene
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 JOURNAL = Path(__file__).resolve().parents[2] / 'docs/evidence/adventure-variety/route-seed5.json.gz'

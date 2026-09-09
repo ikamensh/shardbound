@@ -52,7 +52,7 @@ abilities, receive open sight, and gain no Rally, Smoke, Repulse or flight.
 Worlds and pending adventure rewards are never regenerated. A genuine saved
 version 10 Pinned Crossing continues to exactly the captured former result.
 
-`tools/eador_control_campaign.py` purchases all three new roles from ordinary
+`tools/control_campaign.py` purchases all three new roles from ordinary
 seed-seven Commander resources, travels and recovers, then enters Border Watch.
 Its explicit formation uses Smoke on the Archer's approach, Repulse to clear the
 seal, and flight across the occupied formation to close the remaining flank.
@@ -104,8 +104,8 @@ Reproduce with:
 
 ```sh
 uv run pytest -q
-uv run python tools/stress_eador_control.py --battles 1200 --campaign-seeds 20 --report /tmp/control-model.json
-uv run python tools/fuzz_eador.py --campaigns 300 --scenes 20 --events 10000 --report /tmp/control-fuzz.json
+uv run python tools/stress_control.py --battles 1200 --campaign-seeds 20 --report /tmp/control-model.json
+uv run python tools/fuzz.py --campaigns 300 --scenes 20 --events 10000 --report /tmp/control-fuzz.json
 ```
 
 Raw data: [control model](evidence/eador-control-model-2026-09-06.json),

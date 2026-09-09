@@ -4,7 +4,7 @@ import pytest
 
 @pytest.mark.parametrize('approach,rounds,fee', [('crossfire', 4, 0), ('unseal', 2, 2)])
 def test_vault_routes_spend_the_disclosed_fee_and_save_an_explicit_escape(tmp_path, approach, rounds, fee):
-    from tools.verify_eador_vault import verify
+    from tools.verify_vault import verify
 
     report = verify(tmp_path, backend='mock', approach=approach)
     assert report['battle_rounds'] == rounds

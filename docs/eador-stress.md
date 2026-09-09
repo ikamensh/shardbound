@@ -11,8 +11,8 @@ or evidence that the game is balanced or enjoyable.
 Use source checkpoint `31a2c88` and run from the repository:
 
 ```sh
-uv run python tools/fuzz_eador.py --campaigns 1000 --scenes 0 --report /tmp/eador-stress-model.json
-uv run python tools/fuzz_eador.py --campaigns 0 --scenes 100 --events 100000 --report /tmp/eador-stress-scenes.json
+uv run python tools/fuzz.py --campaigns 1000 --scenes 0 --report /tmp/eador-stress-model.json
+uv run python tools/fuzz.py --campaigns 0 --scenes 100 --events 100000 --report /tmp/eador-stress-scenes.json
 ```
 
 The default command runs twelve model and scene seeds in about seven seconds

@@ -1,8 +1,8 @@
-name: Shardbound Windows installer
+name: Windows installer
 
 on:
   push:
-    tags: ['shardbound-v*']
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       version:
@@ -10,7 +10,7 @@ on:
         required: true
         type: string
       publish:
-        description: 'Publish the matching existing shardbound-vVERSION tag after verification'
+        description: 'Publish the matching existing vVERSION tag after verification'
         type: boolean
         default: false
 
@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: shardbound-windows-${{ github.ref }}
+  group: windows-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
+        working-directory: shardbound
     env:
       UV_PYTHON_PREFERENCE: only-managed
       REQUESTED_VERSION: ${{ inputs.version }}
@@ -35,11 +36,21 @@ jobs:
     steps:
       - name: Preserve committed bytes for asset provenance
         run: git config --global core.autocrlf false
+        working-directory: .
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+          path: shardbound
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ikamensh/saga2d-framework
+          path: saga2d
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ikamensh/sagaforge
+          path: sagaforge
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: '0.12.10'
@@ -48,23 +59,23 @@ jobs:
       - name: Resolve exact release identity
         run: |
           $version = $env:REQUESTED_VERSION
-          if ($env:GITHUB_REF_TYPE -eq 'tag') { $version = $env:GITHUB_REF_NAME -replace '^shardbound-v', '' }
-          $version = uv run --locked --python 3.13.2 python -c 'import sys; from tools.build_game import version; print(version(sys.argv[1]))' $version
+          if ($env:GITHUB_REF_TYPE -eq 'tag') { $version = $env:GITHUB_REF_NAME -replace '^v', '' }
+          $version = uv run --locked --python 3.13.2 python -c 'import sys; from saga2d.packaging import version; print(version(sys.argv[1]))' $version
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "SHARDBOUND_VERSION=$version" | Add-Content $env:GITHUB_ENV
           if ($env:GITHUB_REF_TYPE -eq 'tag' -or $env:REQUESTED_PUBLISH -eq 'true') {
-            $revision = git rev-parse "refs/tags/shardbound-v$version^{commit}"
+            $revision = git rev-parse "refs/tags/v$version^{commit}"
             if ($LASTEXITCODE -ne 0 -or $revision -ne $env:GITHUB_SHA) { throw 'Publishing requires an existing version tag at the dispatched commit.' }
           }
       - name: Run packaging, save and online regression tests
         run: |
-          uv run --locked --python 3.13.2 --extra dev python -m pytest tests/packaging/test_eador_build.py tests/packaging/test_eador_smoke.py tests/packaging/test_eador_campaign.py tests/eador/test_online.py tests/eador/test_online_pvp.py tests/framework/test_online_menu.py tests/framework/test_release.py -q
+          uv run --locked --python 3.13.2 --extra dev python -m pytest tests/packaging tests/eador/test_online.py tests/eador/test_online_pvp.py tests/eador/test_multiplayer.py -q
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build pinned runtime, portable ZIP and per-user installer
         run: |
           $compiler = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
           if (-not (Test-Path $compiler)) { throw 'The Windows runner is missing its documented Inno Setup compiler.' }
-          uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build_eador.py --version $env:SHARDBOUND_VERSION --skip-smoke --installer --iscc $compiler --require-clean
+          uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build.py --version $env:SHARDBOUND_VERSION --skip-smoke --installer --iscc $compiler --require-clean
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           @{
             run_url = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
@@ -93,7 +104,7 @@ jobs:
           } | ConvertTo-Json | Set-Content dist/shardbound/mesa-test-context.json -Encoding utf8
       - name: Verify extracted and installed executables, native smoke and online co-op
         run: |
-          uv run --locked --python 3.13.2 python tools/verify_shardbound_package.py dist/shardbound --mesa-dir $env:SHARDBOUND_TEST_MESA --public-server wss://games.tachyon-ai.eu/play
+          uv run --locked --python 3.13.2 python tools/verify_package.py dist/shardbound --mesa-dir $env:SHARDBOUND_TEST_MESA --public-server wss://games.tachyon-ai.eu/play
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $result = Get-Content dist/shardbound/verification.json -Raw | ConvertFrom-Json
           if (-not $result.passed -or -not $result.install_shortcut_uninstall -or -not $result.installed.public_server.create_join -or $result.source_commit -ne $env:GITHUB_SHA) {
@@ -116,19 +127,19 @@ jobs:
         with:
           name: shardbound-windows-${{ github.sha }}-${{ github.run_attempt }}
           path: |
-            dist/shardbound/*-setup.exe
-            dist/shardbound/*-portable.zip
-            dist/shardbound/*.json
-            dist/shardbound/SHA256SUMS
-            dist/shardbound/release-notes.md
-            dist/shardbound/verification/
+            shardbound/dist/shardbound/*-setup.exe
+            shardbound/dist/shardbound/*-portable.zip
+            shardbound/dist/shardbound/*.json
+            shardbound/dist/shardbound/SHA256SUMS
+            shardbound/dist/shardbound/release-notes.md
+            shardbound/dist/shardbound/verification/
           if-no-files-found: warn
           compression-level: 0
           retention-days: 30
 
   publish:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/shardbound-v') || inputs.publish
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -145,5 +156,5 @@ jobs:
           version=$(python -c 'import json; print(json.load(open("release/build-manifest.json"))["version"])')
           flags=()
           if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
-          gh release create "shardbound-v$version" --verify-tag --title "Shardbound $version" --notes-file release/release-notes.md "${flags[@]}" \
+          gh release create "v$version" --verify-tag --title "Shardbound $version" --notes-file release/release-notes.md "${flags[@]}" \
             release/*-setup.exe release/*-portable.zip release/SHA256SUMS release/build-manifest.json release/verification.json release/workflow-build.json release/mesa-test-context.json

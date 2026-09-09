@@ -18,11 +18,11 @@ os.environ['SAGA2D_SILENT'] = '1'
 from eador.app import create_game
 from eador.model import State
 from eador.scene import ResultScene, ShardScene, TitleScene
-from tools.eador_sources import source_name
-from tools.eador_control_campaign import prepare_control_watch, watch_control_route
-from tools.eador_extraction_campaign import crossing_route, prepare_adventure
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_extraction import PlayerOrders
+from tools.sources import framework_sources, source_name
+from tools.control_campaign import prepare_control_watch, watch_control_route
+from tools.extraction_campaign import crossing_route, prepare_adventure
+from tools.ui import PlayerInput
+from tools.verify_extraction import PlayerOrders
 
 
 class ControlOrders(PlayerOrders):
@@ -65,10 +65,10 @@ class ControlOrders(PlayerOrders):
 
 def verify(output, *, backend='pyglet', scenario='smoke', player_type=PlayerInput):
     output.mkdir(parents=True, exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
-                      *[ROOT / 'tools' / name for name in ('eador_campaign.py', 'eador_control_campaign.py',
-                          'eador_extraction_campaign.py', 'eador_roles_campaign.py', 'eador_ui.py',
-                          'verify_eador_control.py', 'verify_eador_extraction.py')]])
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
+                      *[ROOT / 'tools' / name for name in ('campaign.py', 'control_campaign.py',
+                          'extraction_campaign.py', 'roles_campaign.py', 'ui.py',
+                          'verify_control.py', 'verify_extraction.py')]])
     hashes = {source_name(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -230,8 +230,8 @@ def verify(output, *, backend='pyglet', scenario='smoke', player_type=PlayerInpu
                     player.capture('smoke-expired-charge-still-spent')
             report = dict(scenario=scenario, backend=backend, input_activations=len(player.events),
                           exact_save_reloads=player.reloads, inputs=player.events)
-            changed = [str(path.relative_to(ROOT)) for path in sources
-                       if hashlib.sha256(path.read_bytes()).hexdigest() != hashes[str(path.relative_to(ROOT))]]
+            changed = [source_name(path) for path in sources
+                       if hashlib.sha256(path.read_bytes()).hexdigest() != hashes[source_name(path)]]
             assert not changed, 'Source changed during native verification'
             report.update(revision=revision, dirty_at_start=dirty, source_sha256=hashes,
                           source_files_changed=changed, elapsed_seconds=perf_counter() - started,

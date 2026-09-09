@@ -18,14 +18,14 @@ from eador.codex import CodexScene
 from eador.encounter_scene import EncounterScene
 from eador.preferences import reading_scale
 from eador.scene import BattleScene, ChoiceScene, ResultScene, ShardScene, TitleScene
-from tools.eador_sources import source_name
-from tools.audit_eador_aerie import Purchases, without_flight_reachable
-from tools.eador_aerie_campaign import (prepare_aerie, aerie_western_route, aerie_northern_route,
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_aerie import Purchases, without_flight_reachable
+from tools.aerie_campaign import (prepare_aerie, aerie_western_route, aerie_northern_route,
                                        aerie_scout_route, aerie_failed_sortie, aerie_retry_route)
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_reading import check_page
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
+from tools.verify_guidance import check_reading_layout
+from tools.verify_reading import check_page
 
 PLANS = ('western', 'western-heal', 'northern', 'scout', 'failed-retry')
 
@@ -123,11 +123,11 @@ def failed_retry(state):
 
 def verify(output, *, backend='pyglet', plan='western'):
     output.mkdir(parents=True,exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'),*ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'),*framework_sources(),
                       *ROOT.joinpath('tools').glob('eador_*.py'),*[ROOT/'tools'/name for name in (
-                          'audit_eador_aerie.py','audit_eador_extraction.py','verify_eador_control.py',
-                          'verify_eador_extraction.py','verify_eador_guidance.py','verify_eador_reading.py',
-                          'verify_eador_aerie.py')]])
+                          'audit_aerie.py','audit_extraction.py','verify_control.py',
+                          'verify_extraction.py','verify_guidance.py','verify_reading.py',
+                          'verify_aerie.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     dirty = subprocess.check_output(['git','status','--short'],cwd=ROOT,text=True).splitlines()
@@ -172,7 +172,7 @@ def verify(output, *, backend='pyglet', plan='western'):
             player.reload(before)
             check_reading_layout(game.scene)
             player.capture('aerie-reward-kept-once')
-            changed=[name for name,digest in hashes.items() if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest]
+            changed=[name for name,digest in hashes.items() if hashlib.sha256(source_path(name).read_bytes()).hexdigest()!=digest]
             assert not changed
             report.update(input_activations=len(player.events),exact_save_reloads=player.reloads,orders=play.orders,
                           inputs=player.events,source_revision=revision,dirty_at_start=dirty,source_sha256=hashes,

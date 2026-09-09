@@ -14,18 +14,18 @@ sys.path.insert(0, str(ROOT))
 
 from eador.app import create_game
 from eador.scene import BattleScene, ChoiceScene, TitleScene
-from tools.eador_sources import source_name
-from tools.eador_ui import PlayerInput
-from tools.eador_vault_campaign import prepare_vault, vault_route
-from tools.verify_eador_extraction import PlayerOrders
+from tools.sources import framework_sources, source_name
+from tools.ui import PlayerInput
+from tools.vault_campaign import prepare_vault, vault_route
+from tools.verify_extraction import PlayerOrders
 
 
 def verify(output, *, backend='pyglet', approach='crossfire'):
     output.mkdir(parents=True, exist_ok=True)
-    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *ROOT.joinpath('saga2d').rglob('*.py'),
+    sources = sorted([*ROOT.joinpath('eador').glob('*.py'), *framework_sources(),
                       *[ROOT / 'tools' / name for name in (
-                          'eador_campaign.py', 'eador_extraction_campaign.py', 'eador_ui.py',
-                          'eador_vault_campaign.py', 'verify_eador_extraction.py', 'verify_eador_vault.py')]])
+                          'campaign.py', 'extraction_campaign.py', 'ui.py',
+                          'vault_campaign.py', 'verify_extraction.py', 'verify_vault.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -67,8 +67,8 @@ def verify(output, *, backend='pyglet', approach='crossfire'):
                           mana_spent=mana_spent,
                           survivors=survivors, input_activations=len(player.events), exact_save_reloads=player.reloads,
                           orders=play.orders, inputs=player.events)
-            changed = [str(p.relative_to(ROOT)) for p in sources
-                       if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[str(p.relative_to(ROOT))]]
+            changed = [source_name(p) for p in sources
+                       if hashlib.sha256(p.read_bytes()).hexdigest() != hashes[source_name(p)]]
             assert not changed
             report.update(revision=revision, dirty_at_start=dirty, source_sha256=hashes,
                           source_files_changed=changed, elapsed_seconds=time.perf_counter() - started,

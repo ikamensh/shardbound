@@ -1,8 +1,8 @@
 """Soak Shardbound's campaign and real scene input with deterministic seeds.
 
-    uv run python tools/fuzz_eador.py
-    uv run python tools/fuzz_eador.py --seed 40 --seeds 100 --steps 250
-    uv run python tools/fuzz_eador.py --campaigns 1000 --scenes 100 --events 100000 --report /tmp/eador-stress.json
+    uv run python tools/fuzz.py
+    uv run python tools/fuzz.py --seed 40 --seeds 100 --steps 250
+    uv run python tools/fuzz.py --campaigns 1000 --scenes 100 --events 100000 --report /tmp/eador-stress.json
 
 Every command checks health, occupancy, ownership and save roundtrips. Scene
 runs use mock-backend input and visible button bounds, including unfinished
@@ -47,6 +47,7 @@ from eador.replacement_scene import ReplacementScene  # noqa: E402
 from eador.settings_scene import SettingsScene  # noqa: E402
 from eador.scene import (BattleScene, CatalogScene, ChoiceScene, HelpScene, HeroScene,
                          ResultScene, SaveScene, ShardScene, TitleScene)  # noqa: E402
+from tools.sources import framework_sources  # noqa: E402
 
 
 def check_state(state: State) -> None:
@@ -204,7 +205,7 @@ def campaign_run(seed: int, steps: int, metrics: Counter, *, linked: bool = Fals
     if linked:
         # Start an equal share at each stage using real completed prior shards;
         # short random prefixes alone almost never discover a departure.
-        from tools.eador_linked_campaign import play_stage, travel_selection
+        from tools.linked_campaign import play_stage, travel_selection
         for _ in range(seed % 3):
             state = play_stage(state, budget=budget)
             assert state.campaign.phase == 'departure', 'linked setup did not win its prior shard'
@@ -840,8 +841,8 @@ def main() -> None:
     project = Path(__file__).resolve().parents[1]
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=project, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=project, text=True).splitlines()
-    source_files = [*project.joinpath('eador').glob('*.py'), *project.joinpath('saga2d').rglob('*.py'), Path(__file__).resolve(),
-                    project / 'tools/eador_campaign.py', project / 'tools/eador_linked_campaign.py']
+    source_files = [*project.joinpath('eador').glob('*.py'), *framework_sources(), Path(__file__).resolve(),
+                    project / 'tools/campaign.py', project / 'tools/linked_campaign.py']
     source_hashes = {str(path.relative_to(project)): hashlib.sha256(path.read_bytes()).hexdigest()
                      for path in sorted(source_files)}
     for index, seed in enumerate(range(args.seed, args.seed + campaign_count)):

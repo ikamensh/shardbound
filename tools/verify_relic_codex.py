@@ -12,8 +12,8 @@ from eador.app import create_game
 from eador.codex import CodexScene
 from eador.model import State
 from eador.scene import ShardScene
-from tools.eador_relic_campaign import prepare_censer_watch
-from tools.eador_ui import PlayerInput
+from tools.relic_campaign import prepare_censer_watch
+from tools.ui import PlayerInput
 
 
 def verify(output, *, backend='pyglet'):

@@ -6,7 +6,7 @@ import pytest
     ('western',4,53,4,7), ('western-heal',4,45,8,7), ('northern',3,40,8,7), ('scout',5,27,4,6),
 ])
 def test_paid_aerie_input_plans_keep_exact_saves_and_reward_once(tmp_path, plan, rounds, wounds, mana, bodies):
-    from tools.verify_eador_aerie import verify
+    from tools.verify_aerie import verify
 
     report = verify(tmp_path, backend='mock', plan=plan)
     assert (report['battle_rounds'],report['hp_deficit'],report['mana_spent']) == (rounds,wounds,mana)
@@ -18,7 +18,7 @@ def test_paid_aerie_input_plans_keep_exact_saves_and_reward_once(tmp_path, plan,
 
 
 def test_failed_aerie_inputs_keep_dead_guards_and_fund_the_retry(tmp_path):
-    from tools.verify_eador_aerie import verify
+    from tools.verify_aerie import verify
 
     report = verify(tmp_path, backend='mock', plan='failed-retry')
     failure = report['failed_attempt']

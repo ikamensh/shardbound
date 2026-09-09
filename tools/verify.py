@@ -1,6 +1,6 @@
 """Render Shardbound and verify real pyglet keyboard/mouse scene transitions.
 
-Run: ``uv run python tools/verify_eador.py --output /tmp/shardbound``.
+Run: ``uv run python tools/verify.py --output /tmp/shardbound``.
 Open the resulting PNGs before shipping visual changes. Requires an awake
 display on macOS; windows stay hidden and save files live in a temp folder.
 """

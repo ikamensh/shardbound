@@ -8,7 +8,7 @@ import pytest
 
 from saga2d import Button, Scene
 from tests.eador.test_game_audio import cues
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def human_battle(team, *, defender_healer=False):

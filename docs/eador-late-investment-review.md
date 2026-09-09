@@ -126,9 +126,9 @@ late income, a recurring gold sink, or manual player enjoyment. Production shoul
 wait for a UI that shows the retired identity, rank/XP and HP, fresh replacement,
 normal price, action cost and changed upkeep before the player commits.
 
-Run `uv run python tools/prototype_eador_army_replacement.py` to reproduce the
+Run `uv run python tools/prototype_army_replacement.py` to reproduce the
 observed ledger, ordinary full-army rejection and local comparisons. The
-[source](../tools/prototype_eador_army_replacement.py) and
+[source](../tools/prototype_army_replacement.py) and
 [report](evidence/army-replacement-prototype.json.gz) retain input provenance, all
 orders, intermediate rival ownership, battle logs, exact results and source hashes.
 The original [paid saves](evidence/crystal-service-comparison.examples.json) are

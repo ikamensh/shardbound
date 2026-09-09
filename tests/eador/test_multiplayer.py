@@ -97,7 +97,7 @@ def test_shardbound_guest_can_depart_to_the_next_campaign_shard(tmp_path):
     from eador.app import create_game
     from eador.campaign_scene import CampaignScene
     from eador.multiplayer import ShardboundMatch, NetworkShardScene
-    from tools.eador_linked_campaign import play_stage
+    from tools.linked_campaign import play_stage
     match = ShardboundMatch(campaign=True)
     match.state = play_stage(match.state)
     assert match.state.campaign.phase == 'departure'

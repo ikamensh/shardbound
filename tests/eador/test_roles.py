@@ -3,7 +3,7 @@ import pytest
 
 from eador.battle import Battle
 from eador.model import Hero, RuleError, Troop, UNITS
-from tools.eador_roles_campaign import prepare_support_watch
+from tools.roles_campaign import prepare_support_watch
 
 
 def test_acolyte_spends_shared_mana_to_heal_without_spending_the_heros_order():
@@ -58,7 +58,7 @@ def test_a_v8_active_acolyte_keeps_its_exact_prior_continuation():
     import json
     from pathlib import Path
     from eador.model import State
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
     fixture = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixture / 'v8_acolyte_battle.json').read_text())
     assert not any(unit.can_heal for unit in state.battle.units)

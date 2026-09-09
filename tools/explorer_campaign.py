@@ -1,7 +1,7 @@
 """Purchased split-party preparations and public orders for native input adapters."""
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders
 
 
 def prepare_explorer(hero_class='Commander', *, support='ranger', collect_boots=False, state=None, budget=None):

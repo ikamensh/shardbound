@@ -1,7 +1,7 @@
 """Paid Aerie preparations and manual landing-control plans for input adapters."""
 from eador.model import BUILDINGS, State, UNITS
-from tools.eador_campaign import finish_battle, march_to, rest, site_position
-from tools.eador_extraction_campaign import AdventureOrders
+from tools.campaign import finish_battle, march_to, rest, site_position
+from tools.extraction_campaign import AdventureOrders
 
 
 def prepare_aerie(hero_class='Commander', *, party='flight', state=None, budget=None):

@@ -1,11 +1,11 @@
 """Build a standalone Shardbound artifact and verify the archive.
 
 Run from the repository root:
-uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build_eador.py
+uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build.py
 
 Release builds name their version (``--version 0.1.0-preview.1 --require-clean``)
 and, on Windows, add ``--installer``. Publication is a separate recorded step:
-see tools/verify_shardbound_package.py and .github/workflows/shardbound-windows.yml.
+see tools/verify_package.py and .github/workflows/shardbound-windows.yml.
 """
 
 import argparse
@@ -88,8 +88,8 @@ def snapshot_sources(source: Path) -> dict:
         shutil.copyfile(ROOT / "packaging" / name, source / name)
     (source / "tools").mkdir()
     (source / "tools" / "__init__.py").write_text('"""Frozen public-input verification helpers."""\n')
-    for name in ("build_eador.py", "build_eador_audio.py", "eador_ui.py",
-                 "eador_campaign.py", "eador_linked_campaign.py"):
+    for name in ("build.py", "build_audio.py", "ui.py",
+                 "campaign.py", "linked_campaign.py"):
         shutil.copyfile(ROOT / "tools" / name, source / "tools" / name)
     validate_audio(source)
     data = collect_package_data(source)

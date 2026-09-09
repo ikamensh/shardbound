@@ -1,6 +1,6 @@
 """Render Shardbound settings and exercise native keyboard input, silently.
 
-    uv run python tools/verify_eador_settings.py --out /tmp/shardbound-settings
+    uv run python tools/verify_settings.py --out /tmp/shardbound-settings
 
 Settings is reached through the title and in-game guide using native keys.
 """

@@ -21,7 +21,7 @@ preference key or campaign-save field was added. Its final-stage wording now
 correctly says victory completes the three-shard campaign, rather than
 promising a further departure.
 
-`tools/verify_eador_campaign_plan.py` prepares real saved states with public
+`tools/verify_campaign_plan.py` prepares real saved states with public
 purchases, battles, travel, advancement, capital loss and recovery. Eleven
 cases cover all five contracts, all three mode openings, zero/one/two held
 Foundries, cleared Border Watch, both earned finales and spent recovery.
@@ -30,7 +30,7 @@ The matrix checks all of them at both reading sizes and 1280×720, 1280×800,
 full state JSON to prove that reading and locating do not change the campaign.
 
 ```sh
-uv run python tools/verify_eador_campaign_plan.py --output /tmp/shardbound-campaign-plan-reading
+uv run python tools/verify_campaign_plan.py --output /tmp/shardbound-campaign-plan-reading
 uv run python -m pytest tests/eador/test_campaign_plan_reading.py tests/eador/test_campaign_scene.py -q
 ```
 

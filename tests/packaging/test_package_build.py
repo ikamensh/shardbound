@@ -1,7 +1,7 @@
 """Packaging inputs remain explicit and verifiable before invoking PyInstaller."""
 
 import hashlib
-from tools.build_eador import collect_package_data
+from tools.build import collect_package_data
 
 
 def test_package_data_collection_hashes_every_shipped_file_deterministically(tmp_path):
@@ -33,13 +33,13 @@ def test_package_data_collection_hashes_every_shipped_file_deterministically(tmp
 def test_snapshot_freezes_spec_assets_and_regeneration_sources_before_build(tmp_path):
     """A build consumes one self-contained snapshot, with exact data hashes independent of cwd."""
     import json
-    from tools.build_eador import ROOT, snapshot_sources, validate_audio
+    from tools.build import ROOT, snapshot_sources, validate_audio
 
     source = tmp_path / 'source'
     data = snapshot_sources(source)
     assert (source / 'shardbound.spec').read_bytes() == (ROOT / 'packaging/shardbound.spec').read_bytes()
     assert (source / 'entry.py').read_bytes() == (ROOT / 'packaging/entry.py').read_bytes()
-    assert (source / 'tools/build_eador_audio.py').read_bytes() == (ROOT / 'tools/build_eador_audio.py').read_bytes()
+    assert (source / 'tools/build_audio.py').read_bytes() == (ROOT / 'tools/build_audio.py').read_bytes()
     assert json.loads((source / 'package-data.json').read_text()) == data
     audio = json.loads((source / 'eador/assets/audio-manifest.json').read_text())
     from eador.sound import CUES, TRACKS
@@ -67,7 +67,7 @@ def test_snapshot_freezes_spec_assets_and_regeneration_sources_before_build(tmp_
 def test_audio_validation_refuses_corrupt_missing_unrecorded_and_stale_inputs(tmp_path):
     """A successful build must never attach provenance for a different set of bytes."""
     import pytest
-    from tools.build_eador import snapshot_sources, validate_audio
+    from tools.build import snapshot_sources, validate_audio
 
     source = tmp_path / 'source'
     snapshot_sources(source)
@@ -85,16 +85,16 @@ def test_audio_validation_refuses_corrupt_missing_unrecorded_and_stale_inputs(tm
     with pytest.raises(RuntimeError, match='unrecorded=.*unrecorded'):
         validate_audio(source)
     extra.unlink()
-    generator = source / 'tools/build_eador_audio.py'
+    generator = source / 'tools/build_audio.py'
     generator.write_bytes(generator.read_bytes() + b'\n# changed composition build\n')
-    with pytest.raises(RuntimeError, match='Audio generator differs.*build_eador_audio'):
+    with pytest.raises(RuntimeError, match='Audio generator differs.*build_audio'):
         validate_audio(source)
 
 
 def test_clean_environment_keeps_the_windows_system_root_whatever_its_case(monkeypatch):
     """CI runners spell SystemRoot differently; the isolated launch must still find System32."""
     import os
-    from tools.build_eador import clean_environment
+    from tools.build import clean_environment
 
     monkeypatch.setattr(os, 'name', 'nt')
     monkeypatch.setattr(os, 'pathsep', ';')

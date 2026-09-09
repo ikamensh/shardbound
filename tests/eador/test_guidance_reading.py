@@ -6,8 +6,8 @@ from saga2d import Label
 from eador.app import create_game
 from eador.model import State
 from eador.scene import HelpScene, ShardScene
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
 
 
 def guide_body_size(game):
@@ -58,8 +58,8 @@ def test_saved_reading_size_keeps_paid_briefing_choice_cost_and_geometry_reviewa
     from eador.model import UNITS
     from eador.scene import BattleScene
     from eador.ui import icon_path
-    from tools.eador_observatory_campaign import prepare_observatory
-    from tools.verify_eador_shard_reading import check_metric
+    from tools.observatory_campaign import prepare_observatory
+    from tools.verify_shard_reading import check_metric
 
     path = tmp_path / 'settings.json'
     previous = b'{"codex_text_scale": 125}'
@@ -113,7 +113,7 @@ def test_saved_reading_size_keeps_paid_briefing_choice_cost_and_geometry_reviewa
 
 def test_all_paid_briefings_and_wounded_retries_fit_both_sizes_without_committing(tmp_path):
     """Each actual approach, including blocked fees and the linked Gate, stays fully reviewable."""
-    from tools.verify_eador_guidance import verify_briefing_matrix
+    from tools.verify_guidance import verify_briefing_matrix
 
     game = create_game(backend='mock', save_dir=tmp_path / 'saves')
     try:
@@ -134,7 +134,7 @@ def test_all_paid_briefings_and_wounded_retries_fit_both_sizes_without_committin
                                                   ('Scout', None, 'Hero starts alone east')])
 def test_explorer_names_the_actual_isolated_party_in_both_approaches(tmp_path, hero, support, isolated):
     """A real purchased party is named from deployment, including a lone hero, without changing its orders."""
-    from tools.eador_explorer_campaign import prepare_explorer
+    from tools.explorer_campaign import prepare_explorer
     from eador.encounter_scene import EncounterScene
 
     (tmp_path / 'settings.json').write_text('{"codex_text_scale": 125}')

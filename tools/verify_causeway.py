@@ -17,14 +17,14 @@ from eador.app import create_game
 from eador.encounter_scene import EncounterScene
 from eador.model import State
 from eador.scene import ResultScene, ShardScene, TitleScene
-from tools.eador_sources import framework_sources, source_name
-from tools.audit_eador_aerie import Purchases
-from tools.eador_causeway_campaign import (prepare_causeway, causeway_focus_route,
+from tools.sources import framework_sources, source_name, source_path
+from tools.audit_aerie import Purchases
+from tools.causeway_campaign import (prepare_causeway, causeway_focus_route,
     causeway_guard_route, causeway_scout_route, causeway_failed_attempt, causeway_retry_route)
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_control import ControlOrders
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_reading import check_page
+from tools.ui import PlayerInput
+from tools.verify_control import ControlOrders
+from tools.verify_guidance import check_reading_layout
+from tools.verify_reading import check_page
 
 PLANS = ('focus', 'guard', 'backstop', 'infused-guard', 'scout', 'scout-heal', 'failed-retry')
 
@@ -83,9 +83,9 @@ def verify(output, *, backend='pyglet', plan='focus'):
     output.mkdir(parents=True, exist_ok=True)
     sources = sorted([*ROOT.glob('eador/*.py'), *framework_sources(),
                       *ROOT.glob('tools/eador_*.py'), *[ROOT / 'tools' / name for name in (
-                          'audit_eador_aerie.py', 'audit_eador_extraction.py', 'verify_eador_causeway.py',
-                          'verify_eador_control.py', 'verify_eador_extraction.py',
-                          'verify_eador_guidance.py', 'verify_eador_reading.py')]])
+                          'audit_aerie.py', 'audit_extraction.py', 'verify_causeway.py',
+                          'verify_control.py', 'verify_extraction.py',
+                          'verify_guidance.py', 'verify_reading.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()
@@ -161,7 +161,7 @@ def verify(output, *, backend='pyglet', plan='focus'):
             (output / 'final-state.json').write_text(state.to_json())
         finally:
             game._teardown(); game.backend.quit()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == sha for path, sha in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == sha for path, sha in hashes.items())
     (output / 'journey.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f'Causeway {plan} passed ({backend}): {report["input_activations"]} inputs, {report["exact_save_reloads"]} reloads')
     return report

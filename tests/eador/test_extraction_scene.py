@@ -5,8 +5,8 @@ from eador.app import create_game
 from eador.encounter_scene import EncounterScene
 from eador.encounters import ENCOUNTERS
 from eador.scene import BattleScene, ShardScene
-from tools.eador_extraction_campaign import prepare_adventure
-from tools.eador_ui import PlayerInput
+from tools.extraction_campaign import prepare_adventure
+from tools.ui import PlayerInput
 
 
 @pytest.mark.parametrize('theme', ['frontier', 'elderwild'])
@@ -44,14 +44,14 @@ def test_second_adventure_approach_is_reviewable_cancelable_and_saved_exactly(tm
                                           ('elderwild', 'light'), ('elderwild', 'full')])
 def test_paid_manual_extraction_routes_work_through_visible_player_orders(tmp_path, theme, approach):
     """Both choices at both sites reach an explicit, saved escape with living defenders."""
-    from tools.verify_eador_extraction import verify
+    from tools.verify_extraction import verify
     report = verify(tmp_path, backend='mock', theme=theme, approach=approach)
     assert report['exact_save_reloads'] >= 2
 
 
 def test_spending_the_carriers_order_on_an_exit_disables_evacuation_until_reload(tmp_path):
     """The hero must explicitly leave with an unspent order; a saved ready carrier can do so."""
-    from tools.eador_extraction_campaign import AdventureOrders, crossing_route
+    from tools.extraction_campaign import AdventureOrders, crossing_route
     from eador.scene import ResultScene
 
     class StopBeforeEscape(AdventureOrders):

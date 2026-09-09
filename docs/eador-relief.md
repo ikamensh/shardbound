@@ -114,16 +114,16 @@ ordinary Grove at `(0,1)` after explicitly declining the optional Relief at
 
 ```sh
 uv run pytest -q
-uv run python tools/audit_eador_relief.py --output /tmp/relief.json.gz
-uv run python tools/verify_eador_relief.py --plan forward
-uv run python tools/verify_eador_relief.py --plan western
-uv run python tools/verify_eador_relief.py --plan scout
-uv run python tools/verify_eador_relief.py --plan passive
-uv run python tools/verify_eador_relief.py --plan failed-retry
-uv run python tools/verify_eador_relief.py --mode accessible --seed 2
-uv run python tools/verify_eador_relief.py --mode challenge
-uv run python tools/fuzz_eador.py --campaigns 300 --scenes 20 --events 10000
-uv run python tools/fuzz_eador.py --linked --campaigns 60 --scenes 0
+uv run python tools/audit_relief.py --output /tmp/relief.json.gz
+uv run python tools/verify_relief.py --plan forward
+uv run python tools/verify_relief.py --plan western
+uv run python tools/verify_relief.py --plan scout
+uv run python tools/verify_relief.py --plan passive
+uv run python tools/verify_relief.py --plan failed-retry
+uv run python tools/verify_relief.py --mode accessible --seed 2
+uv run python tools/verify_relief.py --mode challenge
+uv run python tools/fuzz.py --campaigns 300 --scenes 20 --events 10000
+uv run python tools/fuzz.py --linked --campaigns 60 --scenes 0
 uv run python tools/fuzz.py
 ```
 

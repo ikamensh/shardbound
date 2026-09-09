@@ -7,7 +7,7 @@ import pytest
 from eador.__main__ import create_session
 from eador.model import State
 from eador.persistence import CampaignSaves
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 def earned_save(plan, command):

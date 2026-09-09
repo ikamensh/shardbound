@@ -1,6 +1,6 @@
 # Real-backend soak
 
-`tools/soak_eador.py` produces reproducible sustained-rendering evidence for
+`tools/soak.py` produces reproducible sustained-rendering evidence for
 G15 in [the release criteria](early-access-criteria.md). A successful short
 run validates the harness. Only a completed run with at least 7,200 measured
 seconds satisfies the two-hour duration requirement; G15 also requires the
@@ -12,10 +12,10 @@ Run on an awake macOS desktop with the project dependencies installed:
 
 ```sh
 # Fast integration check; 60 Hz rendering, accelerated inputs.
-uv run python tools/soak_eador.py --revision 31a2c88 --seconds 65 --input-interval .05 --output dist/soak/check
+uv run python tools/soak.py --revision 31a2c88 --seconds 65 --input-interval .05 --output dist/soak/check
 
 # Two hours; one logical input every 250 ms.
-uv run python tools/soak_eador.py --revision 31a2c88 --seconds 7200 --output dist/soak/baseline-31a2c88
+uv run python tools/soak.py --revision 31a2c88 --seconds 7200 --output dist/soak/baseline-31a2c88
 ```
 
 Output directories must be new, so earlier evidence cannot be overwritten.

@@ -23,11 +23,11 @@ from eador.preferences import reading_scale
 from eador.replacement_scene import ReplacementScene
 from eador.scene import SaveScene, ShardScene
 from eador.style import RED
-from tools.eador_sources import framework_sources, source_name
-from tools.eador_ui import PlayerInput
-from tools.verify_eador_guidance import check_reading_layout
-from tools.verify_eador_replacement import earned_army, open_review
-from tools.verify_eador_saves import select_slot
+from tools.sources import framework_sources, source_name, source_path
+from tools.ui import PlayerInput
+from tools.verify_guidance import check_reading_layout
+from tools.verify_replacement import earned_army, open_review
+from tools.verify_saves import select_slot
 
 
 def queued_keys(player, names):
@@ -180,7 +180,7 @@ def verify(output, *, backend='pyglet'):
             assert occupied.is_dir() and manual.is_dir()
         finally:
             game._teardown()
-    assert all(hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
+    assert all(hashlib.sha256(source_path(path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
     report = dict(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   backend=backend, source_sha256=hashes, source_unchanged=True, input_activations=len(player.events),
                   directory_characters=len(str(directory)), matrix=metrics, inputs=player.events,

@@ -2,7 +2,7 @@
 from eador.model import State
 import pytest
 
-from tools.eador_explorer_campaign import prepare_explorer, explorer_route, explorer_healer_route, explorer_scout_route
+from tools.explorer_campaign import prepare_explorer, explorer_route, explorer_healer_route, explorer_scout_route
 from tests.eador.test_extraction_journeys import Journey, assert_one_reward
 
 
@@ -47,7 +47,7 @@ def test_purchased_parties_escape_both_assemblies_with_no_hidden_ranger_requirem
 
 
 def test_saved_failed_northern_assembly_keeps_wounded_patrol_on_free_southern_retry():
-    from tools.eador_campaign import finish_battle, march_to, rest
+    from tools.campaign import finish_battle, march_to, rest
 
     before = prepare_explorer().to_json()
     complete = explorer_route(State.from_json(before))
@@ -99,7 +99,7 @@ def test_one_hundred_frontier_sources_still_include_every_relic_and_prior_advent
 def test_actual_prior_caravan_battle_keeps_its_site_and_complete_saved_continuation():
     import json
     from pathlib import Path
-    from tools.eador_campaign import finish_battle
+    from tools.campaign import finish_battle
 
     fixtures = Path(__file__).parent / 'fixtures'
     state = State.from_json((fixtures / 'v12_frontier_caravan_battle.json').read_text())
@@ -142,7 +142,7 @@ def test_boots_earned_at_camp_make_the_later_explorer_reward_an_explicit_saved_d
 
 
 def test_missed_deadline_keeps_real_losses_and_allows_a_paid_replacement_expedition():
-    from tools.eador_campaign import finish_battle, march_to, rest
+    from tools.campaign import finish_battle, march_to, rest
 
     state = prepare_explorer()
     pos = state.hero.pos

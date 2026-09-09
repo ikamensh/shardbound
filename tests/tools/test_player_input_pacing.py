@@ -9,7 +9,7 @@ from eador.app import create_game
 from eador.model import State
 from eador.scene import BattleScene, ShardScene
 from saga2d.backends.mock_backend import MockBackend
-from tools.eador_ui import PlayerInput
+from tools.ui import PlayerInput
 
 
 class NativeWindow:

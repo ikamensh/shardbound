@@ -28,7 +28,7 @@ def clock(monkeypatch):
 
 def test_crossing_preparation_and_orders_yield_without_changing_the_earned_result(clock):
     """The purchased seven-body party and its actual escape match an unpaced run exactly."""
-    from tools.eador_extraction_campaign import AdventureOrders, crossing_route, prepared_crossing
+    from tools.extraction_campaign import AdventureOrders, crossing_route, prepared_crossing
 
     expected = prepared_crossing()
     budget = CpuBudget(25)
@@ -45,8 +45,8 @@ def test_crossing_preparation_and_orders_yield_without_changing_the_earned_resul
 
 def test_scout_causeway_preparation_and_recorded_orders_share_the_allowance(clock):
     """Scout preparation and exact-save tactical recording preserve the same paid escape."""
-    from tools.audit_eador_aerie import RecordedOrders
-    from tools.eador_causeway_campaign import causeway_scout_route, prepare_causeway
+    from tools.audit_aerie import RecordedOrders
+    from tools.causeway_campaign import causeway_scout_route, prepare_causeway
 
     expected = prepare_causeway('Scout')
     budget = CpuBudget(25)
@@ -63,7 +63,7 @@ def test_scout_causeway_preparation_and_recorded_orders_share_the_allowance(cloc
 
 def test_hero_collection_preparation_defaults_to_pacing_without_changing_its_save(clock):
     """The fixed collection preparations yield by default and preserve every earned result."""
-    from tools.verify_eador_hero import prepared_heroes
+    from tools.verify_hero import prepared_heroes
 
     expected = prepared_heroes(budget=CpuBudget(100))
     assert not clock['sleeps'], 'Explicit stress allowance must disable sleeping'

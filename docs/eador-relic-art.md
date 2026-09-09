@@ -15,7 +15,7 @@ are fixed layouts for the 1280×800 logical canvas, not a text-scaling facility.
 need space reserved for it; a future multiline layout component could remove that
 specific manual coordination if font scaling is introduced.
 
-Run `python tools/verify_eador_relic_art.py` for native screenshots and real input.
+Run `python tools/verify_relic_art.py` for native screenshots and real input.
 It checks an old saved eight-relic collection, records actual choices along paid
 public campaign routes for all three themes, reloads each new reward, and equips
 it through visible controls. It also captures every icon at equipment/detail
@@ -38,7 +38,7 @@ equipped hero's recorded battle capability and keeps source names from the saved
 shard. Replacing a spell-granting relic and spending the hero's own active order
 before Evacuate are explicit tradeoffs.
 
-`python tools/verify_eador_relic_codex.py` earns the Censer, enters Watch, spends
+`python tools/verify_relic_codex.py` earns the Censer, enters Watch, spends
 hero Smoke through the visible button/hex controls, saves/reloads, and browses
 all Abilities/Relics pages. The same pages are checked against an older active
 v10 save. Opening, paging and closing the Codex change neither state nor save
