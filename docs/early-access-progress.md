@@ -373,7 +373,7 @@ candidate soak or evidence of no memory growth.
 
 Causeway, its shared duplicate-source/reward handling, battle traces and playback
 stay in Shardbound. Saga2D's existing scenes, layers, input ownership and measured
-UI primitives suffice. The [Scene.measure example](framework-ui-measurement.md)
+UI primitives suffice. The [Scene.measure example](../../saga2d/docs/framework-ui-measurement.md)
 remains independent of this game; this increment adds no framework API or schema.
 
 The [resource attribution study](eador-resource-breakpoints.md) still identifies
@@ -486,7 +486,7 @@ not yet been merged or accepted. G01–G19 remain incomplete.
   declaration. Shardbound's catalogues, choices, paged inventory and save
   browser now use it; separate dynamic bindings were removed. The
   independent example and behavior contract are documented in
-  [framework-button-shortcuts.md](framework-button-shortcuts.md).
+  [framework-button-shortcuts.md](../../saga2d/docs/framework-button-shortcuts.md).
 - The full suite passed **421 tests**; both games' fuzz drivers passed.
   Native Pyglet verification exercised the codex, campaign/battle input,
   choices, equipment, save slots and backup recovery, plus resized windows.
@@ -578,7 +578,7 @@ Encirclement and unpaid upkeep are the next isolated rules increment.
   committed Warband offering. Known preference types and game-owned validators
   reject bad values. Ordinary writes refuse damaged files; explicit reset and
   save retains their exact bytes for recovery. Preferences and campaign saves
-  share private durable file mechanics. See [framework-settings.md](framework-settings.md).
+  share private durable file mechanics. See [framework-settings.md](../../saga2d/docs/framework-settings.md).
   The Shardbound options screen is separate work in progress.
 - `sagaforge.synth` extracts pure sample composition/WAV export from the existing
   games. Tribes imports the shared functions and all 18 of its generated WAVs
@@ -649,7 +649,7 @@ logical resizing and text scaling are not established by that evidence.
   Signed combat feedback respects reduced motion. Its layering uses the small
   shared `Scene.screen_layer()` scope; rules and effect styling stay in Eador.
   See [support-role evidence](eador-roles.md) and the independent
-  [framework layering demo](framework-screen-layers.md).
+  [framework layering demo](../../saga2d/docs/framework-screen-layers.md).
 - `93b5cf8` adds two authored carry-and-escape layouts with four approach
   choices, persistent wounded defenders and exactly recorded rewards. The
   integrated briefing, numbered exits, explicit Evacuate button and Codex
@@ -694,7 +694,7 @@ logical resizing and text scaling are not established by that evidence.
   operations, with a separate game-owned preference screen. Apply/Cancel,
   startup overrides, Retina sizing and a resized-window/fullscreen roundtrip
   were exercised through native input and screenshots. See
-  [framework-display.md](framework-display.md) and
+  [framework-display.md](../../saga2d/docs/framework-display.md) and
   [eador-display-settings.md](eador-display-settings.md). Text scaling is still
   absent; the motion preference's combat presentation is a later increment.
 - The historical `31a2c88` two-hour native soak completed: 429,506 frames,
@@ -786,7 +786,7 @@ runtime, text scaling, human playtests and listening review remain required.
   reactive font/text changes and the next control's hit bounds reflow together,
   including beneath paused overlays. This shares the existing paragraph
   algorithm and preserves its native pixels; no game rules entered the
-  framework. The [independent example and retained evidence](framework-wrapped-label.md)
+  framework. The [independent example and retained evidence](../../saga2d/docs/framework-wrapped-label.md)
   cover native input, text bounds, fonts and resizing. This primitive alone does
   not provide Shardbound text scaling.
 - Combined main passes **896 tests**, with source-specific Tribes and Shardbound
@@ -1161,7 +1161,7 @@ human playtests, listening and overall release acceptance remain open.
 
 ## An independent multiplayer consumer — 2026-09-07
 
-The [counter-room tutorial](framework-match-menu.md) demonstrates MatchMenu,
+The [counter-room tutorial](../../saga2d/docs/framework-match-menu.md) demonstrates MatchMenu,
 MatchLobby and OnlineClient without importing a reference game or production
 server catalog. Its local authority only increments the authenticated seat's
 counter. The example explains the factory interfaces, JSON commands, scene

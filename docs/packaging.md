@@ -49,7 +49,7 @@ Artifacts are versioned: `Shardbound-<version>-darwin-arm64-app.zip` on a Mac,
 applies a build and an exploration from both seats and reclaims the creator's
 seat; the verifier runs it against a loopback server and, on Windows with
 `--public-server`, from the installed executable against the live service.
-The [Windows workflow](../.github/workflows/shardbound-windows.yml) runs the
+The [Windows workflow](../.github/workflows/windows.yml) runs the
 smoke journey under a test-only Mesa driver, installs and uninstalls the
 installer, and publishes `shardbound-v*` tags as GitHub releases; the website
 lists accepted releases from `releases/catalog.json`.
@@ -305,7 +305,7 @@ command above from PowerShell. It produces `Shardbound/Shardbound.exe` and
 executable alone is not the package. PyInstaller requires separate native
 builds for each operating system. [Official multi-platform guidance](https://pyinstaller.org/en/stable/usage.html#supporting-multiple-operating-systems)
 
-The [manual Windows workflow](../.github/workflows/shardbound-windows.yml)
+The [manual Windows workflow](../.github/workflows/windows.yml)
 checks out an exact source commit, installs pinned tools and runs the recipe
 with `--skip-smoke`. It has no push, pull-request or scheduled trigger. It has
 not been dispatched, and no Windows artifact has been uploaded. Building on

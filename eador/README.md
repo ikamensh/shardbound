@@ -449,8 +449,8 @@ terrain meaning, army ownership, action budgets, spells and victory remain
 game rules. Measured paragraph wrapping is another framework responsibility:
 the game supplies text and available width, while Saga2D fits actual font
 metrics. This removes character-count guesses from guides and catalogues.
-See the [HexGrid cookbook](../docs/framework-hexgrid.md) and
-[framework design](../DESIGN.md).
+See the [HexGrid cookbook](../../saga2d/docs/framework-hexgrid.md) and
+[framework design](../../saga2d/DESIGN.md).
 
 The [research and scope notes](../docs/eador-research.md) cite the official
 [Eador manual](https://store.steampowered.com/manual/232050) and
@@ -472,8 +472,8 @@ and active battles.
 
 Press **M / Co-op** on the title to host or join a two-player shared campaign.
 Both partners command the same realm and army. See the
-[multiplayer guide](../docs/multiplayer.md) for LAN/VPN setup and limitations.
+[multiplayer guide](../../saga2d/docs/multiplayer.md) for LAN/VPN setup and limitations.
 
 Online co-op defaults to a Scaleway-hosted room: choose **Co-op**, **Create room**,
 then share its code. Your friend chooses **Join room**. **Rejoin last room**
-recovers your private seat after restarting. See [the online guide](../docs/online-multiplayer.md).
+recovers your private seat after restarting. See [the online guide](../../tribes/docs/online-multiplayer.md).

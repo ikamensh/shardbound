@@ -118,7 +118,7 @@ long play session.
 Saga2D's image cache, drawing layers, scene input, audio manager and synthesis
 primitives support the artwork and audio. The icon pass adds ordinary layout
 images, optional button icons and shared reactive hover explanations through
-[small reusable UI interfaces](framework-icon-controls.md). The game owns
+[small reusable UI interfaces](../../saga2d/docs/framework-icon-controls.md). The game owns
 compositions, artwork, icon meanings, asset builds and placement.
 
 Catalog prices and troop statistics, Tower infusion quotes, rival finances and

@@ -1,6 +1,6 @@
 # Shardbound Windows x64 build and runtime handoff
 
-The [Windows workflow](../.github/workflows/shardbound-windows.yml) builds the
+The [Windows workflow](../.github/workflows/windows.yml) builds the
 portable ZIP and per-user installer, runs the frozen smoke journey and the online
 co-op diagnostic in the extracted and installed applications (with a test-only
 Mesa driver), uninstalls, and publishes a `shardbound-v*` tag as a GitHub

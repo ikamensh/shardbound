@@ -5,7 +5,7 @@ uv run --locked --isolated --python 3.13.2 --with-requirements packaging/require
 
 Release builds name their version (``--version 0.1.0-preview.1 --require-clean``)
 and, on Windows, add ``--installer``. Publication is a separate recorded step:
-see tools/verify_package.py and .github/workflows/shardbound-windows.yml.
+see tools/verify_package.py and .github/workflows/windows.yml.
 """
 
 import argparse

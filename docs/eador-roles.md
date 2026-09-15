@@ -140,7 +140,7 @@ The integrated native journey passed with 157 input activations and six exact
 reloads. All six role screenshots were inspected, including a seven-HP Heal
 forecast followed by the matching readable feedback. A clipped Swap hint was
 shortened. The damage-pill overlap exposed a general draw-order limitation:
-Saga2D's [screen-layer scope](framework-screen-layers.md) now lets its background
+Saga2D's [screen-layer scope](../../saga2d/docs/framework-screen-layers.md) now lets its background
 cover lower text, while effect timing, styling and motion preferences remain
 in Shardbound. The independent framework demo verifies text/image coverage,
 overlapping controls and modal isolation.
