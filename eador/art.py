@@ -4,7 +4,9 @@ Art belongs to the game. Nothing here knows the renderer or imports a
 different reference game; all geometry uses Scene's drawing interface.
 """
 
+import json
 import math
+import os
 from pathlib import Path
 
 from eador.style import BLUE, GOLD, INK, LINE, MUTED, RED, TEAL, TEXT
@@ -12,6 +14,28 @@ from eador.ui import icon_path
 
 OWNERS = {"player": TEAL, "rival": RED, "neutral": (160, 160, 126, 255)}
 IMAGES = Path(__file__).resolve().parent / 'assets' / 'images'
+PIECES = IMAGES / 'pieces'  # painted miniatures from tools/restyle.py: <team>.<kind>.png plus layout.json
+_piece_layout = None
+
+
+def piece_kind(kind):
+    """The drawn figure for a troop kind or hero class: aliases fold into one figure."""
+    lower = kind.lower()
+    return {'acolyte': 'healer', 'mage': 'wizard', 'shaman': 'wizard', 'bow': 'archer'}.get(lower, lower)
+
+
+def restyled_piece(kind, team):
+    """The painted miniature's path, logical size and anchor for *kind*, or None when
+    the kind has none (or ``SHARDBOUND_ART=procedural`` asks for the drawn figures)."""
+    global _piece_layout
+    if os.environ.get('SHARDBOUND_ART') == 'procedural':
+        return None
+    path = PIECES / f'{team}.{kind}.png'
+    if not path.exists():
+        return None
+    if _piece_layout is None:
+        _piece_layout = json.loads((PIECES / 'layout.json').read_text())
+    return path, tuple(_piece_layout['size']), tuple(_piece_layout['origin'])
 
 
 def shade(color, amount):
@@ -351,14 +375,20 @@ def piece(scene, x, y, kind, team, *, scale=1, selected=False, spent=False):
     color = TEAL if team == "player" else RED
     if spent:
         color = shade(color, -38)
+    lower = piece_kind(kind)
+    restyled = restyled_piece(lower, team)
+    if restyled is not None:
+        path, (w, h), (ox, oy) = restyled
+        if selected:
+            ellipse(scene, x, y + 9 * s, 25 * s, 11 * s, GOLD)
+        scene.draw_image(str(path), x - ox * s, y - oy * s, w * s, h * s, opacity=.55 if spent else 1.0)
+        return
     ellipse(scene, x + 5 * s, y + 15 * s, 27 * s, 11 * s, (6, 13, 18, 145))
     ellipse(scene, x, y + 12 * s, 23 * s, 10 * s, (42, 43, 36, 255))
     ellipse(scene, x, y + 8 * s, 23 * s, 10 * s, GOLD if selected else shade(color, -28))
     ellipse(scene, x, y + 7 * s, 19 * s, 7 * s, (31, 42, 40, 255))
     scene.draw_line(x - 15 * s, y + 13 * s, x + 4 * s, y + 15 * s,
                     GOLD if selected else color, 1.5 * s)
-    lower = kind.lower()
-    lower = {'acolyte': 'healer', 'mage': 'wizard', 'shaman': 'wizard', 'bow': 'archer'}.get(lower, lower)
     cloth = tuple(round(c * .60 + 18) for c in color[:3]) + (255,)
     metal, steel, metal_dark = (122, 143, 147, 255), (215, 225, 212, 255), (62, 79, 88, 255)
     wood, leather, brass = (111, 75, 46, 255), (139, 98, 60, 255), (187, 151, 88, 255)

@@ -21,14 +21,26 @@ def melee_state():
 
 
 def rendered_base(game, ident):
-    """Locate the miniature's painted base in the actual recording backend output."""
+    """Locate the miniature's base in the actual recording backend output: the painted
+    miniature's image when the kind has one, the drawn base ellipse otherwise."""
+    from eador import art
     scene = game.scene
     unit = scene.battle.unit(ident)
     cx, cy = scene.grid.center(unit.pos)
     cy += scene.grid.size * .22 + 7 * min(1, scene.grid.size / 56)
-    bases = [(sum(x for x, y in shape['points']) / len(shape['points']),
-              sum(y for x, y in shape['points']) / len(shape['points']))
-             for shape in game.backend.polygons if shape['color'] == (31, 42, 40, 255)]
+    kind = scene.root.state.hero.hero_class if ident == scene.hero_id else unit.kind
+    painted = art.restyled_piece(art.piece_kind(kind), 'player' if unit.team == scene.team else 'enemy')
+    if painted is not None:
+        path, (width, _), (_, origin_y) = painted
+        handle = game.assets.image(str(path))
+        bases = [(image['x'] + image['width'] / 2, image['y'] + (origin_y + 7) * image['width'] / width)
+                 for image in game.backend.images if image['image'] == handle]
+        if not bases:
+            return None  # the miniature is not drawn at all (a defeated unit after its recoil)
+    else:
+        bases = [(sum(x for x, y in shape['points']) / len(shape['points']),
+                  sum(y for x, y in shape['points']) / len(shape['points']))
+                 for shape in game.backend.polygons if shape['color'] == (31, 42, 40, 255)]
     return min(bases, key=lambda point: math.dist(point, (cx, cy)))
 
 
@@ -100,12 +112,13 @@ def test_defeated_target_recoils_briefly_without_resurrecting_or_changing_the_sa
         assert state.battle.unit(target).hp == 0
         position = rendered_base(game, target)
         if still:
-            assert math.dist(position, home) > game.scene.grid.size * .5
+            assert position is None or math.dist(position, home) > game.scene.grid.size * .5
         else:
             assert 1 < math.dist(position, home) < game.scene.grid.size * .25
             assert sum((p - h) * d for p, h, d in zip(position, home, direction)) > 0
         game.tick(.4)
-        assert math.dist(rendered_base(game, target), home) > game.scene.grid.size * .5
+        gone = rendered_base(game, target)  # painted: not drawn; drawn: only other units' bases remain
+        assert gone is None or math.dist(gone, home) > game.scene.grid.size * .5
         assert state.to_json() == order['after']
         player.reload(order['after'])
     finally:

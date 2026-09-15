@@ -29,3 +29,12 @@ counts and SHA-256 hashes are recorded in `hero-portrait-provenance.json`.
 Commander, Warrior, Scout and Wizard share painted bust framing, restrained
 ink/teal/brass color and upper-left light. Their smaller tactical miniatures
 remain code-native drawings, with matching clothing, equipment and headgear.
+
+The 18 painted battle miniatures in `images/pieces/` (`player.<kind>.png`, and the
+same frames recoloured teal-to-red as `enemy.<kind>.png`, with `layout.json` giving
+their logical size and anchor) were generated on 2026-09-15 with Codex's built-in
+image-generation tool from the code-native figures of `eador/art.py`: `tools/restyle.py`
+rasterises `art.piece` for every kind onto one chroma-keyed sheet, the tool repaints it
+in edit mode from the prompt in that file (no Eador artwork or external references),
+and `sagaforge.restyle` keys, aligns and checks the result. `art.piece` draws the PNG
+when a kind has one; `SHARDBOUND_ART=procedural` draws the figures instead.
