@@ -18,7 +18,7 @@ uv run python tools/fuzz.py                # seeded model/scene fuzz, 25% of one
 uv run python tools/verify.py              # real input + PNGs to look at
 uv run python tools/build_audio.py         # regenerate shipping WAVs and the audio manifest
 uv run python tools/build_icons.py --check # (and build_art.py) verify prebuilt PNGs against their manifest
-uv run python tools/restyle.py dump DIR    # painted battle miniatures: dump, render (Codex), cut (installs), preview, showcase
+uv run python tools/restyle.py refresh DIR    # painted battle miniatures: the whole procedure; see ../sagaforge/docs/restyle.md
 uv run --locked --isolated --python 3.13.2 --with-requirements packaging/requirements.txt python tools/build.py --version 0.1.0
 uv run python tools/verify_package.py dist/shardbound
 ```

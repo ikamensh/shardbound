@@ -3,6 +3,7 @@
     uv run python tools/restyle.py dump DIR         # every unit kind and hero class on one sheet, plus the prompt
     uv run python tools/restyle.py render DIR       # repaint it (Codex by default; --provider openrouter --model ...)
     uv run python tools/restyle.py cut DIR          # key, register, check; install into eador/assets/images/pieces
+    uv run python tools/restyle.py refresh DIR OUT.png  # dump, render, cut and preview in one go
     uv run python tools/restyle.py preview DIR OUT.png   # both teams, original row above restyled row
 
 The sheet shows the player's team (teal); the enemy's pieces are the same frames recoloured red.
@@ -173,10 +174,20 @@ def main() -> None:
     p.add_argument("--model", default="google/gemini-3.1-flash-image"); p.set_defaults(run=cmd_render)
     p = sub.add_parser("cut"); p.add_argument("dir", type=Path); p.add_argument("--provider", default="codex"); p.set_defaults(run=cmd_cut)
     p = sub.add_parser("preview"); p.add_argument("dir", type=Path); p.add_argument("out", type=Path); p.set_defaults(run=cmd_preview)
+    p = sub.add_parser("refresh"); p.add_argument("dir", type=Path); p.add_argument("out", type=Path)
+    p.add_argument("--provider", default="codex", choices=["codex", "openrouter"]); p.add_argument("--model", default="google/gemini-3.1-flash-image"); p.set_defaults(run=cmd_refresh)
     p = sub.add_parser("showcase"); p.add_argument("out", type=Path); p.add_argument("--seed", type=int, default=7); p.set_defaults(run=cmd_showcase)
     args = parser.parse_args()
     args.run(args)
 
+
+
+def cmd_refresh(args: argparse.Namespace) -> None:
+    """Dump, render, cut and preview in one go: the whole procedure."""
+    cmd_dump(args)
+    cmd_render(args)
+    cmd_cut(args)
+    cmd_preview(args)
 
 
 def cmd_showcase(args: argparse.Namespace) -> None:
