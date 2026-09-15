@@ -5,6 +5,7 @@
     uv run python tools/restyle.py cut DIR          # key, register, check; install into eador/assets/images/pieces
     uv run python tools/restyle.py refresh DIR OUT.png  # dump, render, cut and preview in one go
     uv run python tools/restyle.py preview DIR OUT.png   # both teams, original row above restyled row
+    uv run python tools/restyle.py check DIR             # a vision judge compares every painted piece with its stand-in
 
 The sheet shows the player's team (teal); the enemy's pieces are the same frames recoloured red.
 """
@@ -174,12 +175,32 @@ def main() -> None:
     p.add_argument("--model", default="google/gemini-3.1-flash-image"); p.set_defaults(run=cmd_render)
     p = sub.add_parser("cut"); p.add_argument("dir", type=Path); p.add_argument("--provider", default="codex"); p.set_defaults(run=cmd_cut)
     p = sub.add_parser("preview"); p.add_argument("dir", type=Path); p.add_argument("out", type=Path); p.set_defaults(run=cmd_preview)
+    p = sub.add_parser("check"); p.add_argument("dir", type=Path); p.set_defaults(run=cmd_check)
     p = sub.add_parser("refresh"); p.add_argument("dir", type=Path); p.add_argument("out", type=Path)
     p.add_argument("--provider", default="codex", choices=["codex", "openrouter"]); p.add_argument("--model", default="google/gemini-3.1-flash-image"); p.set_defaults(run=cmd_refresh)
     p = sub.add_parser("showcase"); p.add_argument("out", type=Path); p.add_argument("--seed", type=int, default=7); p.set_defaults(run=cmd_showcase)
     args = parser.parse_args()
     args.run(args)
 
+
+
+def cmd_check(args: argparse.Namespace) -> None:
+    """Judge the installed player pieces against the stand-ins, one review image per row of six."""
+    sheet, originals = build_sheet()
+    painted = {c.key: Image.open(art.PIECES / f"player.{c.tags['kind']}.png").convert("RGBA") for c in sheet.cells}
+    (args.dir / "pieces").mkdir(parents=True, exist_ok=True)
+    names = [", ".join(DESCRIPTIONS[k] for k in kinds()[r * sheet.cols:(r + 1) * sheet.cols]) for r in range(sheet.rows)]
+    verdicts = []
+    for row in range(sheet.rows):
+        review_png = args.dir / "pieces" / f"review-{row}.png"
+        restyle.review_image(sheet, originals, painted, rows=[row], row_names=names).convert("RGB").save(review_png)
+        verdicts += restyle.judge_with_codex(review_png, "painted battle miniatures; left to right in this row: " + names[row], sheet, rows=[row],
+                                             inventory="one figure on one oval base, carrying what its stand-in carries")
+    (args.dir / "pieces" / "check.json").write_text(json.dumps(verdicts, indent=1))
+    bad = [v for v in verdicts if not v.get("ok", True)]
+    print(f"pieces: {len(bad)} of {len(verdicts)} miniatures questioned")
+    for v in bad:
+        print(f"   row {v['row']} col {v['col']} ({kinds()[v['row'] * sheet.cols + v['col']]}): {v['issue']}")
 
 
 def cmd_refresh(args: argparse.Namespace) -> None:
