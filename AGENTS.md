@@ -3,9 +3,10 @@
 An Eador-inspired campaign: a province map, a stronghold, persistent armies
 and separate hex battles. The Python package is `eador` (the game's codename;
 the product is Shardbound). Third reference game of the Saga stack (`~/saga/`,
-see `../AGENTS.md`). The framework is `../saga2d` and procedural assets come
-from `../sagaforge`, both path dependencies: a change there shows up here at
-once, so run this suite after touching them.
+see `../AGENTS.md`). Saga2D is a pinned PyPI release; its source lives in
+`../saga2d`. Upgrade it deliberately in `pyproject.toml` and `uv.lock`, then
+run this suite. Procedural assets come from `../sagaforge` as an editable
+path dependency, so run this suite after changing that library.
 
 ## Commands
 

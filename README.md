@@ -1,6 +1,6 @@
 # Shardbound
 
-An Eador-inspired strategy game on [Saga2D](../saga2d). Choose one of four
+An Eador-inspired strategy game on [Saga2D](https://pypi.org/project/saga2d/). Choose one of four
 heroes, develop a stronghold, explore guarded ruins, recruit an army, and take
 Duskspire before the rival reaches Westwatch. The 19-province campaign carries
 wounds, casualties and experience between hex battles; a three-shard linked
@@ -12,11 +12,10 @@ original music and sound.
 
 Shardbound runs straight from this checkout on macOS and Windows; nothing is
 installed system-wide. You need
-[uv](https://docs.astral.sh/uv/getting-started/installation/) and the two
-repositories Shardbound depends on, checked out beside this one:
+[uv](https://docs.astral.sh/uv/getting-started/installation/) and the
+sagaforge asset library checked out beside this one:
 
 ```bash
-git clone https://github.com/ikamensh/saga2d-framework.git saga2d
 git clone https://github.com/ikamensh/sagaforge.git
 git clone https://github.com/ikamensh/shardbound.git
 cd shardbound
@@ -25,14 +24,20 @@ uv run shardbound
 
 `uv run` creates `.venv`, fetches Python and the dependencies when they are
 missing, and opens the title: choose a hero, a world and a difficulty, then
-**Linked campaign** (three shards) or **Enter single shard**. The framework
-and the asset library are editable path dependencies, so moving to a newer
-version is a pull in the three checkouts and another start:
+**Linked campaign** (three shards) or **Enter single shard**. Saga2D comes from
+PyPI at the version pinned in `pyproject.toml` and `uv.lock`. The asset library
+remains an editable path dependency. Update the game and asset checkout, then
+start again:
 
 ```bash
-git -C ../saga2d pull && git -C ../sagaforge pull && git pull
+git -C ../sagaforge pull && git pull
 uv run shardbound
 ```
+
+For an existing environment that used the editable engine, run
+`uv sync --locked --extra dev --reinstall-package saga2d` once before launching.
+A plain sync can retain an editable install of the same version. This also
+restores the release after local engine testing.
 
 Straight into a shard, and the other options:
 
@@ -89,7 +94,7 @@ players; every route also exists as a command-line flag
   ```
 
 - **LAN or VPN**, without a server; the host's process is the authority
-  ([LAN guide](../saga2d/docs/multiplayer.md)):
+  ([LAN guide](https://github.com/ikamensh/saga2d-framework/blob/main/docs/multiplayer.md)):
 
   ```bash
   uv run shardbound --host                               # prints the port and room code

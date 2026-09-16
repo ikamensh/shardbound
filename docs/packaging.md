@@ -159,13 +159,14 @@ with Python environment overrides removed and an OS-only executable search
 path. Its temporary working directory is outside the repository. Inspect the
 PNGs after a build; successful execution alone does not establish visual quality.
 
-For a source-mode preflight without building a frozen artifact, run the same
-entry point from an unrelated working directory with the repository on
-`PYTHONPATH`:
+For a source-mode preflight without building a frozen artifact, sync the
+Shardbound environment, then run its entry point from an unrelated working
+directory. The environment supplies the game and its pinned Saga2D release:
 
 ```bash
+uv sync --locked
 cd /tmp
-PYTHONPATH=/absolute/path/to/saga2d /absolute/path/to/saga2d/.venv/bin/python /absolute/path/to/saga2d/packaging/entry.py --smoke-image /tmp/shardbound-source-smoke.png
+/absolute/path/to/shardbound/.venv/bin/python /absolute/path/to/shardbound/packaging/entry.py --smoke-image /tmp/shardbound-source-smoke.png
 ```
 
 That report correctly records `frozen: false`. It verifies the recipe's journey
