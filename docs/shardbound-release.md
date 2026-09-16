@@ -51,3 +51,42 @@ Evidence: [shardbound-distribution-2026-09-08](evidence/shardbound-distribution-
 - CI's native checks use a software GL driver; physical Windows GPU and audio
   quality are unverified.
 - English only.
+
+## Checkout engine alignment for Warband publication
+
+The shared room-server environment must resolve one engine version. Warband and
+Tribes already pin Saga2D 0.3.2; this checkout still pins 0.3.1. Before accepting
+the 0.3.2 pin here:
+
+- Update the exact project dependency and lock together; inspect the lock diff
+  for unrelated dependency changes.
+- Run the complete Shardbound suite, including its socket/online checks.
+- Exercise the existing native UI verification journey and inspect its captured
+  frames. Saga2D 0.3.2 contains the Banner text-placement fix; Shardbound does not
+  currently instantiate that widget, but its launch and transitions must work.
+- Keep the published preview and live service unchanged. This is a tested
+  checkout prerequisite for a separately reviewed shared-server rollout.
+
+Acceptance is pending.
+
+Candidate results (2026-09-16, branch `codex/warband-server-runtime`): only
+the Saga2D version, artifact hashes and project requirement changed in the lock.
+The complete 0.3.2 suite reported **1,078 passed, 19 failed** in 341 seconds.
+Running those exact 19 failing node IDs with the previous 0.3.1 engine reproduced
+all 19 failures. They cover causeway guidance/journeys (8), relief strategy and
+journeys (6), recruitment cost display (3), and tactical guidance/journeys (2).
+No tests or expectations have been changed to make the upgrade pass.
+
+The published engine packages' Python sources differ only in `__init__.py`
+(version string) and `effects.py` (Banner placement). `tools/verify.py` failed at
+the expected battle-victory assertion on line 103 on **both** engines. It captured
+the title, map, six codex pages, buildings, recruitment, help and initial battle
+before stopping; title/map/battle were visually inspected. This is partial
+native evidence, not a completed journey or acceptance of the upgrade.
+
+Logs and captures are under `docs/evidence/engine-0.3.2/`: `regression.log`,
+`baseline-0.3.1-failures.log`, `native.log`, `native-baseline.log`, `native/` and
+`native-baseline/`. The candidate pin remains on its isolated branch. Before
+integrating it into the shared-server rollout, resolve the failed acceptance
+checks or make an explicit, evidence-backed server-only acceptance decision;
+do not describe the whole Shardbound suite or native journey as passing.
