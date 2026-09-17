@@ -90,3 +90,18 @@ Logs and captures are under `docs/evidence/engine-0.3.2/`: `regression.log`,
 integrating it into the shared-server rollout, resolve the failed acceptance
 checks or make an explicit, evidence-backed server-only acceptance decision;
 do not describe the whole Shardbound suite or native journey as passing.
+
+## WB-004 server-only engine alignment
+
+The isolated `codex/wb004-server-engine` candidate updates only Saga2D to
+verified PyPI 0.3.3, with no other locked version changes. The full candidate
+suite reports **1,078 passed, 19 failed in 341.70 s**. The failed node IDs
+match exactly the 19 previously reproduced on 0.3.1 and 0.3.2; there are no
+new failures. Evidence: `docs/evidence/engine-0.3.3/`.
+
+The installed engine packages differ only in their renderer and version string;
+networking, server and game rules are unchanged. Accept this candidate only as
+a headless shared-server input after Saga Online's Linux three-game, restart,
+backup/rejoin and live retained-state acceptance. This evidence does not accept
+a Shardbound client release or resolve its existing UI/gameplay failures. Main
+and the published Shardbound client keep their existing pins.
