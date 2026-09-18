@@ -1079,8 +1079,6 @@ class BattleScene(Screen):
             return 'The battle is over.'
         if self.battle.enemy_magic is not None and self.battle.active_team != self.team:
             return 'Waiting for opponent.'
-        if not self.accepts_orders:
-            return 'Finish playback before giving orders.'
         return None
 
     @property

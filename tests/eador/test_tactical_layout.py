@@ -83,6 +83,8 @@ def test_disabled_footer_icons_keep_their_names_and_keys_during_playback(tmp_pat
             player.press(key)
         assert isinstance(game.scene, BattlePlaybackScene)
         before = player.state.to_json()
+        reason = game.scene.order_blocked_reason
+        assert 'Space finishes playback' in reason
         for label, shortcut in (('Auto-play one round', 'A'), ('Retreat', 'T')):
             item = game.scene.ui.find(lambda item: isinstance(item, Button) and item.text == label)
             assert item is not None and not item.enabled
@@ -91,8 +93,7 @@ def test_disabled_footer_icons_keep_their_names_and_keys_during_playback(tmp_pat
             game.tick(1 / 60)
             order = max(text['order'] for text in game.backend.texts)
             shown = ' '.join(text['text'] for text in game.backend.texts if text['order'] == order)
-            assert f'{label} ({shortcut})' in shown, shown
-            assert 'Finish playback before giving orders.' in shown
+            assert f'{label} ({shortcut}). {reason}' in shown, shown
             assert player.state.to_json() == before
     finally:
         game.close()

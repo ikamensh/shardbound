@@ -342,8 +342,8 @@ def verify(output, *, backend='pyglet', budget=None):
                 label, key = ('Auto-play one round', 'A') if kind == 'gain' else ('Retreat', 'T')
                 item = control(label)
                 assert not item.enabled
-                tip = hover(item)
-                assert f'{label} ({key})' in tip and 'Finish playback before giving orders.' in tip
+                reason = game.scene.order_blocked_reason
+                assert hover(item) == f'{label} ({key}). {reason}' and 'Space finishes playback' in reason
                 capture('seal-' + kind + '-125')
                 assert game.scene.battle.objective.progress == after_progress
                 report['objective_pulses'].append({'kind': kind, 'before': before_progress, 'after': after_progress,
