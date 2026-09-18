@@ -4,13 +4,24 @@ from tools.campaign import finish_battle, march_to, rest
 from tools.extraction_campaign import AdventureOrders
 
 
+def _rest(state, *, budget=None):
+    """While provisioning, intercept only an announced attack on Westwatch or its neighbours.
+
+    The shared rest also chases raiders that are already returning home, then marches the
+    wounded victors on into the garrison those raiders failed to take.
+    """
+    rest(state, defend=state.rival.intent == 'attack' and state.rival.target is not None
+         and state.grid.distance(state.rival.target, (-2, 0)) <= 1, budget=budget)
+
+
 def prepare_relief(hero_class='Commander', *, seed=7, difficulty='standard', state=None, budget=None):
     state = State.new(seed, hero_class, difficulty=difficulty) if state is None else state
     target = next(p.pos for p in state.provinces.values() if p.site_kind == 'relief_column')
+    party = {troop.id for troop in state.hero.army}
     state.explore(); finish_battle(state, budget=budget)
     state.build('market')
     for destination in ((-1, -1), (-1, 0)):
-        march_to(state, destination, budget=budget); rest(state, budget=budget)
+        march_to(state, destination, budget=budget); _rest(state, budget=budget)
     kinds = ('pikeman', 'warden', 'adept') if state.hero.hero_class == 'Commander' else ('pikeman', 'archer')
     for kind in kinds:
         spec = UNITS[kind]
@@ -22,8 +33,9 @@ def prepare_relief(hero_class='Commander', *, seed=7, difficulty='standard', sta
                     state.build(spec.building)
             if spec.building in state.buildings and state.gold >= state.recruit_cost(kind) and state.crystals >= state.recruit_crystal_cost(kind):
                 state.recruit(kind)
+                party.add(state.hero.army[-1].id)
                 break
-            rest(state, budget=budget)
+            _rest(state, budget=budget)
         else:
             raise AssertionError(f'Could not fund {spec.name}.')
     for _ in range(48):
@@ -34,6 +46,8 @@ def prepare_relief(hero_class='Commander', *, seed=7, difficulty='standard', sta
             rest(state, budget=budget)
             continue
         if state.hero.pos == target:
+            fallen = party - {troop.id for troop in state.hero.army}
+            assert not fallen, f'The Relief routes order troops by id; {sorted(fallen)} fell on the way.'
             return state
         # One action at a time: a distant optional signal cannot skip a capital defense.
         march_to(state, state.grid.path(state.hero.pos, target)[1], budget=budget)
