@@ -14,6 +14,7 @@ os.environ.setdefault('SAGA2D_SILENT', '1')
 
 from saga2d import Label
 from eador.app import create_game
+from eador.content import RELICS
 from eador.encounter_scene import EncounterScene
 from eador.model import State
 from eador.scene import BattleScene, ResultScene, ShardScene, TitleScene
@@ -24,7 +25,7 @@ from tools.relief_campaign import (prepare_relief, relief_forward_route, relief_
                                          relief_failed_support, relief_retry_route)
 from tools.ui import PlayerInput
 from tools.verify_control import ControlOrders
-from tools.verify_guidance import check_reading_layout
+from tools.verify_guidance import check_reading_layout, check_reward
 from tools.verify_reading import check_page
 
 PLANS = {'forward': relief_forward_route, 'western': relief_western_route,
@@ -66,7 +67,8 @@ def inspect_briefing(player):
             player.press(str(index + 1))
             scene = player.game.scene
             labels = '\n'.join(c.text for c in scene.ui.walk() if isinstance(c, Label))
-            assert f'{province.site_gold} gold · {province.site_crystals}' in labels
+            check_reward(scene, gold=province.site_gold + approach.bonus_gold, crystals=province.site_crystals,
+                         relic=RELICS[province.site_relic].name if province.site_relic else None)
             assert 'round 4' in labels and '2 consecutive enemy turns' in labels
             assert ("Militia clears adjacent allies' Pin." in labels) == ('militia' in province.site_guards)
             assert ('Skyrider crosses occupied cells' in labels) == ('skyrider' in province.site_guards)
@@ -89,7 +91,7 @@ def verify(output, *, backend='pyglet', plan='forward', mode='standard', seed=7)
                       *ROOT.glob('tools/eador_*.py'), *[ROOT / 'tools' / name for name in (
                           'audit_aerie.py', 'audit_extraction.py', 'verify_relief.py',
                           'verify_control.py', 'verify_extraction.py',
-                          'verify_guidance.py', 'verify_reading.py')]])
+                          'verify_guidance.py', 'verify_reading.py', 'verify_shard_reading.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()

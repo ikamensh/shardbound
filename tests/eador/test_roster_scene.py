@@ -2,11 +2,13 @@
 from dataclasses import replace
 
 import pytest
+from saga2d import Label
 
 from eador.app import create_game
-from eador.model import State
+from eador.model import State, UNITS
 from eador.scene import ShardScene
 from tools.ui import PlayerInput
+from tools.verify_shard_reading import check_metric
 
 
 @pytest.mark.parametrize('kind', ['sapper', 'adept', 'skyrider'])
@@ -27,14 +29,16 @@ def test_recruit_buttons_require_crystals_and_deduct_both_displayed_costs(tmp_pa
                 player.press('right')
             number = str(game.scene.visible_items.index(kind) + 1)
             before = state.to_json()
-            crystal_cost = state.recruit_crystal_cost(kind)
-            assert any(f'{crystal_cost} crystal' in item['text'] for item in game.backend.texts)
+            gold_cost, crystal_cost = state.recruit_cost(kind), state.recruit_crystal_cost(kind)
+            offer = game.scene.ui.find(lambda item: isinstance(item, Label) and item.text == UNITS[kind].name).parent
+            check_metric(game.scene, 'gold', gold_cost, 'Gold', within=offer)
+            check_metric(game.scene, 'crystals', crystal_cost, 'Crystals', within=offer)
             player.press(number)
             if crystals == 0:
                 assert state.to_json() == before
             else:
                 assert state.hero.army[-1].kind == kind
-                assert state.gold == 200 - state.recruit_cost(kind)
+                assert state.gold == 200 - gold_cost
                 assert state.crystals == crystals - crystal_cost
                 player.press('escape')
                 player.reload(state.to_json())

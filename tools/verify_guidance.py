@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ['SAGA2D_SILENT'] = '1'
 
-from saga2d import Button, Label
+from saga2d import Button, Image, Label
 from eador.app import create_game
 from eador.encounter_scene import EncounterScene
 from eador.preferences import reading_scale
@@ -33,6 +33,21 @@ def check_reading_layout(scene):
             ox, oy, ow, oh = other.bounds
             assert x + width <= ox or ox + ow <= x or y + height <= oy or oy + oh <= y, (label.text, other.text)
     return len(labels)
+
+
+def check_reward(scene, *, gold, crystals, relic):
+    """Under its heading a briefing pairs both reward amounts with their icons and names any relic."""
+    from tools.verify_shard_reading import check_metric  # It imports this module.
+
+    heading = scene.ui.find(lambda item: isinstance(item, Label) and item.visible and item.text == 'REWARDS ON SUCCESS')
+    assert heading is not None, 'The briefing shows no reward block'
+    check_metric(scene, 'gold', gold, 'Gold', within=heading.parent)
+    check_metric(scene, 'crystals', crystals, 'Crystals', within=heading.parent)
+    # Every other text in the block is a name; the amounts sit beside their icons.
+    named = [item.text for item in heading.parent.walk()
+             if isinstance(item, Label) and item.visible and item is not heading
+             and not any(isinstance(sibling, Image) for sibling in item.parent.children)]
+    assert named == ([relic] if relic else []), named
 
 
 def prepared_briefings(*, budget=None):

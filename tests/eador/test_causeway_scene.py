@@ -6,7 +6,7 @@ from eador.encounter_scene import EncounterScene
 from eador.scene import ShardScene
 from tools.causeway_campaign import prepare_causeway, causeway_failed_attempt
 from tools.ui import PlayerInput
-from tools.verify_guidance import check_reading_layout
+from tools.verify_guidance import check_reading_layout, check_reward
 
 
 def test_causeway_briefing_teaches_choices_at_both_sizes_and_removes_dead_caster_advice(tmp_path):
@@ -27,7 +27,7 @@ def test_causeway_briefing_teaches_choices_at_both_sizes_and_removes_dead_caster
                 player.press('t'); player.press('left' if percent == 100 else 'right'); player.press('return')
                 labels = '\n'.join(c.text for c in game.scene.ui.walk() if isinstance(c, Label))
                 assert ('one Repulse charge' in labels) == caster_present
-                assert '45 gold · 2 crystals · Moonstone' in labels
+                check_reward(game.scene, gold=45, crystals=2, relic='Moonstone')
                 assert 'round 5' in labels and 'cargo slows the hero by 1' in labels
                 check_reading_layout(game.scene)
                 assert state.to_json() == before

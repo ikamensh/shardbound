@@ -14,6 +14,7 @@ os.environ.setdefault('SAGA2D_SILENT', '1')
 
 from saga2d import Label
 from eador.app import create_game
+from eador.content import RELICS
 from eador.encounter_scene import EncounterScene
 from eador.model import State
 from eador.scene import ResultScene, ShardScene, TitleScene
@@ -23,7 +24,7 @@ from tools.causeway_campaign import (prepare_causeway, causeway_focus_route,
     causeway_guard_route, causeway_scout_route, causeway_failed_attempt, causeway_retry_route)
 from tools.ui import PlayerInput
 from tools.verify_control import ControlOrders
-from tools.verify_guidance import check_reading_layout
+from tools.verify_guidance import check_reading_layout, check_reward
 from tools.verify_reading import check_page
 
 PLANS = ('focus', 'guard', 'backstop', 'infused-guard', 'scout', 'scout-heal', 'failed-retry')
@@ -59,7 +60,8 @@ def inspect_briefing(player):
         player.press('1')
         labels = '\n'.join(c.text for c in scene.ui.walk() if isinstance(c, Label))
         assert ('one Repulse charge' in labels) == ('adept' in province.site_guards)
-        assert f'{province.site_gold} gold · {province.site_crystals}' in labels
+        check_reward(scene, gold=province.site_gold + scene.approach.bonus_gold, crystals=province.site_crystals,
+                     relic=RELICS[province.site_relic].name if province.site_relic else None)
         assert 'round 5' in labels and 'cargo slows the hero by 1' in labels
         check_reading_layout(scene)
         player.capture(f'briefing-{percent}')
@@ -85,7 +87,7 @@ def verify(output, *, backend='pyglet', plan='focus'):
                       *ROOT.glob('tools/eador_*.py'), *[ROOT / 'tools' / name for name in (
                           'audit_aerie.py', 'audit_extraction.py', 'verify_causeway.py',
                           'verify_control.py', 'verify_extraction.py',
-                          'verify_guidance.py', 'verify_reading.py')]])
+                          'verify_guidance.py', 'verify_reading.py', 'verify_shard_reading.py')]])
     hashes = {source_name(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--short'], cwd=ROOT, text=True).splitlines()

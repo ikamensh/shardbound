@@ -60,10 +60,13 @@ def prepared_shards():
     return tuple(cases)
 
 
-def check_metric(scene, name, value, meaning):
-    """A visible icon and its exact value share a row whose tooltip names the fact."""
+def check_metric(scene, name, value, meaning, *, within=None):
+    """A visible icon and its exact value share a row whose tooltip names the fact.
+
+    `within` is the block a player reads it in, so the purse cannot stand in for a price or reward.
+    """
     value = str(value)
-    rows = [item for item in scene.ui.walk() if isinstance(item, Row) and item.visible
+    rows = [item for item in (scene.ui if within is None else within).walk() if isinstance(item, Row) and item.visible
             and any(isinstance(child, Image) and child.visible and child.image == icon_path(name)
                     for child in item.children)
             and any(isinstance(child, Label) and child.visible and child.text == value
