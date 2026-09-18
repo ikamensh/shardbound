@@ -18,6 +18,7 @@ from saga2d.testing.native_frames import tick
 from saga2d import Button
 
 from eador.app import create_game
+from eador.battle_playback_scene import BattlePlaybackScene
 from eador.codex import CodexScene
 from eador.scene import BattleScene, CatalogScene, ChoiceScene, HelpScene, HeroScene, SaveScene, ShardScene, TitleScene
 
@@ -30,10 +31,18 @@ def verify(output: Path):
 
         window = game.backend.window
 
-        def press(symbol, modifiers=0):
+        def finish_playback():
+            """A resolved order plays back in a scene that owns all input; Space is its visible way out."""
+            if isinstance(game.scene, BattlePlaybackScene):
+                press(key.SPACE, watch=True)
+                assert not isinstance(game.scene, BattlePlaybackScene), "Space did not finish the playback"
+
+        def press(symbol, modifiers=0, *, watch=False):
             window.dispatch_event("on_key_press", symbol, modifiers)
             window.dispatch_event("on_key_release", symbol, modifiers)
             tick(game)
+            if not watch:
+                finish_playback()
 
         def click(x, y):
             scale = min(window.width / game.width, window.height / game.height)
@@ -42,6 +51,7 @@ def verify(output: Path):
             window.dispatch_event("on_mouse_press", round(px), round(py), mouse.LEFT, 0)
             window.dispatch_event("on_mouse_release", round(px), round(py), mouse.LEFT, 0)
             tick(game)
+            finish_playback()
 
         def capture(name):
             tick(game)
@@ -91,9 +101,11 @@ def verify(output: Path):
             capture("battle")
             press(key.F5)
             saved = root.state.to_json()
-            press(key.A)
-            press(key.F9)
-            assert isinstance(game.scene, BattleScene)
+            press(key.A, watch=True)
+            assert isinstance(game.scene, BattlePlaybackScene)
+            capture("battle-playback")
+            press(key.F9)  # Loading during a playback skips it and restores the save.
+            assert type(game.scene) is BattleScene
             root = game.scene.root
             assert root.state.to_json() == saved
             for _ in range(40):
@@ -180,15 +192,18 @@ def verify(output: Path):
             b = root.state.battle
             before = root.state.to_json()
             press(key._1)
+            # No enemy is within a Bolt's reach yet: the scene says so instead of aiming.
+            assert game.scene.targeting is None and game.scene.message
             press(key.UP)
-            press(key.ENTER)
-            assert root.state.to_json() == before  # Empty spell target.
-            press(key.ESCAPE)
+            assert root.state.to_json() == before
             press(key.ENTER)
             assert b.unit(0).pos == (-3, 0) and b.unit(0).moved
             press(key.E)
-            mana = b.mana
+            mana, before = b.mana, root.state.to_json()
             press(key._1)
+            press(key.DOWN)
+            press(key.ENTER)
+            assert game.scene.targeting == "bolt" and root.state.to_json() == before  # Empty spell target.
             press(key.F)
             capture("keyboard-spell-target")
             press(key.ENTER)
