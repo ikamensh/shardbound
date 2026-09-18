@@ -52,56 +52,44 @@ Evidence: [shardbound-distribution-2026-09-08](evidence/shardbound-distribution-
   quality are unverified.
 - English only.
 
-## Checkout engine alignment for Warband publication
+## Engine: Saga2D 0.3.5 on main
 
-The shared room-server environment must resolve one engine version. Warband and
-Tribes already pin Saga2D 0.3.2; this checkout still pins 0.3.1. Before accepting
-the 0.3.2 pin here:
+Main pins `saga2d==0.3.5` since 2026-09-18, the release the live room server
+runs. The pin arrived by merging `server-engine-035`, so `e900366`, the commit
+the server is built from, is an ancestor of main; `pyproject.toml` and `uv.lock`
+are that commit's. The published preview.1 client and the live service did not
+change.
 
-- Update the exact project dependency and lock together; inspect the lock diff
-  for unrelated dependency changes.
-- Run the complete Shardbound suite, including its socket/online checks.
-- Exercise the existing native UI verification journey and inspect its captured
-  frames. Saga2D 0.3.2 contains the Banner text-placement fix; Shardbound does not
-  currently instantiate that widget, but its launch and transitions must work.
-- Keep the published preview and live service unchanged. This is a tested
-  checkout prerequisite for a separately reviewed shared-server rollout.
+Accepted on the released wheel (`uv sync --locked`, the engine imported from
+`site-packages`):
 
-Acceptance is pending.
+- The whole suite: **1,097 passed** in 341 s, the first complete run on this
+  engine.
+- `tools/verify.py`, the native journey through real pyglet keyboard and mouse
+  input, passes and writes 26 frames: title, shard, catalogs, guide, codex,
+  battle, playback, victory, conquest, choices, relics, save slots, damaged-save
+  recovery, the save error, and keyboard targeting at 1280x720, 1280x800 and
+  1920x1080. All were looked at; text, icons, miniatures, modal dimming,
+  pillarboxing and HiDPI scale are intact after 0.3.3's renderer changes.
+- A local Apple Silicon build (`tools/build.py --version 0.1.0`) froze the 0.3.5
+  engine and passed its smoke journey, and `tools/verify_package.py` passed with
+  the loopback co-op diagnostic. Local host only: no Windows build, signing or
+  clean-account claim, and nothing was published.
 
-Candidate results (2026-09-16, branch `codex/warband-server-runtime`): only
-the Saga2D version, artifact hashes and project requirement changed in the lock.
-The complete 0.3.2 suite reported **1,078 passed, 19 failed** in 341 seconds.
-Running those exact 19 failing node IDs with the previous 0.3.1 engine reproduced
-all 19 failures. They cover causeway guidance/journeys (8), relief strategy and
-journeys (6), recruitment cost display (3), and tactical guidance/journeys (2).
-No tests or expectations have been changed to make the upgrade pass.
+### How the pin got here
 
-The published engine packages' Python sources differ only in `__init__.py`
-(version string) and `effects.py` (Banner placement). `tools/verify.py` failed at
-the expected battle-victory assertion on line 103 on **both** engines. It captured
-the title, map, six codex pages, buildings, recruitment, help and initial battle
-before stopping; title/map/battle were visually inspected. This is partial
-native evidence, not a completed journey or acceptance of the upgrade.
+The shared room server resolves one engine version for the three games it
+hosts, so each Warband engine upgrade needed a Shardbound commit on the same
+release: `cc070e3` (0.3.2, 2026-09-16), `68a5fac` (0.3.3) and `e900366` (0.3.5,
+2026-09-18). Each changed only the requirement and its lock entry, and each was
+accepted as a headless server input only and kept off main, because the suite
+then reported 1,078 passed and 19 failed with identical node IDs on every engine
+from 0.2.0 to 0.3.5, and `tools/verify.py` stopped at its first battle.
 
-Logs and captures are under `docs/evidence/engine-0.3.2/`: `regression.log`,
-`baseline-0.3.1-failures.log`, `native.log`, `native-baseline.log`, `native/` and
-`native-baseline/`. The candidate pin remains on its isolated branch. Before
-integrating it into the shared-server rollout, resolve the failed acceptance
-checks or make an explicit, evidence-backed server-only acceptance decision;
-do not describe the whole Shardbound suite or native journey as passing.
-
-## WB-004 server-only engine alignment
-
-The isolated `codex/wb004-server-engine` candidate updates only Saga2D to
-verified PyPI 0.3.3, with no other locked version changes. The full candidate
-suite reports **1,078 passed, 19 failed in 341.70 s**. The failed node IDs
-match exactly the 19 previously reproduced on 0.3.1 and 0.3.2; there are no
-new failures. Evidence: `docs/evidence/engine-0.3.3/`.
-
-The installed engine packages differ only in their renderer and version string;
-networking, server and game rules are unchanged. Accept this candidate only as
-a headless shared-server input after Saga Online's Linux three-game, restart,
-backup/rejoin and live retained-state acceptance. This evidence does not accept
-a Shardbound client release or resolve its existing UI/gameplay failures. Main
-and the published Shardbound client keep their existing pins.
+None of that was an engine defect. The 19 were assertions left behind by the
+icon conversion and the playback scenes, a replay input the repository split
+did not track, and a Relief preparation that lost a troop in one world; they
+were fixed on main in `0b14a65..ba626b3`. The native journey had not finished a
+playback since playbacks were introduced (fixed in `576e693`). A future server
+cohort can therefore be cut from main, and its acceptance is a passing suite,
+not a list of expected failures.
