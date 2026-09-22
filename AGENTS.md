@@ -56,9 +56,11 @@ uv run python tools/verify_package.py dist/shardbound
   concrete game need (Shardbound added only `HexGrid` and
   `Scene.draw_paragraph`).
 - Keep every Early Access gate incomplete until its full evidence passes;
-  evidence goes under `docs/evidence/` (git-ignored; the pre-split evidence
-  lives in the archived monorepo). The recorded journals, reports and audio sampler that
-  replay tests read are tracked there deliberately (`git ls-files docs/evidence`);
+  iterate verification in a temporary directory and keep only useful final
+  output in `~/saga/evidence/shardbound/<topic>/`, replacing older output for that
+  topic. Pass output paths explicitly and follow `~/saga/AGENTS.md` for retention
+  and worktree cleanup. The recorded journals, reports and audio sampler that
+  replay tests read stay tracked under `docs/evidence/` (`git ls-files docs/evidence`);
   add a new input with `git add -f`. Verifiers write source fingerprints through
   `tools/sources.py`, which labels framework files `saga2d/...`/`sagaforge/...`.
 - Visual changes must be looked at (`tools/verify.py` or
