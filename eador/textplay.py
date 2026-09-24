@@ -95,8 +95,8 @@ def unit_name(unit: BattleUnit) -> str:
     return f'{unit.name}#{unit.id}'
 
 
-def stats(spec_or_unit) -> str:
-    unit = spec_or_unit
+def stats(unit) -> str:
+    """Combat numbers of a catalogue entry or a battle unit."""
     return f'atk{unit.attack} def{unit.defense} mv{unit.move_range} rng{unit.attack_range}'
 
 
@@ -270,14 +270,18 @@ def objective_text(definition) -> str:
     return 'rout all defenders'
 
 
+def roster(kinds: list[str], health: list[int]) -> str:
+    """'Brigand 20/20, Goblin 9/16'; saved health may be empty for untouched defenders."""
+    return ', '.join(f'{UNITS[kind].name} {hp}/{UNITS[kind].hp}'
+                     for kind, hp in zip(kinds, health or [UNITS[kind].hp for kind in kinds]))
+
+
 def inspect_view(state: State, pos) -> str:
     province = state.provinces[pos]
     lines = [f'{province.name} {at(pos)}{" (capital)" if province.capital else ""}: {OWNERS[province.owner]}, '
              f'{province.terrain}, income {province.income}, crystals {province.crystals}']
     if province.guards:
-        guards = ', '.join(f'{UNITS[kind].name} {hp}/{UNITS[kind].hp}' for kind, hp in zip(province.guards, province.guard_hp or
-                                                                                    [UNITS[k].hp for k in province.guards]))
-        lines.append(f'Defenders: {guards}')
+        lines.append(f'Defenders: {roster(province.guards, province.guard_hp)}')
     encounter = state.encounter_at(pos)
     if encounter:
         lines.append(f'Assault battle: {ENCOUNTERS[encounter].name}: {objective_text(ENCOUNTERS[encounter])}')
@@ -291,16 +295,12 @@ def inspect_view(state: State, pos) -> str:
         spec = SITES[province.site_kind]
         lines.append(f'Site: {province.site}{" (cleared)" if province.explored else ""} - {spec.description}')
         if not province.explored:
-            hps = province.site_guard_hp or [UNITS[k].hp for k in province.site_guards]
-            lines.append('  Guards: ' + ', '.join(f'{UNITS[k].name} {hp}/{UNITS[k].hp}' for k, hp in zip(province.site_guards, hps)))
+            lines.append(f'  Guards: {roster(province.site_guards, province.site_guard_hp)}')
             relic = f', relic {RELICS[province.site_relic].name}' if province.site_relic else ''
             lines.append(f'  Reward: {province.site_gold} gold, {province.site_crystals} crystals{relic}')
             if spec.approaches:
-                for approach in spec.approaches:
-                    fee = ', '.join(part for part in (f'{approach.gold_cost} gold' if approach.gold_cost else '',
-                                                      f'{approach.crystals_cost} crystals' if approach.crystals_cost else '') if part)
-                    lines.append(f'  explore {approach.id}: {approach.title} - {approach.description}'
-                                 f'{" Fee " + fee + "." if fee else ""} Battle: {objective_text(ENCOUNTERS[approach.encounter])}')
+                lines += [f'  explore {approach.id}: {approach.title} - {approach.description} '
+                          f'Battle: {objective_text(ENCOUNTERS[approach.encounter])}' for approach in spec.approaches]
             else:
                 battle = objective_text(ENCOUNTERS[spec.encounter]) if spec.encounter else 'rout all defenders'
                 lines.append(f'  explore: battle ({battle}); owned province, one action')
