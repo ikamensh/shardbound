@@ -376,7 +376,7 @@ class ShardScene(Screen):
     def refresh(self):
         from saga2d import Column, Image, Label, Row
         from eador.preferences import reading_scale
-        from eador.rival_scene import rival_order
+        from eador.rival import rival_order
 
         super().refresh()
         s = self.state

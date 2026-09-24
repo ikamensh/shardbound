@@ -4,34 +4,12 @@ from saga2d import Anchor, Button, Column, Component, Label, Row
 
 from eador import art
 from eador.model import UNITS
-from eador.rival import RECRUIT_COSTS
+from eador.rival import RECRUIT_COSTS, rival_order
 from eador.preferences import reading_scale
 from eador.reading import reading_pages
 from eador.scene import Screen
 from eador.style import GOLD, MUTED, RED, TEAL, TEXT
 from eador.ui import icon_path, metric
-
-
-def rival_order(state):
-    rival = state.rival
-    if state.status == "victory":
-        return "Duskspire has fallen"
-    if state.status == "defeat":
-        return "The rival holds the shard"
-    if state.battle_kind in ("intercept", "defense"):
-        return "Expedition in battle"
-    target = state.provinces[rival.target].name if rival.target is not None else None
-    action = {
-        "march": f"March to {target}",
-        "attack": f"Attack {target}",
-        "return": f"Return via {target}",
-        "recruit": "Recruit at Duskspire",
-        "recover": "Heal at Duskspire",
-        "watch": "Reassess its orders",
-        "defeated": "Duskspire has fallen",
-    }[rival.intent]
-    when = "next turn" if rival.turns_until_action == 1 else f"in {rival.turns_until_action} turns"
-    return f"{action} {when}"
 
 
 class RivalScene(Screen):

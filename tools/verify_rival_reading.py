@@ -20,7 +20,8 @@ from eador.difficulty import DIFFICULTIES
 from eador.model import State, UNITS
 from eador.preferences import reading_scale
 from eador.rival import RECRUIT_COSTS
-from eador.rival_scene import RivalScene, rival_order
+from eador.rival import rival_order
+from eador.rival_scene import RivalScene
 from eador.scene import ShardScene
 from eador.ui import icon_path
 from tools.campaign import finish_battle

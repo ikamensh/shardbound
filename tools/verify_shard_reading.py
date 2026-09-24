@@ -20,7 +20,7 @@ from saga2d import Button, Image, Label, Row
 from eador.app import create_game
 from eador.model import State, UNITS
 from eador.preferences import reading_scale
-from eador.rival_scene import rival_order
+from eador.rival import rival_order
 from eador.scene import BattleScene, ShardScene
 from eador.ui import icon_path
 from tools.sources import framework_sources, source_name, source_path

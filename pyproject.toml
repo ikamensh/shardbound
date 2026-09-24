@@ -17,6 +17,7 @@ dev = ["pytest>=9.0.2"]
 
 [project.scripts]
 shardbound = "eador.__main__:main"
+shardbound-text = "eador.textplay:main"
 
 [tool.uv.sources]
 sagaforge = { path = "../sagaforge", editable = true }

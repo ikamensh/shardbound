@@ -161,3 +161,26 @@ class RivalState:
         self.defeats += 1
         self.pos = STRONGHOLD
         self.plan(state, delay=state.rules.replacement_delay)
+
+
+def rival_order(state):
+    """The expedition's announced next operation, as every front end prints it."""
+    rival = state.rival
+    if state.status == "victory":
+        return "Duskspire has fallen"
+    if state.status == "defeat":
+        return "The rival holds the shard"
+    if state.battle_kind in ("intercept", "defense"):
+        return "Expedition in battle"
+    target = state.provinces[rival.target].name if rival.target is not None else None
+    action = {
+        "march": f"March to {target}",
+        "attack": f"Attack {target}",
+        "return": f"Return via {target}",
+        "recruit": "Recruit at Duskspire",
+        "recover": "Heal at Duskspire",
+        "watch": "Reassess its orders",
+        "defeated": "Duskspire has fallen",
+    }[rival.intent]
+    when = "next turn" if rival.turns_until_action == 1 else f"in {rival.turns_until_action} turns"
+    return f"{action} {when}"
