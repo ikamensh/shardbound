@@ -24,11 +24,11 @@ player's reasoning into it, so the transcript is the playtest record.
   finishes is shown or settled in the same output. A `[status]` line ends
   each run of orders, so the player rarely needs to look again.
 - **Chains.** `'move 3 0,1; attack 3 1004; end'` runs in order. The first
-  error stops the chain and names the skipped commands. `attack ID T from Q,R`
-  checks the whole order before it moves, so a refused attack moves nothing.
-  A refusal names its cause where the rules' message is generic: what
-  occupies a hex, which hexes an out-of-range target can be struck from,
-  why a spell target is illegal.
+  error stops the chain and names the skipped commands. `attack`, `pin` and
+  `cast` take `from Q,R`: the move and the act are checked together on a copy,
+  so a refused order moves nothing. A refusal names its cause where the rules'
+  message is generic (what occupies a hex, which units block every route,
+  range or sight) and the hexes from which the order would work.
 - **Observations show what the GUI shows.** `look` is the overview (campaign,
   battle or transition), `map` lists provinces with their neighbours,
   `inspect` gives a province's briefing, `plan` the campaign plan (what

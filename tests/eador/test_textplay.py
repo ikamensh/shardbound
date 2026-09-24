@@ -18,6 +18,10 @@ def in_shrine_battle() -> Session:
     return session
 
 
+def enemy(session: Session, kind: str) -> int:
+    return next(u.id for u in session.state.battle.units if u.team == 'enemy' and u.kind == kind)
+
+
 def test_cli_keeps_the_game_and_a_transcript_between_invocations(tmp_path):
     save = tmp_path / 'game.json'
     assert main(['-g', str(save), 'new', '7']) == 0
@@ -74,8 +78,8 @@ def test_a_refused_attack_from_a_hex_does_not_move_the_unit():
     session = in_shrine_battle()
     battle = session.state.battle
     militia = battle.unit(1)
-    output, ok = session.run('attack 1 1005 from -3,0; end')
-    assert not ok and 'error:' in output and 'skipped: end' in output
+    output, ok = session.run(f'attack 1 {enemy(session, "goblin")} from -3,0; end')
+    assert not ok and 'Choose an enemy in range' in output and 'skipped: end' in output
     assert militia.pos == (-2, 0) and not militia.moved and battle.round == 1
 
 
@@ -178,11 +182,11 @@ def test_names_resolve_as_the_game_prints_them():
 
 def test_an_out_of_range_attack_names_the_hexes_it_could_strike_from():
     session = in_shrine_battle()
-    militia = session.state.battle.unit(1)
-    output, ok = session.run('attack 1 1004')
+    militia, goblin = session.state.battle.unit(1), enemy(session, 'goblin')
+    output, ok = session.run(f'attack 1 {goblin}')
     assert not ok and 'add "from Q,R", one of:' in output
     hexes = output.split('one of: ')[1].split()
-    output, ok = session.run(f'attack 1 1004 from {hexes[0]}')
+    output, ok = session.run(f'attack 1 {goblin} from {hexes[0]}')
     assert ok, output
     assert militia.acted
 
@@ -211,3 +215,60 @@ def test_the_campaign_plan_tells_what_travels_before_the_shard_is_won():
     assert f'you would arrive with {gold} gold and {crystals} crystals' in output
     plan, ok = session.run('plan')
     assert ok and 'todo: Duskspire 2,0' in plan and 'up to two veterans and two relics' in plan
+
+
+# Regressions from the second blind playtest.
+
+def forest_between(battle, source, target):
+    """Clear the ends and plant forest on the one hex between two hexes two apart."""
+    middle = ((source[0] + target[0]) // 2, (source[1] + target[1]) // 2)
+    for pos in (source, target):
+        battle.terrain[pos] = 'plains'
+    battle.terrain[middle] = 'forest'
+
+
+def test_an_attack_refused_for_sight_says_so_rather_than_range():
+    session = in_shrine_battle()
+    battle, goblin = session.state.battle, enemy(session, 'goblin')
+    battle.unit(goblin).pos = (0, 1)
+    forest_between(battle, battle.unit(3).pos, (0, 1))
+    output, ok = session.run(f'attack 3 {goblin}')
+    assert not ok and 'no line of sight' in output and 'out of range' not in output
+
+
+def test_a_spell_can_be_cast_after_a_move_checked_as_one_order():
+    session = Session()
+    session.run('new 7 Wizard; explore')
+    battle, goblin = session.state.battle, enemy(session, 'goblin')
+    hero = battle.unit(0)
+    battle.unit(goblin).pos = (-1, 1)
+    forest_between(battle, hero.pos, (-1, 1))
+    output, ok = session.run(f'cast bolt {goblin}')
+    assert not ok and 'no line of sight' in output and 'cast from one of:' in output
+    cell = output.split('cast from one of: ')[1].split()[0]
+    output, ok = session.run(f'cast bolt {goblin} from 3,0')
+    assert not ok and not hero.moved
+    output, ok = session.run(f'cast bolt {goblin} from {cell}')
+    assert ok, output
+    assert hero.pos == tuple(map(int, cell.split(','))) and hero.acted
+
+
+def test_a_move_blocked_by_bodies_names_them():
+    session = in_shrine_battle()
+    output, ok = session.run('move 0 -1,1')
+    assert not ok and 'units stand on every route' in output and 'Archer#3 at -2,1' in output
+
+
+def test_prompts_name_the_text_command_that_follows():
+    session = in_shrine_battle()
+    output, _ = session.run('auto all')
+    assert 'equip moonstone' in output
+    output, _ = session.run('note first; second')
+    assert 'including any ";"' in output
+
+
+def test_codex_searches_rule_text_when_no_title_matches():
+    session = Session()
+    session.run('new 7')
+    output, ok = session.run('codex encirclement')
+    assert ok and 'Mage Tower' in output

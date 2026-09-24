@@ -306,10 +306,10 @@ class Battle:
             return set()
         occupied = {other.pos for other in self.units if other.alive and other.id != unit.id}
         cells = self.grid.reachable(unit.pos, unit.effective_move_range, blocked=() if unit.can_fly else occupied,
-                                    cost=lambda pos: self._move_cost(unit, pos))
+                                    cost=lambda pos: self.move_cost(unit, pos))
         return set(cells) - occupied - {unit.pos}
 
-    def _move_cost(self, unit, pos):
+    def move_cost(self, unit, pos):
         return 2 if self.terrain[pos] in ('forest', 'marsh') and not (unit.terrain_walk or unit.can_fly) else 1
 
     def has_sight(self, source: Pos, target: Pos) -> bool:
@@ -338,7 +338,7 @@ class Battle:
         if self._observer is not None:
             occupied = {other.pos for other in self.units if other.alive and other.id != unit.id}
             path = self.grid.path(unit.pos, destination, blocked=() if unit.can_fly else occupied,
-                                  cost=lambda pos: self._move_cost(unit, pos))
+                                  cost=lambda pos: self.move_cost(unit, pos))
         unit.pos = destination
         unit.moved = True
         self._emit('move', unit.id, text=f'{unit.name} {"flies" if unit.can_fly else "moves"} to {destination}.', path=path)

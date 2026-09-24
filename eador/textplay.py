@@ -43,6 +43,8 @@ Westwatch (-2,0). The first lost capital offers one recovery; a second ends the 
 Campaign turn: travelling and exploring spend an action (Scout 3 per turn, others 2).
 Building and recruiting spend none; recruit where your hero stands, in your territory.
 End turn: income, upkeep (unpaid troops desert), the army rests, then the rival acts.
+Encirclement: while every neighbour of Westwatch is held by the rival, the capital's income,
+the Marketplace, rest and infusion there stop; retake any neighbour to reopen supply.
 The rival expedition is finite; its next operation and timing are public (rival).
 Hexes are q,r. Neighbours of q,r: q+1,r q-1,r q,r+1 q,r-1 q+1,r-1 q-1,r+1.
 Distance: max(|dq|, |dr|, |dq+dr|).
@@ -128,7 +130,8 @@ def choice_text(state: State) -> str | None:
     if choice is None:
         return None
     options = '; '.join(f'{option.id} = {option.name}: {option.description}' for option in choice.options)
-    return f'CHOICE PENDING - {choice.title}: {choice.description} Options: {options} (choose ID)'
+    after = f' A kept relic works once equipped: equip {choice.context}.' if choice.kind == 'relic' else ''
+    return f'CHOICE PENDING - {choice.title}: {choice.description} Options: {options} (choose ID).{after}'
 
 
 def hero_lines(state: State) -> list[str]:
@@ -504,8 +507,26 @@ def move_refusal(battle: Battle, unit: BattleUnit, pos) -> str | None:
         return f'{unit_name(unit)} already moved this round'
     if unit.acted:
         return f'{unit_name(unit)} already acted, which ends its movement'
+    blockers = path_blockers(battle, unit, pos)
+    if blockers:
+        return (f'{at(pos)} is within {unit_name(unit)}\'s movement, but units stand on every route: '
+                + ', '.join(f'{unit_name(u)} at {at(u.pos)}' for u in blockers))
     return (f'{at(pos)} is out of reach for {unit_name(unit)}: mv {unit.effective_move_range}, forest and marsh '
-            f'cost 2{"" if unit.can_fly else ", units block the path"} (unit {unit.id} lists its reach)')
+            f'cost 2 (unit {unit.id} lists its reach)')
+
+
+def path_blockers(battle: Battle, unit: BattleUnit, pos) -> list[BattleUnit]:
+    """Units standing on the routes that would reach pos if their hexes were empty."""
+    budget = unit.effective_move_range
+
+    def cost(cell):
+        return battle.move_cost(unit, cell)
+    ahead = battle.grid.reachable(unit.pos, budget, cost=cost)
+    if pos not in ahead:
+        return []
+    back = battle.grid.reachable(pos, budget, cost=cost)
+    return [other for other in battle.units if other.alive and other.id != unit.id and other.pos in ahead
+            and other.pos in back and ahead[other.pos] + back[other.pos] - cost(other.pos) + cost(pos) <= budget]
 
 
 def spell_refusal(battle: Battle, spell: str, caster: BattleUnit, target: BattleUnit) -> str | None:
@@ -853,8 +874,9 @@ def _codex(session, args):
     if topic in categories:
         chosen = [(categories[topic], entry) for entry in codex_entries(session.state, categories[topic])]
     else:
-        chosen = [(category, entry) for category in CATEGORIES for entry in codex_entries(session.state, category)
-                  if topic in entry.title.lower()]
+        entries = [(category, entry) for category in CATEGORIES for entry in codex_entries(session.state, category)]
+        chosen = ([(c, e) for c, e in entries if topic in e.title.lower()]
+                  or [(c, e) for c, e in entries if topic in f'{e.facts} {e.description}'.lower()])
     if not chosen:
         raise UsageError(f'no codex entry matches {topic!r}')
     absent = 'No recorded source on this shard.'
@@ -871,7 +893,7 @@ def _codex(session, args):
 def _note(session, args):
     if not args:
         raise UsageError('note what?')
-    return 'noted'
+    return 'noted (everything after "note", including any ";", is the note)' if any(';' in a for a in args) else 'noted'
 
 
 @command('map', 'every province: owner, defenders, site, neighbours', where='both', observes=True)
@@ -1027,31 +1049,42 @@ def _move(session, args):
     return session.battle_order(lambda b: b.move(ident, pos))
 
 
-def strike(session, args, kind: str) -> str:
-    """attack/pin ID TARGET [from Q,R]: an optional move first, refused whole if the strike would be."""
-    if len(args) not in (2, 4) or len(args) == 4 and args[2] != 'from':
-        raise UsageError(f'usage: {kind} ID TARGET [from Q,R]')
-    ident, target = battle_unit(session, args[0]), battle_unit(session, args[1])
-    source = parse_pos(args[3]) if len(args) == 4 else None
-    battle, unit = session.state.battle, session.state.battle.unit(ident)
+def ordered_from(session, ident: int, source, act: Callable[[Battle], None]) -> str:
+    """Move to source first when given; the whole order is checked on a copy, so a refusal moves nothing."""
+    battle = session.state.battle
+    unit = battle.unit(ident)
     moving = source is not None and source != unit.pos
-    if moving and (reason := move_refusal(battle, unit, source)):
-        raise UsageError(reason)
-    if source is None and unit.team == battle.active_team and not unit.acted:
-        cells = [pos for _, _, pos in strike_options(battle, unit).get(target, [])]
-        if cells:
-            raise UsageError(f'{unit_name(battle.unit(target))} is out of range from {at(unit.pos)}; '
-                             f'add "from Q,R", one of: {" ".join(at(pos) for pos in cells)}')
     if moving:
+        if reason := move_refusal(battle, unit, source):
+            raise UsageError(reason)
         probe = copy.deepcopy(battle)
         probe.move(ident, source)
-        getattr(probe, kind)(ident, target)
+        act(probe)
 
     def order(battle):
         if moving:
             battle.move(ident, source)
-        getattr(battle, kind)(ident, target)
+        act(battle)
     return session.battle_order(order)
+
+
+def strike(session, args, kind: str) -> str:
+    """attack/pin ID TARGET [from Q,R]."""
+    if len(args) not in (2, 4) or len(args) == 4 and args[2] != 'from':
+        raise UsageError(f'usage: {kind} ID TARGET [from Q,R]')
+    ident, target = battle_unit(session, args[0]), battle_unit(session, args[1])
+    source = parse_pos(args[3]) if len(args) == 4 else None
+    battle, unit, enemy = session.state.battle, session.state.battle.unit(ident), session.state.battle.unit(target)
+    if (source is None and kind == 'attack' and unit.team == battle.active_team and unit.alive and not unit.acted
+            and enemy.alive and enemy.team != unit.team and enemy.id not in {t.id for t in battle.targets(ident)}):
+        distance = HexGrid.distance(unit.pos, enemy.pos)
+        cause = (f'{distance} hexes away, range {unit.attack_range}' if distance > unit.attack_range
+                 else 'no line of sight (intervening forest or smoke)')
+        cells = [pos for _, _, pos in strike_options(battle, unit).get(target, [])]
+        raise UsageError(f'{unit_name(enemy)} cannot be attacked from {at(unit.pos)}: {cause}; '
+                         + (f'add "from Q,R", one of: {" ".join(at(pos) for pos in cells)}' if cells
+                            else 'no reachable hex brings it in range'))
+    return ordered_from(session, ident, source, lambda b: getattr(b, kind)(ident, target))
 
 
 @command('attack ID TARGET [from Q,R]', 'attack, optionally moving to Q,R first', where='battle')
@@ -1101,21 +1134,34 @@ def _smoke(session, args):
     return session.battle_order(lambda b: b.smoke(ident, pos))
 
 
-@command('cast SPELL TARGET [by ID]', 'cast bolt or heal (hero by default; an Acolyte can heal)', where='battle')
+@command('cast SPELL TARGET [by ID] [from Q,R]',
+         'cast bolt or heal (hero by default; an Acolyte can heal), optionally moving the caster first', where='battle')
 def _cast(session, args):
-    if len(args) not in (2, 4) or len(args) == 4 and args[2] != 'by':
-        raise UsageError('usage: cast SPELL TARGET [by ID]')
+    options = dict(zip(args[2::2], args[3::2]))
+    if len(args) < 2 or len(args) % 2 or set(options) - {'by', 'from'}:
+        raise UsageError('usage: cast SPELL TARGET [by ID] [from Q,R]')
     battle, spell = session.state.battle, args[0].lower()
     if spell not in SPELLS:
         raise UsageError('spell is bolt or heal')
     target = battle_unit(session, args[1])
-    caster = battle_unit(session, args[3]) if len(args) == 4 else None
+    caster = battle_unit(session, options['by']) if 'by' in options else None
+    source = parse_pos(options['from']) if 'from' in options else None
+    ident = battle.hero_id if caster is None else caster
     try:
-        return session.battle_order(lambda b: b.cast(spell, target, caster_id=caster))
+        return ordered_from(session, ident, source, lambda b: b.cast(spell, target, caster_id=caster))
     except RuleError as error:
-        refusal = battle.hero_id is not None and spell_refusal(
-            battle, spell, battle.unit(battle.hero_id if caster is None else caster), battle.unit(target))
-        raise RuleError(f'{error} ({refusal})' if refusal and 'within 4 hexes' in str(error) else str(error)) from None
+        if 'within 4 hexes' not in str(error):
+            raise
+        view = copy.deepcopy(battle)
+        view.unit(ident).pos = source or view.unit(ident).pos
+        refusal = spell_refusal(view, spell, view.unit(ident), view.unit(target))
+        cells = []
+        for pos in sorted(battle.reachable(ident), key=lambda p: (p[1], p[0])):
+            view.unit(ident).pos = pos
+            if target in {t.id for t in view.spell_targets(spell, caster_id=caster)}:
+                cells.append(at(pos))
+        hint = f'; cast from one of: {" ".join(cells)}' if cells else ''
+        raise RuleError(f'{error} ({refusal}){hint}' if refusal else f'{error}{hint}') from None
 
 
 @command('evacuate', 'the hero leaves with the cargo from a marked exit', where='battle')
