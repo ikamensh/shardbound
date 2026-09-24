@@ -3,7 +3,8 @@
 from saga2d import Button, Label
 
 from eador.app import create_game
-from eador.campaign_scene import CampaignPlanScene, campaign_targets
+from eador.campaign import campaign_targets
+from eador.campaign_scene import CampaignPlanScene
 from eador.model import State
 from eador.preferences import reading_scale
 from eador.scene import ShardScene

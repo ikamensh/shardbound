@@ -99,6 +99,18 @@ class Campaign:
                                     for record in data['completed']]})
 
 
+def campaign_targets(state):
+    """Ordered map labels for the game's current contract and its progress."""
+    targets = []
+    if state.campaign.contract == 'foundries':
+        targets.extend((pos, state.provinces[pos].name, state.provinces[pos].owner == 'player') for pos in FOUNDRIES)
+    elif state.campaign.contract == 'rootward':
+        watch = next(p for p in state.provinces.values() if p.site_kind == 'border_watch')
+        targets.append((watch.pos, f'Border Watch at {watch.name}', watch.explored))
+    targets.append(((2, 0), 'Duskspire', state.provinces[(2, 0)].owner == 'player'))
+    return targets
+
+
 def validate_campaign(data: dict) -> None:
     """Validate a single bounded campaign object, including its recorded entry world."""
     from eador.model import RECRUITABLE, SaveFormatError, _validate_save

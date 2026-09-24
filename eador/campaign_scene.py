@@ -1,23 +1,11 @@
 """Choose the next challenge and traveling retinue, or review a completed journey."""
 
-from eador.campaign import CONTRACTS, FOUNDRIES
+from eador.campaign import CONTRACTS, campaign_targets
 from eador.content import RELICS, SKILLS
 from eador.model import RuleError, UNITS
 from eador.scene import OrderPending, Screen, TitleScene
 from eador.style import GOLD, MUTED, RED, TEAL, TEXT
 from eador.worldgen import THEMES
-
-
-def campaign_targets(state):
-    """Ordered map labels for the game's current contract and its progress."""
-    targets = []
-    if state.campaign.contract == 'foundries':
-        targets.extend((pos, state.provinces[pos].name, state.provinces[pos].owner == 'player') for pos in FOUNDRIES)
-    elif state.campaign.contract == 'rootward':
-        watch = next(p for p in state.provinces.values() if p.site_kind == 'border_watch')
-        targets.append((watch.pos, f'Border Watch at {watch.name}', watch.explored))
-    targets.append(((2, 0), 'Duskspire', state.provinces[(2, 0)].owner == 'player'))
-    return targets
 
 
 class CampaignPlanScene(Screen):

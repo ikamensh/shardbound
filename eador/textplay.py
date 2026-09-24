@@ -18,7 +18,8 @@ from pathlib import Path
 
 from saga2d import HexGrid
 
-from eador.battle import Battle, BattleUnit
+from eador.battle import SPELLS, Battle, BattleUnit
+from eador.campaign import campaign_targets
 from eador.content import RELICS, SITES, SKILLS
 from eador.difficulty import DIFFICULTIES
 from eador.encounters import ENCOUNTERS
@@ -46,7 +47,8 @@ The rival expedition is finite; its next operation and timing are public (rival)
 Hexes are q,r. Neighbours of q,r: q+1,r q-1,r q,r+1 q,r-1 q+1,r-1 q-1,r+1.
 Distance: max(|dq|, |dr|, |dq+dr|).
 Battle round: each unit may move, then act once (attack, ability or spell); acting
-usually ends its move. A surviving adjacent defender retaliates once per round.
+usually ends its move. Units cannot move through other units (flyers can).
+A surviving adjacent defender retaliates once per round.
 Forest and marsh cost 2 movement. Forest and hills give cover. Intervening forest
 blocks ranged sight. Forecasts are exact: 'deal/take' is damage dealt/taken.
 Your hero falling loses the battle. Wounds carry over between battles.
@@ -70,6 +72,17 @@ def parse_int(text: str, what: str) -> int:
         return int(text.lstrip('#'))
     except ValueError:
         raise UsageError(f'expected {what} (a number), got {text!r}') from None
+
+
+def resolve(words: list[str], table: dict, what: str) -> str:
+    """An id from its id or its display name in any case: 'Moonstone', 'merchant seal', 'Acolyte'."""
+    def key(text):
+        return text.lower().replace(' ', '_').replace('-', '_').replace("'", '').replace('\u2019', '')
+    wanted = key('_'.join(words))
+    for ident, spec in table.items():
+        if wanted in (key(ident), key(spec.name)):
+            return ident
+    raise UsageError(f'unknown {what} {" ".join(words)!r}; one of: {" ".join(table)}')
 
 
 def troop_name(troop) -> str:
@@ -133,6 +146,34 @@ def hero_lines(state: State) -> list[str]:
     return lines
 
 
+def carry_line(state: State) -> str:
+    if state.campaign.stage == 3:
+        return 'Final shard: its victory completes the campaign.'
+    gold, crystals = state.expedition_funding()
+    return ('Next shard: your skills, up to two veterans and two relics travel (Militia refill the levy to three); '
+            f'buildings and provinces stay behind; you would arrive with {gold} gold and {crystals} crystals '
+            f'(base {state.rules.starting_gold} and {state.rules.starting_crystals}, plus up to 40 gold and 2 crystals you carry).')
+
+
+def plan_view(state: State) -> str:
+    campaign = state.campaign
+    if campaign is None:
+        return 'A single shard: capture Duskspire (2,0) and protect Westwatch (-2,0).'
+    lines = [f'Stage {campaign.stage}/3 {campaign.title}: {campaign.objective}']
+    lines += [f'  {"done" if complete else "todo"}: {name} {at(pos)}' for pos, name, complete in campaign_targets(state)]
+    lines.append(state.assault_blocked_reason or 'Duskspire is open to assault.')
+    lines.append(carry_line(state))
+    lines.append(f'Rank limits this stage: hero {state.hero_level_cap}, troops {state.troop_level_cap}; '
+                 'experience pauses at the limit.')
+    if campaign.recovery_used:
+        lines.append('Recovery spent: another lost capital ends the campaign.')
+    else:
+        gold, crystals = state.expedition_funding(recovery=True)
+        lines.append(f'One recovery if Westwatch falls: restart this shard with {gold} gold and {crystals} crystals, '
+                     'your skills and a chosen retinue.')
+    return '\n'.join(lines)
+
+
 def campaign_view(state: State) -> str:
     campaign = state.campaign
     if campaign and campaign.phase != 'playing':
@@ -152,6 +193,8 @@ def campaign_view(state: State) -> str:
         lines.append('WARNING: Westwatch is encircled: capital income, Marketplace and recovery are blocked.')
     lines += hero_lines(state)
     lines.append('Stronghold: ' + (', '.join(sorted(state.buildings)) or 'nothing built'))
+    if campaign:
+        lines.append(carry_line(state) + ' (plan)')
     rival = state.rival
     lines.append(f'Rival: {rival_order(state)} · {len(rival.army)} troops at {province_label(state, rival.pos)} (rival for details)')
     here = state.provinces[state.hero.pos]
@@ -435,6 +478,52 @@ def board_view(battle: Battle) -> str:
     return '\n'.join(lines)
 
 
+def strike_options(battle: Battle, unit: BattleUnit) -> dict[int, list[tuple[int, int, tuple]]]:
+    """Targets only a move brings in range: target id -> [(deal, take, hex)], forecast by the rules."""
+    now = {target.id for target in battle.targets(unit.id)}
+    options = {}
+    for pos in sorted(battle.reachable(unit.id), key=lambda p: (p[1], p[0])):
+        probe = copy.deepcopy(battle)
+        probe.unit(unit.id).pos = pos
+        for target in probe.targets(unit.id):
+            if target.id not in now:
+                options.setdefault(target.id, []).append((*probe.preview(unit.id, target.id), pos))
+    return options
+
+
+def move_refusal(battle: Battle, unit: BattleUnit, pos) -> str | None:
+    """Why your unit cannot move to a hex, more specifically than the rules' shared refusal."""
+    if unit.team != battle.active_team or not unit.alive or pos in battle.reachable(unit.id):
+        return None
+    if pos not in battle.terrain:
+        return f'{at(pos)} is off the battlefield'
+    occupant = next((u for u in battle.units if u.alive and u.pos == pos and u.id != unit.id), None)
+    if occupant is not None:
+        return f'{at(pos)} is occupied by {unit_name(occupant)}'
+    if unit.moved:
+        return f'{unit_name(unit)} already moved this round'
+    if unit.acted:
+        return f'{unit_name(unit)} already acted, which ends its movement'
+    return (f'{at(pos)} is out of reach for {unit_name(unit)}: mv {unit.effective_move_range}, forest and marsh '
+            f'cost 2{"" if unit.can_fly else ", units block the path"} (unit {unit.id} lists its reach)')
+
+
+def spell_refusal(battle: Battle, spell: str, caster: BattleUnit, target: BattleUnit) -> str | None:
+    """The target-side reason a spell is refused: side, health, range or sight."""
+    if not target.alive:
+        return f'{unit_name(target)} has fallen'
+    if (spell == 'bolt') == (target.team == caster.team):
+        return 'bolt targets enemies' if spell == 'bolt' else 'heal targets allies'
+    if spell == 'heal' and target.hp >= target.max_hp:
+        return f'{unit_name(target)} is unhurt'
+    distance = HexGrid.distance(caster.pos, target.pos)
+    if distance > 4:
+        return f'{unit_name(target)} is {distance} hexes from {unit_name(caster)}; spells reach 4'
+    if not battle.has_sight(caster.pos, target.pos):
+        return f'no line of sight from {unit_name(caster)} at {at(caster.pos)} (intervening forest or smoke)'
+    return None
+
+
 def unit_view(battle: Battle, unit_id: int) -> str:
     unit = battle.unit(unit_id)
     lines = [unit_line(battle, unit)]
@@ -443,25 +532,17 @@ def unit_view(battle: Battle, unit_id: int) -> str:
     reach = sorted(battle.reachable(unit.id), key=lambda p: (p[1], p[0]))
     lines.append(f'reach ({len(reach)}, mv {unit.effective_move_range}): ' + (' '.join(hex_text(battle, p) for p in reach) or 'none'))
     ours = unit.team == battle.active_team and battle.outcome is None
-    now = {t.id for t in battle.targets(unit.id)} if not unit.acted else set()
-    later = {}
-    for pos in reach:
-        probe = copy.deepcopy(battle)
-        probe.unit(unit.id).pos = pos
-        for target in probe.targets(unit.id):
-            if target.id in now:
-                continue
-            deal, take = probe.preview(unit.id, target.id)
-            later.setdefault((target.id, deal, take), []).append(hex_text(battle, pos))
     who = 'attack' if ours else 'could attack'
+    now = battle.targets(unit.id)
     if now:
         lines.append(f'{who} now (deal/take): ' + ', '.join(
-            f'{unit_name(battle.unit(t))} {forecast(*battle.preview(unit.id, t), battle.unit(t), unit)}' for t in sorted(now)))
-    for target_id in sorted({key[0] for key in later}):
-        target = battle.unit(target_id)
-        options = [f'{forecast(deal, take, target, unit)} from {" ".join(cells)}'
-                   for (ident, deal, take), cells in sorted(later.items()) if ident == target_id]
-        lines.append(f'{who} after moving: {unit_name(target)} ' + '; '.join(options))
+            f'{unit_name(t)} {forecast(*battle.preview(unit.id, t.id), t, unit)}' for t in now))
+    for target_id, options in sorted(strike_options(battle, unit).items()):
+        target, cells = battle.unit(target_id), {}
+        for deal, take, pos in options:
+            cells.setdefault((deal, take), []).append(hex_text(battle, pos))
+        lines.append(f'{who} after moving: {unit_name(target)} ' + '; '.join(
+            f'{forecast(deal, take, target, unit)} from {" ".join(hexes)}' for (deal, take), hexes in cells.items()))
     if not ours:
         return '\n'.join(lines)
     orders = []
@@ -495,8 +576,8 @@ def unit_view(battle: Battle, unit_id: int) -> str:
 # ---------------------------------------------------------------- change reports
 
 VERBS = {'attack': 'hits', 'pin': 'pins', 'retaliation': 'retaliates on', 'brace': 'brace-strikes',
-         'bolt': 'casts bolt on', 'heal': 'casts heal on', 'guard': 'takes a stance', 'repulse': 'repulses',
-         'smoke': 'throws smoke', 'rally': 'rallies', 'swap': 'swaps with', 'escape': 'evacuates'}
+         'bolt': 'casts bolt on', 'heal': 'casts heal on', 'repulse': 'repulses', 'rally': 'rallies',
+         'swap': 'swaps with', 'escape': 'evacuates'}
 
 
 def trace_lines(battle: Battle, trace) -> list[str]:
@@ -529,11 +610,14 @@ def trace_lines(battle: Battle, trace) -> list[str]:
             actor = event.before.unit(event.actor_id)
             lines.append(f'{names[event.actor_id]} moves {at(actor.pos)}->{at(event.after.unit(event.actor_id).pos)}')
         else:
-            head = f'{names[event.actor_id]} {VERBS.get(event.kind, event.kind)}'
-            if event.target_id is not None and event.kind != 'smoke':
-                head += f' {names[event.target_id]}'
-            if event.kind in ('guard', 'smoke'):
-                head = event.text
+            actor = names[event.actor_id]
+            if event.kind == 'guard':
+                head = actor + (' braces' if event.after.unit(event.actor_id).stance == 'brace' else ' guards')
+            elif event.kind == 'smoke':
+                clouds = sorted(set(event.after.smoke) - set(event.before.smoke))
+                head = f'{actor} smokes ' + ' '.join(at(pos) for pos, _ in clouds)
+            else:
+                head = f'{actor} {VERBS[event.kind]}' + (f' {names[event.target_id]}' if event.target_id is not None else '')
             lines.append(head + (': ' + '; '.join(changes) if changes else ''))
     return lines
 
@@ -541,11 +625,9 @@ def trace_lines(battle: Battle, trace) -> list[str]:
 @dataclass(frozen=True)
 class Snapshot:
     """The campaign facts whose changes an order reports."""
-    gold: int
-    crystals: int
-    actions: int
-    hero: tuple
-    army: dict
+    values: dict  # label -> number, reported as 'label old->new'
+    hero_at: tuple
+    army: dict  # troop id -> (name, hp, level)
     owners: dict
     rival: tuple
     log: int
@@ -553,23 +635,20 @@ class Snapshot:
     @classmethod
     def take(cls, state: State) -> Snapshot:
         hero = state.hero
-        return cls(state.gold, state.crystals, state.actions_left,
-                   (hero.hp, hero.mana, hero.level, hero.xp, hero.pos),
-                   {t.id: (troop_name(t), t.hp, t.level) for t in hero.army},
+        values = {'gold': state.gold, 'crystals': state.crystals, 'actions': state.actions_left,
+                  'hero hp': hero.hp, 'mana': hero.mana, 'hero level': hero.level, 'hero xp': hero.xp}
+        return cls(values, hero.pos, {t.id: (troop_name(t), t.hp, t.level) for t in hero.army},
                    {pos: p.owner for pos, p in state.provinces.items()},
                    (state.rival.pos, rival_order(state), tuple((t.id, t.hp) for t in state.rival.army)),
                    len(state.log))
 
     def report(self, state: State) -> list[str]:
         after = Snapshot.take(state)
-        lines = list(state.log[self.log:]) if len(state.log) >= self.log else list(state.log)
-        deltas = [f'{name} {old}->{new}' for name, old, new in (
-            ('gold', self.gold, after.gold), ('crystals', self.crystals, after.crystals),
-            ('actions', self.actions, after.actions), ('hero hp', self.hero[0], after.hero[0]),
-            ('mana', self.hero[1], after.hero[1]), ('hero level', self.hero[2], after.hero[2]),
-            ('hero xp', self.hero[3], after.hero[3])) if old != new]
-        if self.hero[4] != after.hero[4]:
-            deltas.append(f'hero at {province_label(state, after.hero[4])}')
+        lines = state.log[self.log:]
+        deltas = [f'{label} {old}->{after.values[label]}' for label, old in self.values.items()
+                  if old != after.values[label]]
+        if self.hero_at != after.hero_at:
+            deltas.append(f'hero at {province_label(state, after.hero_at)}')
         if deltas:
             lines.append(' · '.join(deltas))
         army = []
@@ -578,17 +657,17 @@ class Snapshot:
                 army.append(f'+{name} {hp}hp')
                 continue
             _, old_hp, old_level = self.army[ident]
-            if (hp, level) != (old_hp, old_level):
-                army.append(f'{name} ' + ' '.join(filter(None, (f'hp {old_hp}->{hp}' if hp != old_hp else '',
-                                                                 f'L{level}' if level != old_level else ''))))
+            changes = ([f'hp {old_hp}->{hp}'] if hp != old_hp else []) + ([f'L{level}'] if level != old_level else [])
+            if changes:
+                army.append(f'{name} ' + ' '.join(changes))
         army += [f'-{name} (gone)' for ident, (name, _, _) in self.army.items() if ident not in after.army]
         if army:
             lines.append('Army: ' + ', '.join(army))
-        for pos, owner in after.owners.items():
-            if self.owners.get(pos) != owner:
-                lines.append(f'{province_label(state, pos)}: {OWNERS.get(self.owners.get(pos), "?")} -> {OWNERS[owner]}')
+        lines += [f'{province_label(state, pos)}: {OWNERS[self.owners[pos]]} -> {OWNERS[owner]}'
+                  for pos, owner in after.owners.items() if self.owners[pos] != owner]
         if self.rival != after.rival:
-            lines.append(f'Rival: {rival_order(state)} · {len(state.rival.army)} troops at {province_label(state, state.rival.pos)}')
+            lines.append(f'Rival: {rival_order(state)} · {len(state.rival.army)} troops at '
+                         f'{province_label(state, state.rival.pos)}')
         return lines
 
 
@@ -598,7 +677,8 @@ class Snapshot:
 class Command:
     usage: str
     summary: str
-    where: str
+    where: str  # 'any' (even without a game), 'shard', 'battle' or 'both'
+    observes: bool  # an observation changes nothing, so no [status] line follows it
     run: Callable[[Session, list[str]], str]
 
 
@@ -606,9 +686,9 @@ COMMANDS: dict[str, Command] = {}
 ALIASES = {'l': 'look', 'm': 'map', 'i': 'inspect', 'u': 'unit', 'b': 'board', '?': 'help'}
 
 
-def command(usage: str, summary: str, *, where: str = 'shard'):
+def command(usage: str, summary: str, *, where: str = 'shard', observes: bool = False):
     def register(func):
-        COMMANDS[usage.split()[0]] = Command(usage, summary, where, func)
+        COMMANDS[usage.split()[0]] = Command(usage, summary, where, observes, func)
         return func
     return register
 
@@ -634,7 +714,8 @@ def retinue(args: list[str]) -> dict:
             raise UsageError('expected [troops ID,ID] [relics NAME,NAME]')
         items = [v for v in values.split(',') if v]
         chosen['troop_ids' if word == 'troops' else 'relic_ids'] = (
-            tuple(parse_int(v, 'a troop id') for v in items) if word == 'troops' else tuple(items))
+            tuple(parse_int(v, 'a troop id') for v in items) if word == 'troops'
+            else tuple(resolve([v], RELICS, 'relic') for v in items))
     return chosen
 
 
@@ -670,7 +751,7 @@ class Session:
                 if changed:
                     blocks.append(self.footer())
                 return '\n'.join(blocks), False
-            changed |= name not in OBSERVATIONS
+            changed |= not spec.observes
             blocks.append(prefix + output if output else prefix.rstrip())
         if changed:
             blocks.append(self.footer())
@@ -722,10 +803,7 @@ class Session:
         return [header, self.order(self.state.resolve_battle)]
 
 
-OBSERVATIONS = {'look', 'map', 'inspect', 'rival', 'camp', 'unit', 'board', 'codex', 'help', 'note'}
-
-
-@command('help [COMMAND|rules]', 'command reference, or the rules primer', where='any')
+@command('help [COMMAND|rules]', 'command reference, or the rules primer', where='any', observes=True)
 def _help(session, args):
     if args and args[0] == 'rules':
         return RULES
@@ -736,7 +814,8 @@ def _help(session, args):
         return f'{spec.usage} - {spec.summary}'
     groups = {'any': 'Anywhere', 'shard': 'On the shard map', 'battle': 'In battle', 'both': 'Map or battle'}
     lines = ['shardbound-text [-g SAVE] "cmd; cmd; ...": commands run in order; the first error stops the rest.',
-             'Orders print what changed; a [status] line follows. Aliases: '
+             'Orders print what changed; a [status] line follows. Names match ids or display names in any case.',
+             'note must come last in a chain; double-quote a chain whose note has an apostrophe. Aliases: '
              + ' '.join(f'{k}={v}' for k, v in ALIASES.items()) + '. See also: help rules.']
     for where, title in groups.items():
         lines.append(title + ':')
@@ -758,12 +837,14 @@ def _new(session, args):
     return f'{hero}: {HERO_CLASSES[hero].description}\n' + campaign_view(session.state)
 
 
-@command('look', 'the situation now: shard overview, battle, or campaign transition', where='both')
+@command('look', 'the situation now: shard overview, battle, or campaign transition',
+         where='both', observes=True)
 def _look(session, args):
     return battle_view(session.state) if session.state.battle else campaign_view(session.state)
 
 
-@command('codex [TOPIC]', 'the in-game codex: ' + ' '.join(c.lower() for c in CATEGORIES) + ', or any entry name', where='both')
+@command('codex [TOPIC]', 'the in-game codex: ' + ' '.join(c.lower() for c in CATEGORIES) + ', or any entry name',
+         where='both', observes=True)
 def _codex(session, args):
     topic = ' '.join(args).lower()
     categories = {category.lower(): category for category in CATEGORIES}
@@ -776,22 +857,30 @@ def _codex(session, args):
                   if topic in entry.title.lower()]
     if not chosen:
         raise UsageError(f'no codex entry matches {topic!r}')
-    return '\n'.join(f'{entry.title} [{entry.facts}] {entry.description}' for _, entry in chosen)
+    absent = 'No recorded source on this shard.'
+    elsewhere = list(dict.fromkeys(entry.title.split(':')[0] for category, entry in chosen
+                                   if category == 'Sites' and absent in entry.description))
+    lines = [f'{entry.title} [{entry.facts}] {entry.description}' for category, entry in chosen
+             if not (category == 'Sites' and absent in entry.description)]
+    if elsewhere:
+        lines.append('Sites not on this shard (codex NAME for details): ' + ', '.join(elsewhere))
+    return '\n'.join(lines)
 
 
-@command('note TEXT', 'write your remark into the transcript (must be last in a chain)', where='any')
+@command('note TEXT', 'write your remark into the transcript (must be last in a chain)', where='any', observes=True)
 def _note(session, args):
     if not args:
         raise UsageError('note what?')
     return 'noted'
 
 
-@command('map', 'every province: owner, defenders, site, neighbours', where='both')
+@command('map', 'every province: owner, defenders, site, neighbours', where='both', observes=True)
 def _map(session, args):
     return map_view(session.state)
 
 
-@command('inspect Q,R', 'one province: defenders, site, reward, approaches, what entering does', where='both')
+@command('inspect Q,R', 'one province: defenders, site, reward, approaches, what entering does',
+         where='both', observes=True)
 def _inspect(session, args):
     if len(args) != 1:
         raise UsageError('usage: inspect Q,R')
@@ -801,12 +890,18 @@ def _inspect(session, args):
     return inspect_view(session.state, pos)
 
 
-@command('rival', 'the rival expedition: plan, troops, treasury', where='both')
+@command('plan', 'campaign objectives, what travels to the next shard, rank limits, recovery',
+         where='both', observes=True)
+def _plan(session, args):
+    return plan_view(session.state)
+
+
+@command('rival', 'the rival expedition: plan, troops, treasury', where='both', observes=True)
 def _rival(session, args):
     return rival_view(session.state)
 
 
-@command('camp', 'build, recruit, replace, infuse and equip options with prices and blockers')
+@command('camp', 'build, recruit, replace, infuse and equip options with prices and blockers', observes=True)
 def _camp(session, args):
     return camp_view(session.state)
 
@@ -832,26 +927,27 @@ def _explore(session, args):
     return session.order(lambda: state.explore(approach=args[0] if args else None))
 
 
+RECRUITS = {kind: UNITS[kind] for kind in RECRUITABLE}
+
+
 @command('build KIND', 'build a stronghold building (see camp)')
 def _build(session, args):
-    if len(args) != 1:
-        raise UsageError('usage: build KIND (' + ' '.join(BUILDINGS) + ')')
-    return session.order(lambda: session.state.build(args[0]))
+    kind = resolve(args, BUILDINGS, 'building')
+    return session.order(lambda: session.state.build(kind))
 
 
 @command('recruit KIND', 'recruit a troop where your hero stands (see camp)')
 def _recruit(session, args):
-    if len(args) != 1:
-        raise UsageError('usage: recruit KIND (' + ' '.join(RECRUITABLE) + ')')
-    return session.order(lambda: session.state.recruit(args[0]))
+    kind = resolve(args, RECRUITS, 'troop')
+    return session.order(lambda: session.state.recruit(kind))
 
 
 @command('replace TROOP_ID KIND', 'retire a troop and recruit KIND in its slot (1 action)')
 def _replace(session, args):
-    if len(args) != 2:
+    if len(args) < 2:
         raise UsageError('usage: replace TROOP_ID KIND')
-    ident = parse_int(args[0], 'a troop id')
-    return session.order(lambda: session.state.replace_troop(ident, args[1]))
+    ident, kind = parse_int(args[0], 'a troop id'), resolve(args[1:], RECRUITS, 'troop')
+    return session.order(lambda: session.state.replace_troop(ident, kind))
 
 
 @command('infuse', 'spend 3 crystals and 1 action for up to 8 mana (needs a Mage Tower)')
@@ -861,9 +957,10 @@ def _infuse(session, args):
 
 @command('equip RELIC|none', 'equip an owned relic, or none')
 def _equip(session, args):
-    if len(args) != 1:
+    if not args:
         raise UsageError('usage: equip RELIC|none')
-    return session.order(lambda: session.state.equip(None if args[0] == 'none' else args[0]))
+    relic = None if args == ['none'] else resolve(args, RELICS, 'relic')
+    return session.order(lambda: session.state.equip(relic))
 
 
 @command('choose OPTION', 'answer the pending skill or relic choice')
@@ -907,14 +1004,15 @@ def battle_unit(session, text: str) -> int:
     return ident
 
 
-@command('unit ID', 'one unit: reach, attack forecasts from each hex, ability and spell targets', where='battle')
+@command('unit ID', 'one unit: reach, attack forecasts from each hex, ability and spell targets',
+         where='battle', observes=True)
 def _unit(session, args):
     if len(args) != 1:
         raise UsageError('usage: unit ID')
     return unit_view(session.state.battle, battle_unit(session, args[0]))
 
 
-@command('board', 'the battlefield drawn as a hex map', where='battle')
+@command('board', 'the battlefield drawn as a hex map', where='battle', observes=True)
 def _board(session, args):
     return board_view(session.state.battle)
 
@@ -924,6 +1022,8 @@ def _move(session, args):
     if len(args) != 2:
         raise UsageError('usage: move ID Q,R')
     ident, pos = battle_unit(session, args[0]), parse_pos(args[1])
+    if reason := move_refusal(session.state.battle, session.state.battle.unit(ident), pos):
+        raise UsageError(reason)
     return session.battle_order(lambda b: b.move(ident, pos))
 
 
@@ -933,10 +1033,17 @@ def strike(session, args, kind: str) -> str:
         raise UsageError(f'usage: {kind} ID TARGET [from Q,R]')
     ident, target = battle_unit(session, args[0]), battle_unit(session, args[1])
     source = parse_pos(args[3]) if len(args) == 4 else None
-
-    moving = source is not None and source != session.state.battle.unit(ident).pos
+    battle, unit = session.state.battle, session.state.battle.unit(ident)
+    moving = source is not None and source != unit.pos
+    if moving and (reason := move_refusal(battle, unit, source)):
+        raise UsageError(reason)
+    if source is None and unit.team == battle.active_team and not unit.acted:
+        cells = [pos for _, _, pos in strike_options(battle, unit).get(target, [])]
+        if cells:
+            raise UsageError(f'{unit_name(battle.unit(target))} is out of range from {at(unit.pos)}; '
+                             f'add "from Q,R", one of: {" ".join(at(pos) for pos in cells)}')
     if moving:
-        probe = copy.deepcopy(session.state.battle)
+        probe = copy.deepcopy(battle)
         probe.move(ident, source)
         getattr(probe, kind)(ident, target)
 
@@ -957,12 +1064,19 @@ def _pin(session, args):
     return strike(session, args, 'pin')
 
 
-@command('guard ID', 'spend the order on Guard (+2 def), or Brace for a Pikeman', where='battle')
+@command('guard ID|all', 'spend the order on Guard (+2 def), or Brace for a Pikeman; all: every unit that can act',
+         where='battle')
 def _guard(session, args):
     if len(args) != 1:
-        raise UsageError('usage: guard ID')
-    ident = battle_unit(session, args[0])
-    return session.battle_order(lambda b: b.guard(ident))
+        raise UsageError('usage: guard ID|all')
+    battle = session.state.battle
+    if args[0] == 'all':
+        ids = [u.id for u in battle.units if u.alive and u.team == battle.active_team and not u.acted]
+        if not ids:
+            raise UsageError('no unit can act')
+    else:
+        ids = [battle_unit(session, args[0])]
+    return session.battle_order(lambda b: [b.guard(ident) for ident in ids])
 
 
 def targeted(name: str):
@@ -991,9 +1105,17 @@ def _smoke(session, args):
 def _cast(session, args):
     if len(args) not in (2, 4) or len(args) == 4 and args[2] != 'by':
         raise UsageError('usage: cast SPELL TARGET [by ID]')
+    battle, spell = session.state.battle, args[0].lower()
+    if spell not in SPELLS:
+        raise UsageError('spell is bolt or heal')
     target = battle_unit(session, args[1])
     caster = battle_unit(session, args[3]) if len(args) == 4 else None
-    return session.battle_order(lambda b: b.cast(args[0], target, caster_id=caster))
+    try:
+        return session.battle_order(lambda b: b.cast(spell, target, caster_id=caster))
+    except RuleError as error:
+        refusal = battle.hero_id is not None and spell_refusal(
+            battle, spell, battle.unit(battle.hero_id if caster is None else caster), battle.unit(target))
+        raise RuleError(f'{error} ({refusal})' if refusal and 'within 4 hexes' in str(error) else str(error)) from None
 
 
 @command('evacuate', 'the hero leaves with the cargo from a marked exit', where='battle')
@@ -1020,7 +1142,7 @@ def _auto(session, args):
 
 @command('retreat', 'abandon the battle: lose it, keep the survivors', where='battle')
 def _retreat(session, args):
-    return 'Retreated.\n' + session.order(session.state.retreat)
+    return session.order(session.state.retreat)
 
 
 # ---------------------------------------------------------------- entry point

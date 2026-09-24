@@ -161,3 +161,53 @@ def test_random_play_through_text_never_breaks_the_game(seed, hero):
         kinds.add(('battle' if session.state.battle else session.state.campaign.phase, ok))
         session.state = State.from_json(session.state.to_json())
     assert ('battle', True) in kinds and ('playing', True) in kinds
+
+
+# Regressions from the first blind playtest: each refusal below cost the agent a retry.
+
+def test_names_resolve_as_the_game_prints_them():
+    """'Kept Moonstone' invites 'equip Moonstone'; display names and ids both work, in any case."""
+    session = in_shrine_battle()
+    session.run('auto all; choose take')
+    output, ok = session.run('equip Moonstone; build Archery Range; recruit Archer')
+    assert ok, output
+    assert session.state.hero.relic == 'moonstone' and 'archery' in session.state.buildings
+    output, ok = session.run('recruit dragon')
+    assert not ok and 'one of: militia swordsman' in output
+
+
+def test_an_out_of_range_attack_names_the_hexes_it_could_strike_from():
+    session = in_shrine_battle()
+    militia = session.state.battle.unit(1)
+    output, ok = session.run('attack 1 1004')
+    assert not ok and 'add "from Q,R", one of:' in output
+    hexes = output.split('one of: ')[1].split()
+    output, ok = session.run(f'attack 1 1004 from {hexes[0]}')
+    assert ok, output
+    assert militia.acted
+
+
+def test_a_refused_move_says_what_stands_in_the_way():
+    session = in_shrine_battle()
+    output, ok = session.run('move 0 -2,0')
+    assert not ok and 'occupied by Militia#1' in output
+    output, ok = session.run('move 1 3,0')
+    assert not ok and 'out of reach for Militia#1' in output
+
+
+def test_guard_all_spends_every_ready_order():
+    session = in_shrine_battle()
+    battle = session.state.battle
+    output, ok = session.run('guard all')
+    ours = [u for u in battle.units if u.team == 'player']
+    assert ok and all(f'{u.name}#{u.id} guards' in output for u in ours)
+    assert all(u.acted and u.stance == 'guard' for u in ours)
+
+
+def test_the_campaign_plan_tells_what_travels_before_the_shard_is_won():
+    session = Session()
+    output, _ = session.run('new 7 Commander challenge')
+    gold, crystals = session.state.expedition_funding()
+    assert f'you would arrive with {gold} gold and {crystals} crystals' in output
+    plan, ok = session.run('plan')
+    assert ok and 'todo: Duskspire 2,0' in plan and 'up to two veterans and two relics' in plan

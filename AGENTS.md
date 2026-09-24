@@ -13,6 +13,7 @@ path dependency, so run this suite after changing that library.
 ```bash
 uv sync --extra dev
 uv run shardbound --seed 7                 # play (python -m eador works too); --hero Wizard --theme elderwild
+uv run shardbound-text -g SAVE 'help'      # text play for agents and playtests: docs/text-play.md
 uv run pytest -q                           # headless suite, long (well over a thousand tests)
 uv run pytest tests/eador/test_model.py -q # iterate on a slice
 uv run python tools/fuzz.py                # seeded model/scene fuzz, 25% of one core by default
@@ -34,6 +35,8 @@ uv run python tools/verify_package.py dist/shardbound
   `ui.py`, `reading.py`, `style.py`, `app.py`, `sound.py`, `battle_audio.py`,
   `battle_effects.py` — the saga2d side. `multiplayer.py`'s `ONLINE` registers
   `shardbound-v1` (co-op) and `shardbound-pvp-v1` with `saga2d.server`.
+  `textplay.py` is the text front end; `reference.py` holds the codex entries
+  both front ends read.
 - `eador/art.py`, `icon_art.py`, `landscape.py` compose the original art;
   `eador/assets/` holds the prebuilt PNGs and WAVs with provenance manifests
   that hash their generator sources (`tools/sources.py` finds the framework

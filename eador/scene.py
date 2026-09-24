@@ -736,7 +736,7 @@ class ShardScene(Screen):
             art.expedition(self, self.grid, s.rival.pos, len(s.rival.army))
         art.compass(self, 75, self._summary_bottom + 60)
         if s.campaign:
-            from eador.campaign_scene import campaign_targets
+            from eador.campaign import campaign_targets
             for index, (pos, _, complete) in enumerate(campaign_targets(s)):
                 cx, cy = self.grid.center(pos)
                 cx, cy = cx + self.grid.size * .50, cy + self.grid.size * .05

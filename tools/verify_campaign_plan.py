@@ -15,7 +15,8 @@ os.environ.setdefault('SAGA2D_SILENT', '1')
 from saga2d import Button, Label
 from eador.app import create_game
 from eador.campaign import CONTRACTS, FOUNDRIES
-from eador.campaign_scene import CampaignPlanScene, campaign_targets
+from eador.campaign import campaign_targets
+from eador.campaign_scene import CampaignPlanScene
 from eador.difficulty import DIFFICULTIES
 from eador.model import State
 from eador.preferences import reading_scale
